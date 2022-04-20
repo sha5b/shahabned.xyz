@@ -1,0 +1,15 @@
+.about {
+  font-size: 13rem;
+  font-weight: 900;
+  text-align: center;
+  align-items: center;
+  padding-top: 8rem;
+
+  &-subtext {
+    font-size: 2rem;
+    text-align: center;
+    align-items: center;
+    padding-top: 10rem;
+    padding-bottom: 10rem;
+  }
+}

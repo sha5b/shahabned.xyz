@@ -1,0 +1,15 @@
+/* Navbar */
+
+.navbar {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-grow: 1;
+  flex-shrink: 1;
+
+  a {
+    padding-left: 1rem;
+    text-decoration: none;
+  }
+}

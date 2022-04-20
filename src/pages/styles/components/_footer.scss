@@ -1,0 +1,37 @@
+/* Footer */
+
+.footer {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  align-items: center;
+
+  &-footnote {
+    padding-bottom: 1rem;
+    padding-left: 1rem;
+    justify-content: center;
+    text-align: center;
+
+
+    a {
+    color:$primary ;
+    }
+  }
+
+  &-navigation {
+    overflow: hidden;
+
+    &-item {
+      font-size: 3rem;
+      transition: 0.3s ease-in-out;
+
+      text-decoration: none;
+      cursor: none;
+    }
+    &-item:hover {
+      font-size: 4rem;
+    }
+  }
+
+}
