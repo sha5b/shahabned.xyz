@@ -160,7 +160,6 @@ select {
 
 /* Footer */
 .footer {
-  background-color: #0a0a0a;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -173,8 +172,7 @@ select {
 }
 
 .footer-footnote {
-  background-color: #0a0a0a;
-  color: whitesmoke;
+  color: #0a0a0a;
   padding-top: 1rem;
   padding-bottom: 1rem;
   padding-left: 1rem;
@@ -185,7 +183,7 @@ select {
 }
 
 .footer-footnote a {
-  color: whitesmoke;
+  color: #0a0a0a;
   -webkit-transition: 0.3s ease-in-out;
   transition: 0.3s ease-in-out;
 }
@@ -286,10 +284,6 @@ select {
 
 .pagegrid-item-iframe {
   width: 100%;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  padding-left: 0rem;
-  padding-right: 0rem;
 }
 
 .pagegrid-item-iframe iframe {
