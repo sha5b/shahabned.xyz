@@ -41,37 +41,50 @@ const Cv = ({ data }) => {
             </Link>
           </h1>
           <hr />
-          
-           <div>
+
+          <div>
             <h4>This_Place_ment</h4>
             <p>
               Work: <Link to="/works/echoandnarcissus/">Echo & Narcissus</Link>
             </p>
             <p>Year: 2022</p>
             <p>
-              Space: <a href="https://www.facebook.com/RFDINSEL/">Reich fuer die Insel</a>
+              Space:{" "}
+              <a href="https://www.facebook.com/RFDINSEL/">
+                Reich fuer die Insel
+              </a>
             </p>
             <p>
               Curated:{" "}
-              <a href="https://www.facebook.com/RFDINSEL/">Reich fuer die Insel</a>
+              <a href="https://www.facebook.com/RFDINSEL/">
+                Reich fuer die Insel
+              </a>
             </p>
             <p>Place: Innsbruck / Vienna</p>
           </div>
 
           <hr />
 
-           <div>
+          <div>
             <h4>Intra-Actions: Existence is not an Individual Matter</h4>
             <p>
-              Work: <Link to="/works/elasticloopingspaceintime/">Elastic looping space in time</Link>
+              Work:{" "}
+              <Link to="/works/elasticloopingspaceintime/">
+                Elastic looping space in time
+              </Link>
             </p>
             <p>Year: 2022</p>
             <p>
-              Space: <a href="https://ecc-italy.eu/locations/palazzomora">Palazzo Mora</a>
+              Space:{" "}
+              <a href="https://ecc-italy.eu/locations/palazzomora">
+                Palazzo Mora
+              </a>
             </p>
             <p>
               Curated:{" "}
-              <a href="http://www.fachdidaktik.or.at/venicebiennial/">Zentrum fuer Fachdidaktik</a>
+              <a href="http://www.fachdidaktik.or.at/venicebiennial/">
+                Zentrum fuer Fachdidaktik
+              </a>
             </p>
             <p>Place: Venice / Italy</p>
           </div>
@@ -232,6 +245,7 @@ const Cv = ({ data }) => {
           <div>
             <h4>Heart of Noise 2015</h4>
             <p>
+              Work:{" "}
               <Link to="/works/timeisthesoulofthings/">
                 Time is the Soul of Things
               </Link>
@@ -257,6 +271,7 @@ const Cv = ({ data }) => {
           <div>
             <h4>Biennale Sessions</h4>
             <p>
+              Work:{" "}
               <Link to="/works/onlinetheperformance/">
                 online the performance
               </Link>
@@ -382,25 +397,27 @@ const Cv = ({ data }) => {
           </h1>
           <hr />
           <div>
-
-            <h4>Digital Scuplture</h4>
+            <h4>HGM Internvention</h4>
             <p>
               Work:{" "}
-              <Link to="/works/calmbeforthestorm">
-                Calm befor the Storm
-              </Link>
+              <Link to="/works/calmbeforthestorm">Calm befor the Storm</Link>
             </p>
             <p>
-              Space: <a href="https://www.hgm.at/en">Heeresgeschichtliches Museum</a>
+              Space:{" "}
+              <a href="https://www.hgm.at/en">Heeresgeschichtliches Museum</a>
             </p>
-            <p>Curated: <a href="https://artificialmuseum.com/#z=6&lat=49&lng=14.7&s=about">theartificialmuseum</a>
+            <p>
+              Curated:{" "}
+              <a href="https://artificialmuseum.com/#z=6&lat=49&lng=14.7&s=about">
+                theartificialmuseum
+              </a>
             </p>
           </div>
 
           <hr />
 
           <div>
-            <h4>Rendering</h4>
+            <h4>Bodycount</h4>
             <p>
               Work:{" "}
               <Link to="/works/stoffmeineralptraeume/">
@@ -435,7 +452,7 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
-            <h4>Rendering</h4>
+            <h4>The Emperor's New Clothes</h4>
             <p>
               Work: <Link to="/works/purplehaze/">Purple Haze</Link>
             </p>
@@ -448,7 +465,7 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
-            <h4>Rendering</h4>
+            <h4>My Imagination curated this</h4>
             <p>
               Work: <Link to="/works/impossimobile/">Impossi-mobile</Link>
             </p>
@@ -464,7 +481,7 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
-            <h4>Rendering</h4>
+            <h4>Crumbeling Castle</h4>
             <p>
               Work: <Link to="/works/ohnetitel1/">o(hne)t(itel)</Link>
             </p>
@@ -480,7 +497,7 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
-            <h4>Rendering</h4>
+            <h4>Such Curation, Much Art, WOW!</h4>
             <p>
               Work: <Link to="/works/skullandbones/">Skull and Bones</Link>
             </p>
@@ -493,7 +510,7 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
-            <h4>Rendering</h4>
+            <h4>Such Curation, Much Art, WOW!</h4>
             <p>
               Work: <Link to="/works/ohnetitel4/">o(hne)t(itel)</Link>
             </p>
@@ -506,7 +523,7 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
-            <h4>Rendering</h4>
+            <h4>Such Curation, Much Art, WOW!</h4>
             <p>
               Work:{" "}
               <Link to="/works/simplewaferswafercookie/">

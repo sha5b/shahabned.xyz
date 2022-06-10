@@ -115,22 +115,14 @@ select {
 
 /* Navbar */
 .navbar {
-  background-color: #0a0a0a;
   -webkit-transition: 0.3s ease-in-out;
   transition: 0.3s ease-in-out;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
   -webkit-box-align: baseline;
       -ms-flex-align: baseline;
           align-items: baseline;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
   -webkit-box-flex: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
@@ -140,12 +132,13 @@ select {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
-  text-align: center;
+  justify-items: center;
+  text-align: left;
+  justify-self: left;
   overflow: hidden;
 }
 
 .navbar a {
-  color: whitesmoke;
   padding-left: 3rem;
   padding-right: 3rem;
   text-decoration: none;
@@ -155,7 +148,7 @@ select {
 }
 
 .navbar a:hover {
-  color: darkorange;
+  color: #0a14ff;
 }
 
 /* Footer */
@@ -183,13 +176,14 @@ select {
 }
 
 .footer-footnote a {
-  color: #0a0a0a;
+  color: #0a14ff;
   -webkit-transition: 0.3s ease-in-out;
   transition: 0.3s ease-in-out;
+  text-decoration: none;
 }
 
 .footer-footnote a:hover {
-  color: darkorange;
+  color: #0a0a0a;
 }
 
 .footer-navigation {
@@ -279,7 +273,14 @@ select {
 }
 
 .pagegrid-item-header a {
+  color: #0a0a0a;
   text-decoration: none;
+  -webkit-transition: 0.3s ease-in-out;
+  transition: 0.3s ease-in-out;
+}
+
+.pagegrid-item-header a:hover {
+  color: #0a14ff;
 }
 
 .pagegrid-item-iframe {
@@ -301,6 +302,13 @@ select {
 
 .pagegrid a {
   cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>👌</text></svg>") 16 0, auto;
+  color: #0a14ff;
+  text-decoration: none;
+  -webkit-transition: 0.3s ease-in-out;
+  transition: 0.3s ease-in-out;
+}
+
+.pagegrid a:hover {
   color: #0a0a0a;
 }
 
@@ -343,11 +351,18 @@ select {
   -o-object-fit: cover;
      object-fit: cover;
   overflow: hidden;
-  padding: 3rem;
+  padding: 1rem;
   text-align: justify;
 }
 
 .cvgrid a {
+  color: #0a14ff;
+  -webkit-transition: 0.3s ease-in-out;
+  transition: 0.3s ease-in-out;
+  text-decoration: none;
+}
+
+.cvgrid a:hover {
   color: #0a0a0a;
 }
 
@@ -369,6 +384,8 @@ select {
           align-items: center;
   padding-top: 10rem;
   padding-bottom: 10rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 html,
