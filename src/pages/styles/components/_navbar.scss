@@ -1,15 +1,30 @@
 /* Navbar */
 
 .navbar {
+  background-color: $primary;
+  transition: 0.3s ease-in-out;
   display: flex;
   flex-direction: row;
   align-items: baseline;
   justify-content: space-between;
   flex-grow: 1;
   flex-shrink: 1;
+  padding: 1rem;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+
 
   a {
-    padding-left: 1rem;
+    color: $secondary;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    text-decoration: none;
+    transition: 0.3s ease-in-out;
     text-decoration: none;
   }
+  a:hover {
+    color: darkorange;
+  }
+
 }

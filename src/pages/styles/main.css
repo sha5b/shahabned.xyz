@@ -115,6 +115,9 @@ select {
 
 /* Navbar */
 .navbar {
+  background-color: #0a0a0a;
+  -webkit-transition: 0.3s ease-in-out;
+  transition: 0.3s ease-in-out;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -133,28 +136,46 @@ select {
           flex-grow: 1;
   -ms-flex-negative: 1;
       flex-shrink: 1;
+  padding: 1rem;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  text-align: center;
+  overflow: hidden;
 }
 
 .navbar a {
-  padding-left: 1rem;
+  color: whitesmoke;
+  padding-left: 3rem;
+  padding-right: 3rem;
   text-decoration: none;
+  -webkit-transition: 0.3s ease-in-out;
+  transition: 0.3s ease-in-out;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  color: darkorange;
 }
 
 /* Footer */
 .footer {
+  background-color: #0a0a0a;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-pack: distribute;
       justify-content: space-around;
   padding-top: 2rem;
-  padding-bottom: 2rem;
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
 }
 
 .footer-footnote {
+  background-color: #0a0a0a;
+  color: whitesmoke;
+  padding-top: 1rem;
   padding-bottom: 1rem;
   padding-left: 1rem;
   -webkit-box-pack: center;
@@ -164,7 +185,13 @@ select {
 }
 
 .footer-footnote a {
-  color: #0a0a0a;
+  color: whitesmoke;
+  -webkit-transition: 0.3s ease-in-out;
+  transition: 0.3s ease-in-out;
+}
+
+.footer-footnote a:hover {
+  color: darkorange;
 }
 
 .footer-navigation {
@@ -173,6 +200,8 @@ select {
 
 .footer-navigation-item {
   font-size: 3rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
   -webkit-transition: 0.3s ease-in-out;
   transition: 0.3s ease-in-out;
   text-decoration: none;
@@ -234,7 +263,6 @@ select {
   display: -ms-flexbox;
   display: flex;
   width: auto;
-  padding: 2rem;
 }
 
 .pagegrid-item {
@@ -260,6 +288,8 @@ select {
   width: 100%;
   padding-top: 1rem;
   padding-bottom: 1rem;
+  padding-left: 0rem;
+  padding-right: 0rem;
 }
 
 .pagegrid-item-iframe iframe {
@@ -272,7 +302,7 @@ select {
 .pagegrid-item-image {
   -webkit-transform: scale(1);
           transform: scale(1);
-  padding: 1rem;
+  padding: 0.5rem .5rem;
 }
 
 .pagegrid a {

@@ -3,7 +3,6 @@
   display: -ms-flexbox;
   display: flex;
   width: auto;
-  padding: 2rem;
 
   &-item {
     position: relative;
@@ -25,9 +24,7 @@
     }
     &-iframe {
       width: 100%;
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-
+      
       iframe {
         border-style: none;
         width: 100%;
@@ -37,7 +34,7 @@
     }
     &-image {
       transform: scale(1);
-      padding: 1rem;
+      padding: 0.5rem .5rem;
     }
   }
 

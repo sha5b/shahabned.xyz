@@ -4,18 +4,23 @@
   display: flex;
   justify-content: space-around;
   padding-top: 2rem;
-  padding-bottom: 2rem;
   align-items: center;
 
   &-footnote {
+    color: $primary;
+    padding-top: 1rem;
     padding-bottom: 1rem;
     padding-left: 1rem;
     justify-content: center;
     text-align: center;
 
-
     a {
-    color:$primary ;
+    color:$primary;
+    transition: 0.3s ease-in-out;
+    }
+    
+    a:hover {
+      color: darkorange;
     }
   }
 
@@ -24,6 +29,8 @@
 
     &-item {
       font-size: 3rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
       transition: 0.3s ease-in-out;
 
       text-decoration: none;

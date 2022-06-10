@@ -5,12 +5,11 @@ const Navbar = () => {
   return (
     <>
       <div className="navbar">
-        <h1>//shahabnedaei</h1>
-        <div>
-          <Link to="/">home</Link>
+        <h3>
           <Link to="/cv">cv</Link>
-          <Link to="/404">error</Link>
-        </div>
+          <Link to="/">home</Link>
+          <Link to="/about">about</Link>
+        </h3>
       </div>
     </>
   );

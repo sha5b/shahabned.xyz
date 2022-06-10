@@ -54,9 +54,11 @@ const WorkPage = ({ data, pageContext }) => {
         {data.allFile.edges.map((edge) => {
           const image = getImage(edge.node);
           return (
+            <>
             <div className="pagegrid-item-image">
               <GatsbyImage image={image} alt="Image of the Project" />
             </div>
+            </>
           );
         })}
       </Masonry>

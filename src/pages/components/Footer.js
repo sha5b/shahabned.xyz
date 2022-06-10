@@ -27,7 +27,6 @@ const homeIcon = homeArray[Math.floor(Math.random() * homeArray.length)];
 const Footer = ({ next, previous }) => {
   return (
     <>
-      <hr />
       <div className="footer">
         <div className="footer-navigation">
           <Link className="footer-navigation-item" to={previous}>
