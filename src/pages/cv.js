@@ -397,7 +397,7 @@ const Cv = ({ data }) => {
           </h1>
           <hr />
           <div>
-            <h4>HGM Internvention</h4>
+            <h4>HGM Intervention</h4>
             <p>
               Work:{" "}
               <Link to="/works/calmbeforthestorm">Calm befor the Storm</Link>
