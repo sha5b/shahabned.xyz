@@ -54,7 +54,7 @@ const ImageGallery = () => {
                     alt=""
                   />
                   <div className="imagegrid-item-text">
-                    <h3>{edge.node.frontmatter.title}</h3>
+                    <h4>{edge.node.frontmatter.title}</h4>
                     <p>
                       {edge.node.frontmatter.date} //{" "}
                       {edge.node.frontmatter.medium}

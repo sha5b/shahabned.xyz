@@ -4,14 +4,11 @@
   transition: 0.3s ease-in-out;
   display: flex;
   align-items: baseline;
-  flex-grow: 1;
-  flex-shrink: 1;
   padding: 1rem;
   justify-content: center;
   justify-items: center;
-  text-align: left;
-  justify-self: left;
   overflow: hidden;
+
 
 
   a {
@@ -21,8 +18,21 @@
     transition: 0.3s ease-in-out;
     text-decoration: none;
   }
+
+  
   a:hover {
     color: $highlight;
+  }
+
+  @media only screen and (max-width: 640px) {
+
+      a {
+          padding-left: 1rem;
+          padding-right: 1rem;
+          text-decoration: none;
+          transition: 0.3s ease-in-out;
+          text-decoration: none;
+        }
   }
 
 }

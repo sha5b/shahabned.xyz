@@ -6,9 +6,9 @@ const Navbar = () => {
     <>
       <div className="navbar">
         <h4>
-          <Link to="/cv">cv</Link>{' '} // {' '}
-          <Link to="/">home</Link>{' '} // {' '}
-          <Link to="/about">about</Link>{' '}
+          <Link to="/cv">cv</Link>{''} // {''}
+          <Link to="/">home</Link>{''} // {''}
+          <Link to="/about">about</Link>{''}
         </h4>
       </div>
     </>
