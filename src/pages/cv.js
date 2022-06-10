@@ -41,6 +41,43 @@ const Cv = ({ data }) => {
             </Link>
           </h1>
           <hr />
+          
+           <div>
+            <h4>This_Place_ment</h4>
+            <p>
+              Work: <Link to="/works/echoandnarcissus/">Echo & Narcissus</Link>
+            </p>
+            <p>Year: 2022</p>
+            <p>
+              Space: <a href="https://www.facebook.com/RFDINSEL/">Reich fuer die Insel</a>
+            </p>
+            <p>
+              Curated:{" "}
+              <a href="https://www.facebook.com/RFDINSEL/">Reich fuer die Insel</a>,
+              Shahab Nedaei
+            </p>
+            <p>Place: Innsbruck / Vienna</p>
+          </div>
+
+          <hr />
+
+           <div>
+            <h4>Intra-Actions: Existence is not an Individual Matter</h4>
+            <p>
+              Work: <Link to="/works/elasticloopingspaceintime/">Elastic looping space in time</Link>
+            </p>
+            <p>Year: 2022</p>
+            <p>
+              Space: <a href="https://ecc-italy.eu/locations/palazzomora">Palazzo Mora</a>
+            </p>
+            <p>
+              Curated:{" "}
+              <a href="http://www.fachdidaktik.or.at/venicebiennial/">Zentrum fuer Fachdidaktik</a>
+            </p>
+            <p>Place: Venice / Italy</p>
+          </div>
+
+          <hr />
 
           <div>
             <h4>This_Place_ment</h4>
@@ -341,9 +378,26 @@ const Cv = ({ data }) => {
         <div className="cvgrid-item">
           <h1>
             <Link to="/">
-              <h1>exhibited - virtual</h1>
+              <h1>Exhibited - Virtual</h1>
             </Link>
           </h1>
+          <hr />
+          <div>
+
+            <h4>Digital Scuplture</h4>
+            <p>
+              Work:{" "}
+              <Link to="/works/calmbeforthestorm">
+                Calm befor the Storm
+              </Link>
+            </p>
+            <p>
+              Space: <a href="https://www.hgm.at/en">Heeresgeschichtliches Museum</a>
+            </p>
+            <p>Curated: <a href="https://artificialmuseum.com/#z=6&lat=49&lng=14.7&s=about">theartificialmuseum</a>
+            </p>
+          </div>
+
           <hr />
 
           <div>
@@ -363,7 +417,7 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
-            <h4>Website</h4>
+            <h4>Randiance VR</h4>
             <p>
               Work: <Link to="/works/disarray/">disarray</Link>
             </p>

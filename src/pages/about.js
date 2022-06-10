@@ -26,7 +26,7 @@ const About = ({ data }) => {
         ]}
       />
       <div className="about-subtext">
-        <div>The princess you're looking for is in another castle!</div>
+        <div>Shahab Nedaei works as a digital artist in Vienna. In his projects he examines the meaning and impact on new technology in the post-digital age. Using a variety of technical disciplines, such as VR, A.I., robotics, kinetic and generative sculpture, image manipulation, render and video he fosters the expansion and fluidity of media itself: his work subjects the neverending process of change and challenges the idea of the static. Born 1988 in Tehran, Shahab Nedaei has studied Digital Arts at the University of Applied Arts in Vienna. He works as well as a curator and programmer. </div>
         <div>🐢</div>
       </div>
     </Layout>
