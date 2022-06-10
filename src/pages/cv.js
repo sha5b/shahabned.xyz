@@ -37,7 +37,7 @@ const Cv = ({ data }) => {
         <div className="cvgrid-item">
           <h1>
             <Link to="/">
-              <h1>exhibited - real life</h1>
+              <h1>Exhibited - Real life</h1>
             </Link>
           </h1>
           <hr />
@@ -53,8 +53,7 @@ const Cv = ({ data }) => {
             </p>
             <p>
               Curated:{" "}
-              <a href="https://www.facebook.com/RFDINSEL/">Reich fuer die Insel</a>,
-              Shahab Nedaei
+              <a href="https://www.facebook.com/RFDINSEL/">Reich fuer die Insel</a>
             </p>
             <p>Place: Innsbruck / Vienna</p>
           </div>
@@ -526,7 +525,7 @@ const Cv = ({ data }) => {
         <div className="cvgrid-item">
           <h1>
             <Link to="/">
-              <h1>curated - real life</h1>
+              <h1>Curated</h1>
             </Link>
           </h1>
           <hr />
