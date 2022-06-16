@@ -548,11 +548,9 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
-            <h4>This_Place_ment</h4>
-            <p>
-              Exhibition:{" "}
+            <h4>
               <Link to="/curation/this_place_ment/">This_Place_ment</Link>
-            </p>
+            </h4>
             <p>Year: 2021</p>
             <p>
               Artists: Jorge Gomez Elizondo, ,Thomas Hochwallner, Manuel Baumer,
@@ -571,27 +569,23 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
-            <h4>In Between</h4>
-            <p>
-              Exhibition: <Link to="/curation/inbetween">In Between</Link>
-            </p>
+            <h4>
+              <Link to="/curation/inbetween">In Between</Link>
+            </h4>
             <p>Year: 2021</p>
             <p>Artists: Magdalena Salner</p>
             <p>
               Space: <a href="http://www.raumen.org/">Raumen</a>
             </p>
-            <p>Co-Curator: -----</p>
             <p>Place: Austria / Vienna</p>
           </div>
 
           <hr />
 
           <div>
-            <h4>Poetics of Uncertainty</h4>
-            <p>
-              Exhibition:{" "}
+            <h4>
               <Link to="/curation/poetics">Poetics of Uncertainty</Link>
-            </p>
+            </h4>
             <p>Year: 2019</p>
             <p>Artists: Claire Hentschker</p>
             <p>
@@ -607,10 +601,9 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
-            <h4>Old Habits</h4>
-            <p>
-              Exhibition: <Link to="/curation/oldhabits">Old Habits</Link>
-            </p>
+            <h4>
+              <Link to="/curation/oldhabits">Old Habits</Link>
+            </h4>
             <p>Year: 2019</p>
             <p>Artists: Line Finderup Jensen</p>
             <p>
@@ -626,11 +619,9 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
-            <h4>hyperartefakte</h4>
-            <p>
-              Exhibition:{" "}
+            <h4>
               <Link to="/curation/hyperartefakte">hyperartefakte</Link>
-            </p>
+            </h4>
             <p>Year: 2019</p>
             <p>Artists: Xaver Gschnitzer</p>
             <p>
@@ -649,10 +640,9 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
-            <h4>and when i</h4>
-            <p>
-              Exhibition: <Link to="/curation/andwheni">and when i</Link>
-            </p>
+            <h4>
+              <Link to="/curation/andwheni">and when i</Link>
+            </h4>
             <p>Year: 2019</p>
             <p>Artists: Enrico Zago Caramante</p>
             <p>
