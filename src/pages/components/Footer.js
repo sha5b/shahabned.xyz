@@ -42,8 +42,8 @@ const Footer = ({ next, previous }) => {
       </div>
       <div className="footer-footnote">
         Shahab Nedaei 2022, All rights reserved. //{" "}
-        <a href="home@shahabned.xyz" target="_blank">
-          home@shahabned.xyz
+        <a href="ned.tabulov@gmail.com" target="_blank">
+          ned.tabulov(at)gmail.com
         </a>{" "}
         //{" "}
         <a href="https://www.instagram.com/shahabned/" target="_blank">

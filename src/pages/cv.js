@@ -43,6 +43,111 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
+            <h4>The Shape of Things to Come</h4>
+            <p>
+              Work: <Link to="/works/rendevouz/">Un jour, m'est apparu en songe un rendez-vous</Link>
+            </p>
+            <p>Year: 2022</p>
+            <p>
+              Space:{" "}
+              <a href="https://www.viennabiocenter.org/">
+                Vienna Bio Center
+              </a>
+            </p>
+            <p>
+              Curated:{" "}
+              <a href="/">
+                Chris Rock
+              </a>
+            </p>
+            <p>Place: Vienna / Austria</p>
+          </div>
+          <hr />
+          <div>
+            <h4>The Shape of Things to Come</h4>
+            <p>
+              Work: <Link to="/works/dom_ino/">Dom_Ino</Link>
+            </p>
+            <p>Year: 2022</p>
+            <p>
+              Space:{" "}
+              <a href="https://www.viennabiocenter.org/">
+                Vienna Bio Center
+              </a>
+            </p>
+            <p>
+              Curated:{" "}
+              <a href="/">
+                Chris Rock
+              </a>
+            </p>
+            <p>Place: Vienna / Austria</p>
+          </div>
+          <hr />
+          <div>
+            <h4>The Shape of Things to Come</h4>
+            <p>
+              Work: <Link to="/works/rendevouz/">Un jour, m'est apparu en songe un rendez-vous</Link>
+            </p>
+            <p>Year: 2022</p>
+            <p>
+              Space:{" "}
+              <a href="https://ars.electronica.art/planetb/en/the-shape-of-things/">
+                Ars Electronica Garden
+              </a>
+            </p>
+            <p>
+              Curated:{" "}
+              <a href="/">
+                Chris Rock
+              </a>
+            </p>
+            <p>Place: Linz / Austria</p>
+          </div>
+          <hr />
+          <div>
+            <h4>The Shape of Things to Come</h4>
+            <p>
+              Work: <Link to="/works/dom_ino/">Dom_Ino</Link>
+            </p>
+            <p>Year: 2022</p>
+            <p>
+              Space:{" "}
+              <a href="https://ars.electronica.art/planetb/en/the-shape-of-things/">
+                Ars Electronica Garden
+              </a>
+            </p>
+            <p>
+              Curated:{" "}
+              <a href="/">
+                Chris Rock
+              </a>
+            </p>
+            <p>Place: Linz / Austria</p>
+          </div>
+          <hr />
+          <div>
+            <h4>This_Place_ment</h4>
+            <p>
+              Work: <Link to="/works/dom_ino/">Dom_Ino</Link>
+            </p>
+            <p>Year: 2022</p>
+            <p>
+              Space:{" "}
+              <a href="https://www.facebook.com/RFDINSEL/">
+                Reich fuer die Insel
+              </a>
+            </p>
+            <p>
+              Curated:{" "}
+              <a href="https://www.facebook.com/RFDINSEL/">
+                Reich fuer die Insel
+              </a>
+            </p>
+            <p>Place: Innsbruck / Vienna</p>
+          </div>
+          <hr />
+          <div>
             <h4>This_Place_ment</h4>
             <p>
               Work: <Link to="/works/echoandnarcissus/">Echo & Narcissus</Link>
@@ -396,6 +501,27 @@ const Cv = ({ data }) => {
             </Link>
           </h1>
           <hr />
+
+          <div>
+            <h4>Criatech 2022</h4>
+            <p>
+              Work:{" "}
+              <Link to="/works/calmbeforthestorm">Calm befor the Storm</Link>
+            </p>
+            <p>
+              Space:{" "}
+              <a href="https://www.criatech.pt/en/">Teatroaveirense</a>
+            </p>
+            <p>
+              Curated:{" "}
+              <a href="https://artificialmuseum.com/#z=6&lat=49&lng=14.7&s=about">
+              theartificialmuseum
+              </a>
+            </p>
+          </div>
+
+          <hr />
+          
           <div>
             <h4>HGM Intervention</h4>
             <p>
