@@ -57,7 +57,7 @@ const Cv = ({ data }) => {
             <p>
               Curated:{" "}
               <a href="/">
-                Chris Rock
+              Christiane Hütter
               </a>
             </p>
             <p>Place: Vienna / Austria</p>
@@ -78,7 +78,7 @@ const Cv = ({ data }) => {
             <p>
               Curated:{" "}
               <a href="/">
-                Chris Rock
+              Christiane Hütter
               </a>
             </p>
             <p>Place: Vienna / Austria</p>
@@ -99,7 +99,7 @@ const Cv = ({ data }) => {
             <p>
               Curated:{" "}
               <a href="/">
-                Chris Rock
+              Christiane Hütter
               </a>
             </p>
             <p>Place: Linz / Austria</p>
@@ -120,7 +120,7 @@ const Cv = ({ data }) => {
             <p>
               Curated:{" "}
               <a href="/">
-                Chris Rock
+              Christiane Hütter
               </a>
             </p>
             <p>Place: Linz / Austria</p>
