@@ -56,7 +56,7 @@ const Cv = ({ data }) => {
             </p>
             <p>
               Curated:{" "}
-              <a href="/">
+              <a href="https://whatevr.xyz/home/creatives/">
               Christiane Hütter
               </a>
             </p>
@@ -77,7 +77,7 @@ const Cv = ({ data }) => {
             </p>
             <p>
               Curated:{" "}
-              <a href="/">
+              <a href="https://whatevr.xyz/home/creatives/">
               Christiane Hütter
               </a>
             </p>
@@ -98,7 +98,7 @@ const Cv = ({ data }) => {
             </p>
             <p>
               Curated:{" "}
-              <a href="/">
+              <a href="https://whatevr.xyz/home/creatives/">
               Christiane Hütter
               </a>
             </p>
@@ -119,7 +119,7 @@ const Cv = ({ data }) => {
             </p>
             <p>
               Curated:{" "}
-              <a href="/">
+              <a href="https://whatevr.xyz/home/creatives/">
               Christiane Hütter
               </a>
             </p>
