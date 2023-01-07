@@ -43,6 +43,27 @@ const Cv = ({ data }) => {
           <hr />
 
           <div>
+            <h4>Best Austrian Animation Festival 2022</h4>
+            <p>
+              Work: <Link to="/works/rendevouz/">Dom_Ino</Link>
+            </p>
+            <p>Year: 2022</p>
+            <p>
+              Space:{" "}
+              <a href="https://sehsaal.at/dom_ino/">
+                Sehsaal
+              </a>
+            </p>
+            <p>
+              Curated:{" "}
+              <a href="https://www.animationfestival.at/">
+              Best Austrian Animation 
+              </a>
+            </p>
+            <p>Place: Vienna / Austria</p>
+          </div>
+
+          <div>
             <h4>The Shape of Things to Come</h4>
             <p>
               Work: <Link to="/works/rendevouz/">Un jour, m'est apparu en songe un rendez-vous</Link>
@@ -85,7 +106,7 @@ const Cv = ({ data }) => {
           </div>
           <hr />
           <div>
-            <h4>The Shape of Things to Come</h4>
+            <h4>Welcome to Planet B</h4>
             <p>
               Work: <Link to="/works/rendevouz/">Un jour, m'est apparu en songe un rendez-vous</Link>
             </p>
@@ -106,7 +127,7 @@ const Cv = ({ data }) => {
           </div>
           <hr />
           <div>
-            <h4>The Shape of Things to Come</h4>
+            <h4>Welcome to Planet B</h4>
             <p>
               Work: <Link to="/works/dom_ino/">Dom_Ino</Link>
             </p>
