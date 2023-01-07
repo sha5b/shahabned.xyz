@@ -62,7 +62,7 @@ const Cv = ({ data }) => {
             </p>
             <p>Place: Vienna / Austria</p>
           </div>
-
+          <hr />
           <div>
             <h4>The Shape of Things to Come</h4>
             <p>
