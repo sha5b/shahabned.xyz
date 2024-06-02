@@ -21,28 +21,31 @@ export function createRenderer() {
 }
 
 export function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, padding) {
-  const material = new THREE.MeshBasicMaterial({ color: 0x66ccff });
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), material);
+  // Create a placeholder material
+  const placeholderMaterial = new THREE.MeshBasicMaterial({ color: 0x66ccff });
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), placeholderMaterial);
   mesh.position.set(x, y, 0);
+  gridContainer.add(mesh);
 
+  // Create a canvas texture for the text
   const textCanvas = document.createElement('canvas');
-  textCanvas.width = 256;
-  textCanvas.height = 512;
+  textCanvas.width = 512;
+  textCanvas.height = 256;
   const context = textCanvas.getContext('2d');
   context.fillStyle = '#ffffff';
-  context.font = '24px Arial';
+  context.font = '30px Arial';
   context.fillText(title, 10, 50);
-  context.fillText(description, 10, 100); 
+  context.fillText(description, 10, 100);
   const textTexture = new THREE.CanvasTexture(textCanvas);
-  const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
-  const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), textMaterial);
-  textMesh.position.set(x, y, 0.1); // Slightly above the background
+  const textMaterial = new THREE.SpriteMaterial({ map: textTexture });
+  const textSprite = new THREE.Sprite(textMaterial);
+  textSprite.scale.set(itemWidth, itemHeight / 2, 1);
+  textSprite.position.set(x, y - itemHeight / 2, 0.1);
 
-  gridContainer.add(mesh);
-  gridContainer.add(textMesh);
+  gridContainer.add(textSprite);
 }
 
-export function getSpiralPositions(index, itemWidth, itemHeight, padding) {
+export function getGridPositions(index, itemWidth, itemHeight, padding) {
   let k = Math.ceil((Math.sqrt(index + 1) - 1) / 2);
   let t = 2 * k + 1;
   let m = Math.pow(t, 2);
