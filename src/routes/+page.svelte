@@ -1,18 +1,16 @@
 <script>
-    export let data;
-    import Grid from '$lib/components/Grid.svelte';
-  
-    const { works } = data;
-  </script>
-  
-  <main>
-    <h1>Landing Page</h1>
-    <Grid {works} />
-  </main>
-  
-  <style>
-    main {
-      padding: 1rem;
-    }
-  </style>
-  
+  export let data;
+  import ThreeCanvas from '$lib/components/ThreeCanvas.svelte';
+
+  const { works, owner } = data;
+</script>
+
+<main>
+  <ThreeCanvas {works} {owner} />
+</main>
+
+<style>
+  main {
+    padding: 1rem;
+  }
+</style>

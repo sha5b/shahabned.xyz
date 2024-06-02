@@ -13,6 +13,7 @@
       startY = e.pageY - gridRef.scrollTop;
       scrollLeft = gridRef.scrollLeft;
       scrollTop = gridRef.scrollTop;
+      document.body.style.userSelect = 'none'; // Prevent text selection
     }
   
     function onMouseMove(e) {
@@ -25,8 +26,7 @@
   
     function onMouseUp() {
       dragging = false;
-      const nearestWorkIndex = Math.round(gridRef.scrollLeft / 200); // Assuming each work card is 200px wide
-      gridRef.scrollLeft = nearestWorkIndex * 200;
+      document.body.style.userSelect = ''; // Enable text selection back
     }
   </script>
   
@@ -35,6 +35,7 @@
     on:mousedown={onMouseDown}
     on:mousemove={onMouseMove}
     on:mouseup={onMouseUp}
+    on:mouseleave={onMouseUp}
     class="grid-container"
   >
     {#each works as work (work.id)}
@@ -50,6 +51,7 @@
       cursor: grab;
       overflow: auto;
       height: 100vh;
+      user-select: none; /* Prevent text selection in the grid */
     }
   </style>
   
