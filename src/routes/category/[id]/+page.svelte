@@ -1,12 +1,11 @@
 <script>
     export let data;
+    const { category, works } = data;
     import Grid from '$lib/components/Grid.svelte';
-  
-    const { works } = data;
   </script>
   
   <main>
-    <h1>Landing Page</h1>
+    <h1>Category: {category.title}</h1>
     <Grid {works} />
   </main>
   
