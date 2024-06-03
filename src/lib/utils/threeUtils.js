@@ -22,7 +22,7 @@ export function createRenderer() {
   return renderer;
 }
 
-export function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, padding) {
+export function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight) {
   const placeholderMaterial = new THREE.MeshBasicMaterial({ color: 0x66ccff });
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), placeholderMaterial);
   mesh.position.set(x, y, 0);
@@ -35,12 +35,12 @@ export function addCard(gridContainer, title, description, x, y, itemWidth, item
   context.fillStyle = '#ffffff';
   context.font = '30px Arial';
   context.fillText(title, 10, 50);
-  context.fillText(description, 10, 100);
+  context.fillText(description, 10, 150);
   const textTexture = new THREE.CanvasTexture(textCanvas);
   const textMaterial = new THREE.SpriteMaterial({ map: textTexture });
   const textSprite = new THREE.Sprite(textMaterial);
   textSprite.scale.set(itemWidth, itemHeight / 2, 1);
-  textSprite.position.set(x, y - itemHeight / 2, 0.1);
+  textSprite.position.set(x, y, 0.1); // Adjust position to avoid overlap
 
   gridContainer.add(textSprite);
 }

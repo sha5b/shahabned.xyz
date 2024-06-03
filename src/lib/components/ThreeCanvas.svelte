@@ -13,32 +13,32 @@
 
   const itemWidth = 4;
   const itemHeight = 6;
-  const padding = 2;
+  const padding = 1; // Reduced padding to make the gap smaller
   let dragging = false;
   let startX, startY;
 
-  const maxZoomOut = 8; // Restrict max zoom out to double the initial zoom level
+  const maxZoomOut = 6; // Further restricted max zoom out to 1.5x the initial zoom level
   const gridCols = Math.ceil(Math.sqrt(works.length + 1));
   const gridRows = Math.ceil((works.length + 1) / gridCols);
 
-  function generatePositionsAround(centerX, centerY, count) {
+  function generatePositions(count) {
     const positions = [];
     const totalCols = Math.ceil(Math.sqrt(count));
     for (let i = 0; i < count; i++) {
       const { x, y } = getGridPositions(i, totalCols, itemWidth, itemHeight, padding);
-      positions.push({ x: centerX + x, y: centerY + y });
+      positions.push({ x, y });
     }
     return positions;
   }
 
   function createCompleteGrid() {
     const totalCards = works.length + 1;
-    const positions = generatePositionsAround(0, 0, totalCards);
+    const positions = generatePositions(totalCards);
 
-    addCard(gridContainer, owner.name, owner.description, positions[0].x, positions[0].y, itemWidth, itemHeight, padding);
+    addCard(gridContainer, owner.name, owner.description, positions[0].x, positions[0].y, itemWidth, itemHeight);
 
     for (let i = 1; i < totalCards; i++) {
-      addCard(gridContainer, works[i - 1].title, works[i - 1].description, positions[i].x, positions[i].y, itemWidth, itemHeight, padding);
+      addCard(gridContainer, works[i - 1].title, works[i - 1].description, positions[i].x, positions[i].y, itemWidth, itemHeight);
     }
   }
 
@@ -54,7 +54,7 @@
       const { x, y } = getGridPositions(i, cols, itemWidth, itemHeight, padding);
       if (!isPositionOccupied(x, y)) {
         const cardIndex = i % works.length;
-        addCard(gridContainer, works[cardIndex].title, works[cardIndex].description, x, y, itemWidth, itemHeight, padding);
+        addCard(gridContainer, works[cardIndex].title, works[cardIndex].description, x, y, itemWidth, itemHeight);
       }
     }
   }
@@ -84,6 +84,20 @@
     });
   }
 
+  function cleanupGrid() {
+    const bounds = new THREE.Box3(
+      new THREE.Vector3(camera.position.x - 50, camera.position.y - 50, -1),
+      new THREE.Vector3(camera.position.x + 50, camera.position.y + 50, 1)
+    );
+
+    for (let i = gridContainer.children.length - 1; i >= 0; i--) {
+      const child = gridContainer.children[i];
+      if (!bounds.containsPoint(child.position)) {
+        gridContainer.remove(child);
+      }
+    }
+  }
+
   onMount(() => {
     // Set up the scene, camera, and renderer
     scene = createScene();
@@ -99,7 +113,7 @@
     gridContainer = new THREE.Group();
     scene.add(gridContainer);
 
-    // Create the complete grid
+    // Create the complete grid and fill empty spaces initially
     createCompleteGrid();
     fillEmptySpaces();
 
@@ -116,6 +130,7 @@
       camera.position.x -= dx * camera.zoom;
       camera.position.y -= dy * camera.zoom;
       wrapGrid();
+      cleanupGrid();
       startX = e.clientX;
       startY = e.clientY;
     });
@@ -132,12 +147,11 @@
 
     renderer.domElement.addEventListener('wheel', (e) => {
       e.preventDefault();
-      const newZoom = Math.min(Math.max(camera.zoom + e.deltaY * -0.01, 0.5), maxZoomOut); // Restrict zoom
+      const newZoom = Math.min(Math.max(camera.zoom + e.deltaY * -0.01, 2), maxZoomOut); // Restrict zoom
       camera.zoom = newZoom;
       camera.updateProjectionMatrix();
-      if (newZoom >= maxZoomOut) {
-        fillEmptySpaces();
-      }
+      fillEmptySpaces();
+      cleanupGrid();
     });
 
     function snapCameraToGrid() {
