@@ -129,7 +129,7 @@
 
     renderer.domElement.addEventListener('mousemove', (e) => {
       if (!dragging) return;
-      const dx = (e.clientX - startX) / 200; // Slow down the movement
+      const dx = (e.clientX - startX) / 500; // Slow down the movement
       const dy = -(e.clientY - startY) / 200; // Slow down the movement
       camera.position.x -= dx * camera.zoom;
       camera.position.y -= dy * camera.zoom;
