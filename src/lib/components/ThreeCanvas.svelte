@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
   import * as THREE from 'three';
-  import { createScene, createCamera, createRenderer, addCard, getGridPositions } from '$lib/utils/threeUtils';
+  import { createScene, createCamera, createRenderer, addCard } from '$lib/utils/threeUtils';
   import { Tween, Easing, update as tweenUpdate } from '@tweenjs/tween.js';
 
   export let works = [];
@@ -18,6 +18,14 @@
   let startX, startY;
   let endX, endY;
 
+  function getGridPositions(index, cols) {
+    const row = Math.floor(index / cols);
+    const col = index % cols;
+    const x = col * (itemWidth + padding);
+    const y = -row * (itemHeight + padding);
+    return { x, y };
+  }
+
   onMount(() => {
     // Set up the scene, camera, and renderer
     scene = createScene();
@@ -33,13 +41,20 @@
     gridContainer = new THREE.Group();
     scene.add(gridContainer);
 
+    // Determine grid dimensions
+    const numCategories = works.length;
+    const cols = Math.ceil(Math.sqrt(numCategories));
+    const rows = Math.ceil(numCategories / cols);
+
     // Add owner card in the middle
-    addCard(gridContainer, owner.name, owner.description, 0, 0, itemWidth, itemHeight, padding);
+    const ownerX = Math.floor(cols / 2) * (itemWidth + padding);
+    const ownerY = -Math.floor(rows / 2) * (itemHeight + padding);
+    addCard(gridContainer, owner.name, owner.description, ownerX, ownerY, itemWidth, itemHeight, padding);
 
     // Add work cards around the owner card
     works.forEach((work, index) => {
-      const positions = getGridPositions(index, itemWidth, itemHeight, padding);
-      addCard(gridContainer, work.title, work.description, positions.x, positions.y, itemWidth, itemHeight, padding);
+      const { x, y } = getGridPositions(index, cols);
+      addCard(gridContainer, work.title, work.description, x - ownerX, y - ownerY, itemWidth, itemHeight, padding);
     });
 
     renderer.domElement.addEventListener('mousedown', (e) => {
