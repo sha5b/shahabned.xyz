@@ -18,12 +18,28 @@
   let startX, startY;
   let endX, endY;
 
-  function getGridPositions(index, cols) {
-    const row = Math.floor(index / cols);
-    const col = index % cols;
-    const x = col * (itemWidth + padding);
-    const y = -row * (itemHeight + padding);
-    return { x, y };
+  function getGridPositions(index, centerX, centerY) {
+    const positions = [
+      { x: centerX, y: centerY }, // Center position for the owner card
+      ...generatePositionsAround(centerX, centerY) // Positions around the center for the category cards
+    ];
+    return positions[index];
+  }
+
+  function generatePositionsAround(centerX, centerY) {
+    const positions = [];
+    let level = 1;
+    while (positions.length < works.length) {
+      for (let i = -level; i <= level; i++) {
+        for (let j = -level; j <= level; j++) {
+          if (i === 0 && j === 0) continue; // Skip the center position
+          if (positions.length >= works.length) break;
+          positions.push({ x: centerX + i * (itemWidth + padding), y: centerY + j * (itemHeight + padding) });
+        }
+      }
+      level++;
+    }
+    return positions;
   }
 
   onMount(() => {
@@ -43,18 +59,20 @@
 
     // Determine grid dimensions
     const numCategories = works.length;
-    const cols = Math.ceil(Math.sqrt(numCategories));
-    const rows = Math.ceil(numCategories / cols);
+    const cols = Math.ceil(Math.sqrt(numCategories + 1));
+    const rows = Math.ceil((numCategories + 1) / cols);
+
+    // Calculate the center of the grid
+    const centerX = Math.floor(cols / 2) * (itemWidth + padding);
+    const centerY = -Math.floor(rows / 2) * (itemHeight + padding);
 
     // Add owner card in the middle
-    const ownerX = Math.floor(cols / 2) * (itemWidth + padding);
-    const ownerY = -Math.floor(rows / 2) * (itemHeight + padding);
-    addCard(gridContainer, owner.name, owner.description, ownerX, ownerY, itemWidth, itemHeight, padding);
+    addCard(gridContainer, owner.name, owner.description, centerX, centerY, itemWidth, itemHeight, padding);
 
     // Add work cards around the owner card
     works.forEach((work, index) => {
-      const { x, y } = getGridPositions(index, cols);
-      addCard(gridContainer, work.title, work.description, x - ownerX, y - ownerY, itemWidth, itemHeight, padding);
+      const { x, y } = getGridPositions(index + 1, centerX, centerY); // +1 to account for the owner card
+      addCard(gridContainer, work.title, work.description, x, y, itemWidth, itemHeight, padding);
     });
 
     renderer.domElement.addEventListener('mousedown', (e) => {
