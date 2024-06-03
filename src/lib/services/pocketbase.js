@@ -16,6 +16,7 @@ export const getWorks = async (fetch) => {
       filter: `category="${category.id}"`,
       sort: '-date',
       limit: 1,
+      expand: 'category', // Ensure categories are expanded
       fetch
     });
     if (works.length > 0) {

@@ -38,7 +38,9 @@
     addCard(gridContainer, owner.name, owner.description, positions[0].x, positions[0].y, itemWidth, itemHeight);
 
     for (let i = 1; i < totalCards; i++) {
-      addCard(gridContainer, works[i - 1].title, works[i - 1].description, positions[i].x, positions[i].y, itemWidth, itemHeight);
+      const work = works[i - 1];
+      const description = work.expand?.category?.title || 'No Category';
+      addCard(gridContainer, work.title, description, positions[i].x, positions[i].y, itemWidth, itemHeight);
     }
   }
 
@@ -54,7 +56,9 @@
       const { x, y } = getGridPositions(i, cols, itemWidth, itemHeight, padding);
       if (!isPositionOccupied(x, y)) {
         const cardIndex = i % works.length;
-        addCard(gridContainer, works[cardIndex].title, works[cardIndex].description, x, y, itemWidth, itemHeight);
+        const work = works[cardIndex];
+        const description = work.expand?.category?.title || 'No Category';
+        addCard(gridContainer, work.title, description, x, y, itemWidth, itemHeight);
       }
     }
   }
@@ -145,14 +149,14 @@
       snapCameraToGrid();
     });
 
-    renderer.domElement.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const newZoom = Math.min(Math.max(camera.zoom + e.deltaY * -0.01, 2), maxZoomOut); // Restrict zoom
-      camera.zoom = newZoom;
-      camera.updateProjectionMatrix();
-      fillEmptySpaces();
-      cleanupGrid();
-    });
+    // renderer.domElement.addEventListener('wheel', (e) => {
+    //   e.preventDefault();
+    //   const newZoom = Math.min(Math.max(camera.zoom + e.deltaY * -0.01, 2), maxZoomOut); // Restrict zoom
+    //   camera.zoom = newZoom;
+    //   camera.updateProjectionMatrix();
+    //   fillEmptySpaces();
+    //   cleanupGrid();
+    // });
 
     function snapCameraToGrid() {
       const snapX = Math.round(camera.position.x / (itemWidth + padding)) * (itemWidth + padding);

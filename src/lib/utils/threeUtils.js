@@ -23,7 +23,7 @@ export function createRenderer() {
 }
 
 export function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight) {
-  const placeholderMaterial = new THREE.MeshBasicMaterial({ color: 0x66ccff });
+  const placeholderMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), placeholderMaterial);
   mesh.position.set(x, y, 0);
   gridContainer.add(mesh);
@@ -32,10 +32,10 @@ export function addCard(gridContainer, title, description, x, y, itemWidth, item
   textCanvas.width = 512;
   textCanvas.height = 256;
   const context = textCanvas.getContext('2d');
-  context.fillStyle = '#ffffff';
-  context.font = '30px Arial';
+  context.fillStyle = '#000000';
+  context.font = '30px Oxanium';
   context.fillText(title, 10, 50);
-  context.fillText(description, 10, 150);
+  context.fillText(description, 10, 150); // Display description or category name
   const textTexture = new THREE.CanvasTexture(textCanvas);
   const textMaterial = new THREE.SpriteMaterial({ map: textTexture });
   const textSprite = new THREE.Sprite(textMaterial);
