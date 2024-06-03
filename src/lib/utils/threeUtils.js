@@ -1,3 +1,4 @@
+// src/lib/utils/threeUtils.js
 import * as THREE from 'three';
 
 export function createScene() {
@@ -5,12 +6,13 @@ export function createScene() {
 }
 
 export function createCamera() {
-  const camera = new THREE.OrthographicCamera(
-    window.innerWidth / -100, window.innerWidth / 100,
-    window.innerHeight / 100, window.innerHeight / -100,
-    1, 1000
+  const camera = new THREE.PerspectiveCamera(
+    75, // Field of view
+    window.innerWidth / window.innerHeight, // Aspect ratio
+    0.1, // Near clipping plane
+    1000 // Far clipping plane
   );
-  camera.position.z = 10;
+  camera.position.z = 20; // Adjust zoom level
   return camera;
 }
 
@@ -21,13 +23,11 @@ export function createRenderer() {
 }
 
 export function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, padding) {
-  // Create a placeholder material
   const placeholderMaterial = new THREE.MeshBasicMaterial({ color: 0x66ccff });
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), placeholderMaterial);
   mesh.position.set(x, y, 0);
   gridContainer.add(mesh);
 
-  // Create a canvas texture for the text
   const textCanvas = document.createElement('canvas');
   textCanvas.width = 512;
   textCanvas.height = 256;
@@ -46,18 +46,20 @@ export function addCard(gridContainer, title, description, x, y, itemWidth, item
 }
 
 export function getGridPositions(index, itemWidth, itemHeight, padding) {
+  const gap = 0.5 * padding; // Reduce gap between cards
+
   let k = Math.ceil((Math.sqrt(index + 1) - 1) / 2);
   let t = 2 * k + 1;
   let m = Math.pow(t, 2);
   t -= 1;
 
   if (index >= m - t) {
-    return { x: (k - (m - index)) * (itemWidth + padding), y: -k * (itemHeight + padding) };
+    return { x: (k - (m - index)) * (itemWidth + gap), y: -k * (itemHeight + gap) };
   } else if (index >= m - 2 * t) {
-    return { x: -k * (itemWidth + padding), y: (-k + (m - t - index)) * (itemHeight + padding) };
+    return { x: -k * (itemWidth + gap), y: (-k + (m - t - index)) * (itemHeight + gap) };
   } else if (index >= m - 3 * t) {
-    return { x: (-k + (m - 2 * t - index)) * (itemWidth + padding), y: k * (itemHeight + padding) };
+    return { x: (-k + (m - 2 * t - index)) * (itemWidth + gap), y: k * (itemHeight + gap) };
   } else {
-    return { x: k * (itemWidth + padding), y: (k - (m - 3 * t - index)) * (itemHeight + padding) };
+    return { x: k * (itemWidth + gap), y: (k - (m - 3 * t - index)) * (itemHeight + gap) };
   }
 }

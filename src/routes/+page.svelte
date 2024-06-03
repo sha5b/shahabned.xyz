@@ -6,11 +6,11 @@
 </script>
 
 <main>
-  <ThreeCanvas {works} {owner} />
+  <ThreeCanvas works={data.works} owner={data.owner} />
 </main>
 
 <style>
   main {
-    padding: 1rem;
+    padding: 0rem;
   }
 </style>

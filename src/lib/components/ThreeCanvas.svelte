@@ -11,9 +11,9 @@
   let gridContainer;
   let canvasContainer;
 
-  const itemWidth = 4; // Double the size
-  const itemHeight = 6; // Double the size
-  const padding = 2; // Increase the gaps
+  const itemWidth = 4;
+  const itemHeight = 6;
+  const padding = 2;
   let dragging = false;
   let startX, startY;
   let endX, endY;
@@ -22,6 +22,10 @@
     // Set up the scene, camera, and renderer
     scene = createScene();
     camera = createCamera();
+    camera.position.z = 20; // Set initial position
+    camera.zoom = 4; // Start with maximum zoom
+    camera.updateProjectionMatrix();
+
     renderer = createRenderer();
     canvasContainer.appendChild(renderer.domElement);
 
@@ -83,7 +87,7 @@
 
     function animateZoom(zoom) {
       new Tween(camera)
-        .to({ zoom: Math.min(Math.max(0.5, zoom), 4) }, 500)
+        .to({ zoom: Math.min(Math.max(0.5, zoom), 4) }, 500) // Max zoom is 4
         .easing(Easing.Quadratic.Out)
         .onUpdate(() => camera.updateProjectionMatrix())
         .start();
@@ -100,10 +104,7 @@
     window.addEventListener('resize', onWindowResize);
 
     function onWindowResize() {
-      camera.left = window.innerWidth / -100;
-      camera.right = window.innerWidth / 100;
-      camera.top = window.innerHeight / 100;
-      camera.bottom = window.innerHeight / -100;
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     }
