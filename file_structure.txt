@@ -1,0 +1,17 @@
+src/
+    app.d.ts
+    app.html
+    lib/
+        index.js
+        components/
+            Card.svelte
+            ThreeCanvas.svelte
+        services/
+            pocketbase.js
+        utils/
+            getURL.js
+            threeUtils.js
+    routes/
+        +layout.svelte
+        +page.js
+        +page.svelte
