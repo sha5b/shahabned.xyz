@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
   import * as THREE from 'three';
-  import { createScene, createCamera, createRenderer, addCard } from '$lib/utils/threeUtils';
+  import { createScene, createCamera, createRenderer, addCard, getGridPositions } from '$lib/utils/threeUtils';
   import { Tween, Easing, update as tweenUpdate } from '@tweenjs/tween.js';
 
   export let works = [];
@@ -16,30 +16,38 @@
   const padding = 2;
   let dragging = false;
   let startX, startY;
-  let endX, endY;
 
-  function getGridPositions(index, centerX, centerY) {
-    const positions = [
-      { x: centerX, y: centerY }, // Center position for the owner card
-      ...generatePositionsAround(centerX, centerY) // Positions around the center for the category cards
-    ];
-    return positions[index];
+  const gridCols = Math.ceil(Math.sqrt(works.length + 1));
+  const gridRows = Math.ceil((works.length + 1) / gridCols);
+
+  function createCompleteGrid() {
+    for (let i = 0; i < works.length + 1; i++) {
+      const { x, y } = getGridPositions(i, gridCols, itemWidth, itemHeight, padding);
+      if (i === 0) {
+        addCard(gridContainer, owner.name, owner.description, x, y, itemWidth, itemHeight, padding);
+      } else {
+        addCard(gridContainer, works[i - 1].title, works[i - 1].description, x, y, itemWidth, itemHeight, padding);
+      }
+    }
   }
 
-  function generatePositionsAround(centerX, centerY) {
-    const positions = [];
-    let level = 1;
-    while (positions.length < works.length) {
-      for (let i = -level; i <= level; i++) {
-        for (let j = -level; j <= level; j++) {
-          if (i === 0 && j === 0) continue; // Skip the center position
-          if (positions.length >= works.length) break;
-          positions.push({ x: centerX + i * (itemWidth + padding), y: centerY + j * (itemHeight + padding) });
-        }
+  function wrapGrid() {
+    const wrapOffsetX = gridCols * (itemWidth + padding);
+    const wrapOffsetY = gridRows * (itemHeight + padding);
+
+    gridContainer.children.forEach(child => {
+      if (child.position.x > camera.position.x + wrapOffsetX / 2) {
+        child.position.x -= wrapOffsetX;
+      } else if (child.position.x < camera.position.x - wrapOffsetX / 2) {
+        child.position.x += wrapOffsetX;
       }
-      level++;
-    }
-    return positions;
+
+      if (child.position.y > camera.position.y + wrapOffsetY / 2) {
+        child.position.y -= wrapOffsetY;
+      } else if (child.position.y < camera.position.y - wrapOffsetY / 2) {
+        child.position.y += wrapOffsetY;
+      }
+    });
   }
 
   onMount(() => {
@@ -57,23 +65,8 @@
     gridContainer = new THREE.Group();
     scene.add(gridContainer);
 
-    // Determine grid dimensions
-    const numCategories = works.length;
-    const cols = Math.ceil(Math.sqrt(numCategories + 1));
-    const rows = Math.ceil((numCategories + 1) / cols);
-
-    // Calculate the center of the grid
-    const centerX = Math.floor(cols / 2) * (itemWidth + padding);
-    const centerY = -Math.floor(rows / 2) * (itemHeight + padding);
-
-    // Add owner card in the middle
-    addCard(gridContainer, owner.name, owner.description, centerX, centerY, itemWidth, itemHeight, padding);
-
-    // Add work cards around the owner card
-    works.forEach((work, index) => {
-      const { x, y } = getGridPositions(index + 1, centerX, centerY); // +1 to account for the owner card
-      addCard(gridContainer, work.title, work.description, x, y, itemWidth, itemHeight, padding);
-    });
+    // Create the complete grid
+    createCompleteGrid();
 
     renderer.domElement.addEventListener('mousedown', (e) => {
       dragging = true;
@@ -83,46 +76,42 @@
 
     renderer.domElement.addEventListener('mousemove', (e) => {
       if (!dragging) return;
-      const dx = (e.clientX - startX) / 100;
-      const dy = -(e.clientY - startY) / 100;
-      gridContainer.position.x += dx;
-      gridContainer.position.y += dy;
+      const dx = (e.clientX - startX) / 200; // Slow down the movement
+      const dy = -(e.clientY - startY) / 200; // Slow down the movement
+      camera.position.x -= dx * camera.zoom;
+      camera.position.y -= dy * camera.zoom;
+      wrapGrid();
       startX = e.clientX;
       startY = e.clientY;
     });
 
     renderer.domElement.addEventListener('mouseup', () => {
       dragging = false;
-      endX = Math.round(gridContainer.position.x / (itemWidth + padding)) * (itemWidth + padding);
-      endY = Math.round(gridContainer.position.y / (itemHeight + padding)) * (itemHeight + padding);
-      animateToPosition(endX, endY);
+      snapCameraToGrid();
     });
 
     renderer.domElement.addEventListener('mouseleave', () => {
       dragging = false;
-      endX = Math.round(gridContainer.position.x / (itemWidth + padding)) * (itemWidth + padding);
-      endY = Math.round(gridContainer.position.y / (itemHeight + padding)) * (itemHeight + padding);
-      animateToPosition(endX, endY);
+      snapCameraToGrid();
     });
 
     renderer.domElement.addEventListener('wheel', (e) => {
       e.preventDefault();
       const newZoom = camera.zoom + e.deltaY * -0.01;
-      animateZoom(newZoom);
+      camera.zoom = newZoom;
+      camera.updateProjectionMatrix();
     });
 
-    function animateToPosition(x, y) {
-      new Tween(gridContainer.position)
-        .to({ x, y }, 500)
-        .easing(Easing.Quadratic.Out)
-        .start();
+    function snapCameraToGrid() {
+      const snapX = Math.round(camera.position.x / (itemWidth + padding)) * (itemWidth + padding);
+      const snapY = Math.round(camera.position.y / (itemHeight + padding)) * (itemHeight + padding);
+      animateToPosition(snapX, snapY);
     }
 
-    function animateZoom(zoom) {
-      new Tween(camera)
-        .to({ zoom: Math.min(Math.max(0.5, zoom), 4) }, 500) // Max zoom is 4
+    function animateToPosition(x, y) {
+      new Tween(camera.position)
+        .to({ x, y }, 500)
         .easing(Easing.Quadratic.Out)
-        .onUpdate(() => camera.updateProjectionMatrix())
         .start();
     }
 

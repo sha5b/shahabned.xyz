@@ -45,21 +45,11 @@ export function addCard(gridContainer, title, description, x, y, itemWidth, item
   gridContainer.add(textSprite);
 }
 
-export function getGridPositions(index, itemWidth, itemHeight, padding) {
-  const gap = 0.5 * padding; // Reduce gap between cards
-
-  let k = Math.ceil((Math.sqrt(index + 1) - 1) / 2);
-  let t = 2 * k + 1;
-  let m = Math.pow(t, 2);
-  t -= 1;
-
-  if (index >= m - t) {
-    return { x: (k - (m - index)) * (itemWidth + gap), y: -k * (itemHeight + gap) };
-  } else if (index >= m - 2 * t) {
-    return { x: -k * (itemWidth + gap), y: (-k + (m - t - index)) * (itemHeight + gap) };
-  } else if (index >= m - 3 * t) {
-    return { x: (-k + (m - 2 * t - index)) * (itemWidth + gap), y: k * (itemHeight + gap) };
-  } else {
-    return { x: k * (itemWidth + gap), y: (k - (m - 3 * t - index)) * (itemHeight + gap) };
-  }
+export function getGridPositions(index, cols, itemWidth, itemHeight, padding) {
+  const gap = padding;
+  const row = Math.floor(index / cols);
+  const col = index % cols;
+  const x = col * (itemWidth + gap);
+  const y = -row * (itemHeight + gap);
+  return { x, y };
 }
