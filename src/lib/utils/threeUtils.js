@@ -1,4 +1,3 @@
-// src/lib/utils/threeUtils.js
 import * as THREE from 'three';
 import { getImageURL } from '$lib/utils/getURL';
 
@@ -54,9 +53,29 @@ export function createRenderer(settings = RENDERER_SETTINGS) {
 }
 
 // Function to create material with texture
-function createMaterialWithTexture(textureURL) {
+function createMaterialWithTexture(textureURL, itemWidth, itemHeight) {
   const loader = new THREE.TextureLoader();
-  const texture = loader.load(textureURL);
+  const texture = loader.load(textureURL, (texture) => {
+    const aspectRatio = texture.image.width / texture.image.height;
+    const cardAspectRatio = itemWidth / itemHeight;
+
+    let repeatX = 1, repeatY = 1;
+    let offsetX = 0, offsetY = 0;
+
+    if (aspectRatio > cardAspectRatio) {
+      repeatX = cardAspectRatio / aspectRatio;
+      offsetX = (1 - repeatX) / 2;
+    } else {
+      repeatY = aspectRatio / cardAspectRatio;
+      offsetY = (1 - repeatY) / 2;
+    }
+
+    texture.wrapS = THREE.ClampToEdgeWrapping;
+    texture.wrapT = THREE.ClampToEdgeWrapping;
+    texture.repeat.set(repeatX, repeatY);
+    texture.offset.set(offsetX, offsetY);
+  });
+
   return new THREE.MeshBasicMaterial({ map: texture });
 }
 
@@ -64,7 +83,7 @@ export function addCard(gridContainer, title, description, x, y, itemWidth, item
   let material;
   
   if (textureURL) {
-    material = createMaterialWithTexture(textureURL);
+    material = createMaterialWithTexture(textureURL, itemWidth, itemHeight);
   } else {
     material = new THREE.MeshBasicMaterial({ color: settings.color });
   }

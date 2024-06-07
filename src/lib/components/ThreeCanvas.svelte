@@ -152,15 +152,6 @@
       snapCameraToGrid();
     });
 
-    // renderer.domElement.addEventListener('wheel', (e) => {
-    //   e.preventDefault();
-    //   const newZoom = Math.min(Math.max(camera.zoom + e.deltaY * -0.01, 2), maxZoomOut); // Restrict zoom
-    //   camera.zoom = newZoom;
-    //   camera.updateProjectionMatrix();
-    //   fillEmptySpaces();
-    //   cleanupGrid();
-    // });
-
     function snapCameraToGrid() {
       const snapX = Math.round(camera.position.x / (itemWidth + padding)) * (itemWidth + padding);
       const snapY = Math.round(camera.position.y / (itemHeight + padding)) * (itemHeight + padding);
