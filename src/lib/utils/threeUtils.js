@@ -16,7 +16,7 @@ const RENDERER_SETTINGS = {
 };
 
 const GRID_ITEM_SETTINGS = {
-  color: 0xffffff,
+  color: 0xffffff, // Ensure the background color is white
   text: {
     color: '#000000',
     font: '30px Oxanium'
@@ -49,6 +49,7 @@ export function createRenderer(settings = RENDERER_SETTINGS) {
   
   const renderer = new THREE.WebGLRenderer({ antialias: settings.antialias });
   renderer.setSize(settings.size.width, settings.size.height);
+  renderer.outputEncoding = THREE.sRGBEncoding; // Ensure the renderer output encoding is set to sRGB
   return renderer;
 }
 
@@ -76,10 +77,10 @@ function createMaterialWithTexture(textureURL, itemWidth, itemHeight) {
     texture.offset.set(offsetX, offsetY);
   });
 
-  return new THREE.MeshBasicMaterial({ map: texture });
+  return new THREE.MeshBasicMaterial({ map: texture, color: 0xffffff });
 }
 
-export function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, textureURL = null, settings = GRID_ITEM_SETTINGS) {
+export function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, textureURL = null, settings = GRID_ITEM_SETTINGS, onClick = null) {
   let material;
   
   if (textureURL) {
@@ -91,6 +92,10 @@ export function addCard(gridContainer, title, description, x, y, itemWidth, item
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), material);
   mesh.position.set(x, y, 0);
   gridContainer.add(mesh);
+
+  if (onClick) {
+    mesh.userData = { onClick };
+  }
 
   if (typeof document !== 'undefined') {
     const textCanvas = document.createElement('canvas');
