@@ -6,7 +6,7 @@
 </script>
 
 <main>
-  <ThreeCanvas works={data.works} owner={data.owner} />
+  <ThreeCanvas {works} {owner} />
 </main>
 
 <style>

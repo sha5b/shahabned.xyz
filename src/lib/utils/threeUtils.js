@@ -1,5 +1,6 @@
 // src/lib/utils/threeUtils.js
 import * as THREE from 'three';
+import { getImageURL } from '$lib/utils/getURL';
 
 // Configuration variables
 const CAMERA_SETTINGS = {
@@ -52,9 +53,23 @@ export function createRenderer(settings = RENDERER_SETTINGS) {
   return renderer;
 }
 
-export function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, settings = GRID_ITEM_SETTINGS) {
-  const placeholderMaterial = new THREE.MeshBasicMaterial({ color: settings.color });
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), placeholderMaterial);
+// Function to create material with texture
+function createMaterialWithTexture(textureURL) {
+  const loader = new THREE.TextureLoader();
+  const texture = loader.load(textureURL);
+  return new THREE.MeshBasicMaterial({ map: texture });
+}
+
+export function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, textureURL = null, settings = GRID_ITEM_SETTINGS) {
+  let material;
+  
+  if (textureURL) {
+    material = createMaterialWithTexture(textureURL);
+  } else {
+    material = new THREE.MeshBasicMaterial({ color: settings.color });
+  }
+
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), material);
   mesh.position.set(x, y, 0);
   gridContainer.add(mesh);
 
