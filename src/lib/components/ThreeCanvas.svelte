@@ -2,9 +2,10 @@
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
   import * as THREE from 'three';
-  import { createScene, createCamera, createRenderer, addCard, getGridPositions } from '$lib/utils/threeUtils';
-  import { Tween, Easing, update as tweenUpdate } from '@tweenjs/tween.js';
-  import { getImageURL } from '$lib/utils/getURL';
+  import {
+    createScene, createCamera, createRenderer, calculateGridSize, createCompleteGrid,
+    fillEmptySpaces, wrapGrid, cleanupGrid, snapCameraToGrid, animate, animateToPosition
+  } from '$lib/utils/threeUtils';
 
   export let works = [];
   export let title;
@@ -18,106 +19,10 @@
   const padding = 1;
   let dragging = false;
   let startX, startY;
-
-  const maxZoomOut = 6;
   let gridCols, gridRows;
 
-  function calculateGridSize() {
-    gridCols = Math.ceil(Math.sqrt(works.length + 1));
-    gridRows = Math.ceil((works.length + 1) / gridCols);
-  }
-
-  function generatePositions(count) {
-    const positions = [];
-    const totalCols = Math.ceil(Math.sqrt(count));
-    for (let i = 0; i < count; i++) {
-      const { x, y } = getGridPositions(i, totalCols, itemWidth, itemHeight, padding);
-      positions.push({ x, y });
-    }
-    return positions;
-  }
-
-  function addWorkCard(work, x, y) {
-    const description = work.expand?.category?.title || 'No Category';
-    const textureURL = getImageURL('works', work.id, work.thump);
-    addCard(gridContainer, work.title, description, x, y, itemWidth, itemHeight, textureURL, null, () => {
-      if (work.expand?.category?.title) {
-        goto(`/category/${work.expand.category.title}`);
-      }
-    });
-  }
-
-  async function createCompleteGrid() {
-    const totalCards = works.length + 1;
-    const positions = generatePositions(totalCards);
-
-    addCard(gridContainer, title, '', positions[0].x, positions[0].y, itemWidth, itemHeight);
-
-    for (let i = 1; i < totalCards; i++) {
-      const work = works[i - 1];
-      addWorkCard(work, positions[i].x, positions[i].y);
-    }
-  }
-
-  function fillEmptySpaces() {
-    const bounds = new THREE.Box3().setFromObject(gridContainer);
-    const width = bounds.max.x - bounds.min.x;
-    const height = bounds.max.y - bounds.min.y;
-    const cols = Math.ceil(width / (itemWidth + padding));
-    const rows = Math.ceil(height / (itemHeight + padding));
-    const totalCards = cols * rows;
-
-    for (let i = 0; i < totalCards; i++) {
-      const { x, y } = getGridPositions(i, cols, itemWidth, itemHeight, padding);
-      if (!isPositionOccupied(x, y)) {
-        const cardIndex = i % works.length;
-        const work = works[cardIndex];
-        addWorkCard(work, x, y);
-      }
-    }
-  }
-
-  function isPositionOccupied(x, y) {
-    return gridContainer.children.some(child => {
-      return Math.abs(child.position.x - x) < itemWidth / 2 && Math.abs(child.position.y - y) < itemHeight / 2;
-    });
-  }
-
-  function wrapGrid() {
-    const wrapOffsetX = gridCols * (itemWidth + padding);
-    const wrapOffsetY = gridRows * (itemHeight + padding);
-
-    gridContainer.children.forEach(child => {
-      if (child.position.x > camera.position.x + wrapOffsetX / 2) {
-        child.position.x -= wrapOffsetX;
-      } else if (child.position.x < camera.position.x - wrapOffsetX / 2) {
-        child.position.x += wrapOffsetX;
-      }
-
-      if (child.position.y > camera.position.y + wrapOffsetY / 2) {
-        child.position.y -= wrapOffsetY;
-      } else if (child.position.y < camera.position.y - wrapOffsetY / 2) {
-        child.position.y += wrapOffsetY;
-      }
-    });
-  }
-
-  function cleanupGrid() {
-    const bounds = new THREE.Box3(
-      new THREE.Vector3(camera.position.x - 50, camera.position.y - 50, -1),
-      new THREE.Vector3(camera.position.x + 50, camera.position.y + 50, 1)
-    );
-
-    for (let i = gridContainer.children.length - 1; i >= 0; i--) {
-      const child = gridContainer.children[i];
-      if (!bounds.containsPoint(child.position)) {
-        gridContainer.remove(child);
-      }
-    }
-  }
-
   onMount(() => {
-    calculateGridSize();
+    ({ gridCols, gridRows } = calculateGridSize(works));
 
     // Set up the scene, camera, and renderer
     scene = createScene();
@@ -134,8 +39,12 @@
     scene.add(gridContainer);
 
     // Create the complete grid and fill empty spaces initially
-    createCompleteGrid();
-    fillEmptySpaces();
+    createCompleteGrid(gridContainer, works, title, itemWidth, itemHeight, padding, (work) => {
+      if (work.expand?.category?.title) {
+        goto(`/category/${work.expand.category.title}`);
+      }
+    });
+    fillEmptySpaces(gridContainer, works, itemWidth, itemHeight, padding);
 
     // Event listeners for dragging
     renderer.domElement.addEventListener('mousedown', (e) => {
@@ -150,45 +59,23 @@
       const dy = -(e.clientY - startY) / 200; // Slow down the movement
       camera.position.x -= dx * camera.zoom;
       camera.position.y -= dy * camera.zoom;
-      wrapGrid();
-      cleanupGrid();
+      wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
+      cleanupGrid(gridContainer, camera);
       startX = e.clientX;
       startY = e.clientY;
     });
 
     renderer.domElement.addEventListener('mouseup', () => {
       dragging = false;
-      snapCameraToGrid();
+      snapCameraToGrid(camera, itemWidth, itemHeight, padding);
     });
 
     renderer.domElement.addEventListener('mouseleave', () => {
       dragging = false;
-      snapCameraToGrid();
+      snapCameraToGrid(camera, itemWidth, itemHeight, padding);
     });
 
-    // Function to snap camera to grid
-    function snapCameraToGrid() {
-      const snapX = Math.round(camera.position.x / (itemWidth + padding)) * (itemWidth + padding);
-      const snapY = Math.round(camera.position.y / (itemHeight + padding)) * (itemHeight + padding);
-      animateToPosition(snapX, snapY);
-    }
-
-    // Function to animate camera position
-    function animateToPosition(x, y) {
-      new Tween(camera.position)
-        .to({ x, y }, 500)
-        .easing(Easing.Quadratic.Out)
-        .start();
-    }
-
-    // Function for animation loop
-    function animate() {
-      requestAnimationFrame(animate);
-      tweenUpdate();
-      renderer.render(scene, camera);
-    }
-
-    animate();
+    animate(renderer, scene, camera);
 
     window.addEventListener('resize', onWindowResize);
 
