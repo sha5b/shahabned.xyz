@@ -20,16 +20,21 @@ export function animate(renderer, scene, camera) {
     renderer.render(scene, camera);
 }
 
-export function rotateCardTowardsMouse(card, mouseX, mouseY, camera, maxRotation) {
+export function rotateCardTowardsMouse(card, mouse, camera, maxRotation) {
     const vector = new THREE.Vector3();
     card.getWorldPosition(vector);
 
-    const dx = mouseX - vector.x;
-    const dy = mouseY - vector.y;
+    const dx = (mouse.x - vector.x);
+    const dy = (mouse.y - vector.y);
 
-    const angle = Math.atan2(dy, dx);
+    const targetRotationX = Math.atan2(dy, camera.position.z);
+    const targetRotationY = Math.atan2(dx, camera.position.z);
 
-    card.rotation.z = THREE.MathUtils.clamp(angle, -maxRotation, maxRotation);
+    const smoothRotationX = THREE.MathUtils.lerp(card.rotation.x, THREE.MathUtils.clamp(-targetRotationX, -maxRotation, maxRotation), 0.1);
+    const smoothRotationY = THREE.MathUtils.lerp(card.rotation.y, THREE.MathUtils.clamp(targetRotationY, -maxRotation, maxRotation), 0.1);
+
+    card.rotation.x = smoothRotationX;
+    card.rotation.y = smoothRotationY;
 }
 
 export function updateCardTransparency(gridContainer, camera, maxDistance) {

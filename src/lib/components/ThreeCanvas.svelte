@@ -8,7 +8,7 @@
   import {
     calculateGridSize, createCompleteGrid, fillEmptySpaces, wrapGrid, cleanupGrid
   } from '$lib/utils/three/grid';
-  import { animate, snapCameraToGrid, rotateCardTowardsMouse, updateCardTransparency } from '$lib/utils/three/animation';
+  import { animate, snapCameraToGrid, rotateCardTowardsMouse } from '$lib/utils/three/animation';
 
   export let works = [];
   export let title;
@@ -18,14 +18,37 @@
   let canvasContainer;
   let dragging = false;
   let startX, startY;
+  let mouse = new THREE.Vector2();
 
   const itemWidth = 4;
   const itemHeight = 6;
   const padding = 1;
   let gridCols, gridRows;
 
-  const maxRotation = Math.PI / 6; // 30 degrees in radians
-  const maxDistance = 50;
+  const maxRotation = Math.PI / 3; // 60 degrees in radians
+
+  function getMousePositionInScene(event) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    // Create a vector in 3D space using the mouse coordinates
+    const mouseVector = new THREE.Vector3(mouseX, mouseY, 0.5);
+
+    // Unproject the vector from the camera to get the correct 3D position
+    mouseVector.unproject(camera);
+
+    // Calculate the direction from the camera to the mouse position
+    const dir = mouseVector.sub(camera.position).normalize();
+
+    // Set a distance from the camera
+    const distance = -camera.position.z / dir.z;
+
+    // Get the mouse position in 3D space
+    const mousePosition = camera.position.clone().add(dir.multiplyScalar(distance));
+    
+    return mousePosition;
+  }
 
   onMount(() => {
     ({ gridCols, gridRows } = calculateGridSize(works));
@@ -33,8 +56,8 @@
     // Set up the scene, camera, and renderer
     scene = createScene();
     camera = createCamera();
-    camera.position.z = 20; // Set initial position
-    camera.zoom = 4; // Start with maximum zoom
+    camera.position.z = 25; // Adjusted position to zoom out less
+    camera.zoom = 4; // Adjusted zoom level to zoom out less
     camera.updateProjectionMatrix();
 
     renderer = createRenderer();
@@ -60,6 +83,9 @@
     });
 
     renderer.domElement.addEventListener('mousemove', (e) => {
+      const mousePosition = getMousePositionInScene(e);
+      mouse.set(mousePosition.x, mousePosition.y);
+
       if (dragging) {
         const dx = (e.clientX - startX) / 500; // Slow down the movement
         const dy = -(e.clientY - startY) / 200; // Slow down the movement
@@ -71,15 +97,9 @@
         startY = e.clientY;
       }
 
-      const rect = renderer.domElement.getBoundingClientRect();
-      const mouseX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      const mouseY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
       gridContainer.children.forEach(child => {
-        rotateCardTowardsMouse(child, mouseX, mouseY, camera, maxRotation);
+        rotateCardTowardsMouse(child, mouse, camera, maxRotation);
       });
-
-      updateCardTransparency(gridContainer, camera, maxDistance);
     });
 
     renderer.domElement.addEventListener('mouseup', () => {
