@@ -75,6 +75,17 @@
     });
     fillEmptySpaces(gridContainer, works, itemWidth, itemHeight, padding);
 
+    // Initial card rotation
+    const initialMousePosition = new THREE.Vector3(0, 0, 0);
+    mouse.set(initialMousePosition.x, initialMousePosition.y);
+    gridContainer.children.forEach(child => {
+      rotateCardTowardsMouse(child, mouse, camera, maxRotation);
+    });
+
+    // Ensure wrap-around grids are generated
+    wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
+    cleanupGrid(gridContainer, camera);
+
     // Event listeners for dragging
     renderer.domElement.addEventListener('mousedown', (e) => {
       dragging = true;
