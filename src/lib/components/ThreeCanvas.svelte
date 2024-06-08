@@ -8,7 +8,7 @@
   import {
     calculateGridSize, createCompleteGrid, fillEmptySpaces, wrapGrid, cleanupGrid
   } from '$lib/utils/three/grid';
-  import { animate, snapCameraToGrid } from '$lib/utils/three/animation';
+  import { animate, snapCameraToGrid, rotateCardTowardsMouse, updateCardTransparency } from '$lib/utils/three/animation';
 
   export let works = [];
   export let title;
@@ -16,13 +16,16 @@
   let scene, camera, renderer;
   let gridContainer;
   let canvasContainer;
+  let dragging = false;
+  let startX, startY;
 
   const itemWidth = 4;
   const itemHeight = 6;
   const padding = 1;
-  let dragging = false;
-  let startX, startY;
   let gridCols, gridRows;
+
+  const maxRotation = Math.PI / 6; // 30 degrees in radians
+  const maxDistance = 50;
 
   onMount(() => {
     ({ gridCols, gridRows } = calculateGridSize(works));
@@ -57,15 +60,26 @@
     });
 
     renderer.domElement.addEventListener('mousemove', (e) => {
-      if (!dragging) return;
-      const dx = (e.clientX - startX) / 500; // Slow down the movement
-      const dy = -(e.clientY - startY) / 200; // Slow down the movement
-      camera.position.x -= dx * camera.zoom;
-      camera.position.y -= dy * camera.zoom;
-      wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
-      cleanupGrid(gridContainer, camera);
-      startX = e.clientX;
-      startY = e.clientY;
+      if (dragging) {
+        const dx = (e.clientX - startX) / 500; // Slow down the movement
+        const dy = -(e.clientY - startY) / 200; // Slow down the movement
+        camera.position.x -= dx * camera.zoom;
+        camera.position.y -= dy * camera.zoom;
+        wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
+        cleanupGrid(gridContainer, camera);
+        startX = e.clientX;
+        startY = e.clientY;
+      }
+
+      const rect = renderer.domElement.getBoundingClientRect();
+      const mouseX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const mouseY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      gridContainer.children.forEach(child => {
+        rotateCardTowardsMouse(child, mouseX, mouseY, camera, maxRotation);
+      });
+
+      updateCardTransparency(gridContainer, camera, maxDistance);
     });
 
     renderer.domElement.addEventListener('mouseup', () => {
