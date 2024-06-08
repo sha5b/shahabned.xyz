@@ -51,16 +51,24 @@
     return mousePosition;
   }
 
+  function onResize() {
+    if (window.innerWidth < 768) {
+      camera.position.z = 35;
+      camera.zoom = 2;
+    } else {
+      camera.position.z = 25;
+      camera.zoom = 4;
+    }
+    camera.updateProjectionMatrix();
+  }
+
   onMount(() => {
     ({ gridCols, gridRows } = calculateGridSize(works));
 
     // Set up the scene, camera, and renderer
     scene = createScene();
     camera = createCamera();
-    camera.position.z = 25; // Adjusted position to zoom out less
-    camera.zoom = 4; // Adjusted zoom level to zoom out less
-    camera.updateProjectionMatrix();
-
+    onResize(); // Adjust camera settings based on initial screen size
     renderer = createRenderer();
     canvasContainer.appendChild(renderer.domElement);
 
@@ -87,50 +95,62 @@
     wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
     cleanupGrid(gridContainer, camera);
 
-    // Event listeners for dragging
-    renderer.domElement.addEventListener('mousedown', (e) => {
+    // Event listeners for dragging (mouse and touch)
+    const startDrag = (e) => {
       dragging = true;
-      startX = e.clientX;
-      startY = e.clientY;
-    });
+      startX = e.clientX || e.touches[0].clientX;
+      startY = e.clientY || e.touches[0].clientY;
+    };
 
-    renderer.domElement.addEventListener('mousemove', (e) => {
-      const mousePosition = getMousePositionInScene(e);
+    const moveDrag = (e) => {
+      const mousePosition = getMousePositionInScene(e.clientX ? e : e.touches[0]);
       mouse.set(mousePosition.x, mousePosition.y);
 
       if (dragging) {
-        const dx = (e.clientX - startX) / 500; // Slow down the movement
-        const dy = -(e.clientY - startY) / 200; // Slow down the movement
+        const dx = ((e.clientX || e.touches[0].clientX) - startX) / 500; // Slow down the movement
+        const dy = -((e.clientY || e.touches[0].clientY) - startY) / 200; // Slow down the movement
         camera.position.x -= dx * camera.zoom;
         camera.position.y -= dy * camera.zoom;
         wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
         cleanupGrid(gridContainer, camera);
-        startX = e.clientX;
-        startY = e.clientY;
+        startX = e.clientX || e.touches[0].clientX;
+        startY = e.clientY || e.touches[0].clientY;
       }
 
       gridContainer.children.forEach(child => {
         rotateCardTowardsMouse(child, mouse, camera, maxRotation);
       });
-    });
+    };
 
-    renderer.domElement.addEventListener('mouseup', () => {
+    const endDrag = () => {
       dragging = false;
       snapCameraToGrid(camera, itemWidth, itemHeight, padding);
-    });
+    };
 
-    renderer.domElement.addEventListener('mouseleave', () => {
-      dragging = false;
-      snapCameraToGrid(camera, itemWidth, itemHeight, padding);
-    });
+    renderer.domElement.addEventListener('mousedown', startDrag);
+    renderer.domElement.addEventListener('mousemove', moveDrag);
+    renderer.domElement.addEventListener('mouseup', endDrag);
+    renderer.domElement.addEventListener('mouseleave', endDrag);
+
+    // Touch events for mobile
+    renderer.domElement.addEventListener('touchstart', startDrag);
+    renderer.domElement.addEventListener('touchmove', moveDrag);
+    renderer.domElement.addEventListener('touchend', endDrag);
+    renderer.domElement.addEventListener('touchcancel', endDrag);
 
     animate(renderer, scene, camera);
 
-    window.addEventListener('resize', () => onWindowResize(camera, renderer));
+    window.addEventListener('resize', () => {
+      onWindowResize(camera, renderer);
+      onResize();
+    });
 
     // Cleanup function on unmount
     return () => {
-      window.removeEventListener('resize', () => onWindowResize(camera, renderer));
+      window.removeEventListener('resize', () => {
+        onWindowResize(camera, renderer);
+        onResize();
+      });
       if (renderer) renderer.dispose();
       if (gridContainer) {
         gridContainer.children.forEach(child => {
