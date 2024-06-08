@@ -1,12 +1,13 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
+  import { goto } from '$app/navigation';
   import * as THREE from 'three';
   import { createScene, createCamera, createRenderer, addCard, getGridPositions } from '$lib/utils/threeUtils';
   import { Tween, Easing, update as tweenUpdate } from '@tweenjs/tween.js';
   import { getImageURL } from '$lib/utils/getURL';
 
   export let works = [];
-  export let owner;
+  export let title;
 
   let scene, camera, renderer;
   let gridContainer;
@@ -14,13 +15,17 @@
 
   const itemWidth = 4;
   const itemHeight = 6;
-  const padding = 1; // Reduced padding to make the gap smaller
+  const padding = 1;
   let dragging = false;
   let startX, startY;
 
-  const maxZoomOut = 6; // Further restricted max zoom out to 1.5x the initial zoom level
-  const gridCols = Math.ceil(Math.sqrt(works.length + 1));
-  const gridRows = Math.ceil((works.length + 1) / gridCols);
+  const maxZoomOut = 6;
+  let gridCols, gridRows;
+
+  function calculateGridSize() {
+    gridCols = Math.ceil(Math.sqrt(works.length + 1));
+    gridRows = Math.ceil((works.length + 1) / gridCols);
+  }
 
   function generatePositions(count) {
     const positions = [];
@@ -32,17 +37,25 @@
     return positions;
   }
 
-  function createCompleteGrid() {
+  function addWorkCard(work, x, y) {
+    const description = work.expand?.category?.title || 'No Category';
+    const textureURL = getImageURL('works', work.id, work.thump);
+    addCard(gridContainer, work.title, description, x, y, itemWidth, itemHeight, textureURL, null, () => {
+      if (work.expand?.category?.title) {
+        goto(`/category/${work.expand.category.title}`);
+      }
+    });
+  }
+
+  async function createCompleteGrid() {
     const totalCards = works.length + 1;
     const positions = generatePositions(totalCards);
 
-    addCard(gridContainer, owner.name, owner.description, positions[0].x, positions[0].y, itemWidth, itemHeight);
+    addCard(gridContainer, title, '', positions[0].x, positions[0].y, itemWidth, itemHeight);
 
     for (let i = 1; i < totalCards; i++) {
       const work = works[i - 1];
-      const description = work.expand?.category?.title || 'No Category';
-      const textureURL = getImageURL('works', work.id, work.thump);
-      addCard(gridContainer, work.title, description, positions[i].x, positions[i].y, itemWidth, itemHeight, textureURL);
+      addWorkCard(work, positions[i].x, positions[i].y);
     }
   }
 
@@ -59,9 +72,7 @@
       if (!isPositionOccupied(x, y)) {
         const cardIndex = i % works.length;
         const work = works[cardIndex];
-        const description = work.expand?.category?.title || 'No Category';
-        const textureURL = getImageURL('works', work.id, work.thump);
-        addCard(gridContainer, work.title, description, x, y, itemWidth, itemHeight, textureURL);
+        addWorkCard(work, x, y);
       }
     }
   }
@@ -106,6 +117,8 @@
   }
 
   onMount(() => {
+    calculateGridSize();
+
     // Set up the scene, camera, and renderer
     scene = createScene();
     camera = createCamera();
@@ -124,6 +137,7 @@
     createCompleteGrid();
     fillEmptySpaces();
 
+    // Event listeners for dragging
     renderer.domElement.addEventListener('mousedown', (e) => {
       dragging = true;
       startX = e.clientX;
@@ -152,21 +166,14 @@
       snapCameraToGrid();
     });
 
-    // renderer.domElement.addEventListener('wheel', (e) => {
-    //   e.preventDefault();
-    //   const newZoom = Math.min(Math.max(camera.zoom + e.deltaY * -0.01, 2), maxZoomOut); // Restrict zoom
-    //   camera.zoom = newZoom;
-    //   camera.updateProjectionMatrix();
-    //   fillEmptySpaces();
-    //   cleanupGrid();
-    // });
-
+    // Function to snap camera to grid
     function snapCameraToGrid() {
       const snapX = Math.round(camera.position.x / (itemWidth + padding)) * (itemWidth + padding);
       const snapY = Math.round(camera.position.y / (itemHeight + padding)) * (itemHeight + padding);
       animateToPosition(snapX, snapY);
     }
 
+    // Function to animate camera position
     function animateToPosition(x, y) {
       new Tween(camera.position)
         .to({ x, y }, 500)
@@ -174,6 +181,7 @@
         .start();
     }
 
+    // Function for animation loop
     function animate() {
       requestAnimationFrame(animate);
       tweenUpdate();
@@ -190,14 +198,32 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
+    // Cleanup function on unmount
     return () => {
       window.removeEventListener('resize', onWindowResize);
       if (renderer) renderer.dispose();
+      if (gridContainer) {
+        gridContainer.children.forEach(child => {
+          if (child.material && child.material.map) child.material.map.dispose();
+          if (child.material) child.material.dispose();
+          if (child.geometry) child.geometry.dispose();
+        });
+      }
     };
   });
 
   onDestroy(() => {
-    if (renderer) renderer.dispose();
+    if (renderer) {
+      renderer.dispose();
+    }
+
+    if (gridContainer) {
+      gridContainer.children.forEach(child => {
+        if (child.material && child.material.map) child.material.map.dispose();
+        if (child.material) child.material.dispose();
+        if (child.geometry) child.geometry.dispose();
+      });
+    }
   });
 </script>
 

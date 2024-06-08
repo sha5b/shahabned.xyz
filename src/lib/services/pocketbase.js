@@ -27,6 +27,15 @@ export const getWorks = async (fetch) => {
   return newestWorks;
 };
 
+export const getWorksByCategory = async (fetch, category) => {
+  return await pb.collection('works').getFullList({
+    filter: `category="${category}"`,
+    sort: '-date',
+    expand: 'category', // Ensure categories are expanded
+    fetch
+  });
+};
+
 export const getOwner = async (fetch, id) => {
   return await pb.collection('users').getOne(id, { fetch });
 };

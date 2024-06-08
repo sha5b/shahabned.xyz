@@ -4,7 +4,6 @@ src/
     lib/
         index.js
         components/
-            Card.svelte
             ThreeCanvas.svelte
         services/
             pocketbase.js
@@ -15,3 +14,7 @@ src/
         +layout.svelte
         +page.js
         +page.svelte
+        category/
+            [category]/
+                +page.js
+                +page.svelte
