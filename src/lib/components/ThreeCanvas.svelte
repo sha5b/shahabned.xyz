@@ -30,8 +30,10 @@
 
   function getMousePositionInScene(event) {
     const rect = renderer.domElement.getBoundingClientRect();
-    const mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    const mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    const clientX = event.clientX !== undefined ? event.clientX : event.touches[0].clientX;
+    const clientY = event.clientY !== undefined ? event.clientY : event.touches[0].clientY;
+    const mouseX = ((clientX - rect.left) / rect.width) * 2 - 1;
+    const mouseY = -((clientY - rect.top) / rect.height) * 2 + 1;
 
     // Create a vector in 3D space using the mouse coordinates
     const mouseVector = new THREE.Vector3(mouseX, mouseY, 0.5);
@@ -98,23 +100,23 @@
     // Event listeners for dragging (mouse and touch)
     const startDrag = (e) => {
       dragging = true;
-      startX = e.clientX || e.touches[0].clientX;
-      startY = e.clientY || e.touches[0].clientY;
+      startX = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
+      startY = e.clientY !== undefined ? e.clientY : e.touches[0].clientY;
     };
 
     const moveDrag = (e) => {
-      const mousePosition = getMousePositionInScene(e.clientX ? e : e.touches[0]);
+      const mousePosition = getMousePositionInScene(e);
       mouse.set(mousePosition.x, mousePosition.y);
 
       if (dragging) {
-        const dx = ((e.clientX || e.touches[0].clientX) - startX) / 500; // Slow down the movement
-        const dy = -((e.clientY || e.touches[0].clientY) - startY) / 200; // Slow down the movement
+        const dx = ((e.clientX !== undefined ? e.clientX : e.touches[0].clientX) - startX) / 500; // Slow down the movement
+        const dy = -((e.clientY !== undefined ? e.clientY : e.touches[0].clientY) - startY) / 200; // Slow down the movement
         camera.position.x -= dx * camera.zoom;
         camera.position.y -= dy * camera.zoom;
         wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
         cleanupGrid(gridContainer, camera);
-        startX = e.clientX || e.touches[0].clientX;
-        startY = e.clientY || e.touches[0].clientY;
+        startX = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
+        startY = e.clientY !== undefined ? e.clientY : e.touches[0].clientY;
       }
 
       gridContainer.children.forEach(child => {
