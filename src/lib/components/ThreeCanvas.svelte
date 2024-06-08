@@ -11,6 +11,7 @@
   import { animate, snapCameraToGrid, rotateCardTowardsMouse } from '$lib/utils/three/animation';
 
   export let works = [];
+  export let categories = [];
   export let title;
 
   let scene, camera, renderer;
@@ -68,7 +69,7 @@
     scene.add(gridContainer);
 
     // Create the complete grid and fill empty spaces initially
-    createCompleteGrid(gridContainer, works, title, itemWidth, itemHeight, padding, (work) => {
+    createCompleteGrid(gridContainer, works, categories, title, itemWidth, itemHeight, padding, (work) => {
       if (work.expand?.category?.title) {
         goto(`/category/${work.expand.category.title}`);
       }

@@ -26,17 +26,38 @@ function generatePositions(count, itemWidth, itemHeight, padding) {
     return positions;
 }
 
-function createCompleteGrid(gridContainer, works, title, itemWidth, itemHeight, padding, onClick) {
-    const totalCards = works.length + 1;
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function createCompleteGrid(gridContainer, works, categories, title, itemWidth, itemHeight, padding, onClick) {
+    const uniqueCategories = [...new Set(categories.map(cat => cat.title))];
+    const totalCards = works.length + uniqueCategories.length + 1; // Adding 1 for the title card
     const positions = generatePositions(totalCards, itemWidth, itemHeight, padding);
 
     // Use a larger radius for the owner card
     addCard(gridContainer, title, '', positions[0].x, positions[0].y, itemWidth, itemHeight, null, null, null, 24);
 
-    for (let i = 1; i < totalCards; i++) {
-        const work = works[i - 1];
-        addWorkCard(gridContainer, work, positions[i].x, positions[i].y, itemWidth, itemHeight, padding, onClick);
-    }
+    // First, ensure each category is represented at least once
+    let positionIndex = 1;
+    uniqueCategories.forEach(category => {
+        const work = works.find(w => w.expand.category.title === category);
+        if (work) {
+            addWorkCard(gridContainer, work, positions[positionIndex].x, positions[positionIndex].y, itemWidth, itemHeight, padding, onClick);
+            positionIndex++;
+        }
+    });
+
+    // Add remaining works
+    works.forEach(work => {
+        if (positionIndex >= totalCards) return;
+        addWorkCard(gridContainer, work, positions[positionIndex].x, positions[positionIndex].y, itemWidth, itemHeight, padding, onClick);
+        positionIndex++;
+    });
 }
 
 function fillEmptySpaces(gridContainer, works, itemWidth, itemHeight, padding) {
@@ -47,11 +68,14 @@ function fillEmptySpaces(gridContainer, works, itemWidth, itemHeight, padding) {
     const rows = Math.ceil(height / (itemHeight + padding));
     const totalCards = cols * rows;
 
+    // Shuffle the works array
+    const shuffledWorks = shuffleArray([...works]);
+
     for (let i = 0; i < totalCards; i++) {
         const { x, y } = getGridPositions(i, cols, itemWidth, itemHeight, padding);
         if (!isPositionOccupied(gridContainer, x, y, itemWidth, itemHeight)) {
-            const cardIndex = i % works.length;
-            const work = works[cardIndex];
+            const cardIndex = i % shuffledWorks.length;
+            const work = shuffledWorks[cardIndex];
             addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, padding);
         }
     }
@@ -100,6 +124,7 @@ export {
     getGridPositions,
     calculateGridSize,
     generatePositions,
+    shuffleArray,
     createCompleteGrid,
     fillEmptySpaces,
     isPositionOccupied,
