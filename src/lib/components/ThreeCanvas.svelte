@@ -2,10 +2,13 @@
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
   import * as THREE from 'three';
+  import { createScene } from '$lib/utils/three/scene';
+  import { createCamera, onWindowResize } from '$lib/utils/three/camera';
+  import { createRenderer } from '$lib/utils/three/renderer';
   import {
-    createScene, createCamera, createRenderer, calculateGridSize, createCompleteGrid,
-    fillEmptySpaces, wrapGrid, cleanupGrid, snapCameraToGrid, animate, animateToPosition
-  } from '$lib/utils/threeUtils';
+    calculateGridSize, createCompleteGrid, fillEmptySpaces, wrapGrid, cleanupGrid
+  } from '$lib/utils/three/grid';
+  import { animate, snapCameraToGrid } from '$lib/utils/three/animation';
 
   export let works = [];
   export let title;
@@ -77,17 +80,11 @@
 
     animate(renderer, scene, camera);
 
-    window.addEventListener('resize', onWindowResize);
-
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
+    window.addEventListener('resize', () => onWindowResize(camera, renderer));
 
     // Cleanup function on unmount
     return () => {
-      window.removeEventListener('resize', onWindowResize);
+      window.removeEventListener('resize', () => onWindowResize(camera, renderer));
       if (renderer) renderer.dispose();
       if (gridContainer) {
         gridContainer.children.forEach(child => {

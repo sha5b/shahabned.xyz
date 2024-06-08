@@ -1,23 +1,5 @@
 import * as THREE from 'three';
 import { getImageURL } from '$lib/utils/getURL';
-import { Tween, Easing, update as tweenUpdate } from '@tweenjs/tween.js';
-
-// Configuration variables
-const CAMERA_SETTINGS = {
-    fov: 75,
-    aspect: typeof window !== 'undefined' ? window.innerWidth / window.innerHeight : 1,
-    near: 0.1,
-    far: 1000,
-    position: { z: 20 }
-};
-
-const RENDERER_SETTINGS = {
-    antialias: true,
-    size: {
-        width: typeof window !== 'undefined' ? window.innerWidth : 800,
-        height: typeof window !== 'undefined' ? window.innerHeight : 600
-    }
-};
 
 const GRID_ITEM_SETTINGS = {
     color: 0xffffff, // Ensure the background color is white
@@ -31,33 +13,6 @@ const GRID_ITEM_SETTINGS = {
     }
 };
 
-export function createScene() {
-    return new THREE.Scene();
-}
-
-export function createCamera(settings = CAMERA_SETTINGS) {
-    const camera = new THREE.PerspectiveCamera(
-        settings.fov,
-        settings.aspect,
-        settings.near,
-        settings.far
-    );
-    camera.position.z = settings.position.z;
-    return camera;
-}
-
-export function createRenderer(settings = RENDERER_SETTINGS) {
-    if (typeof window === 'undefined') {
-        return null; // or a placeholder renderer
-    }
-
-    const renderer = new THREE.WebGLRenderer({ antialias: settings.antialias });
-    renderer.setSize(settings.size.width, settings.size.height);
-    renderer.outputEncoding = THREE.sRGBEncoding; // Ensure the renderer output encoding is set to sRGB
-    return renderer;
-}
-
-// Function to create material with texture
 export function createMaterialWithTexture(textureURL, itemWidth, itemHeight) {
     const loader = new THREE.TextureLoader();
     const texture = loader.load(textureURL, (texture) => {
@@ -99,10 +54,6 @@ export function addCard(gridContainer, title, description, x, y, itemWidth, item
     cardMesh.position.set(x, y, 0);
     gridContainer.add(cardMesh);
 
-    if (onClick) {
-        cardMesh.userData = { onClick, description };
-        cardMesh.callback = onClick;
-    }
 }
 
 export function getGridPositions(index, cols, itemWidth, itemHeight, padding) {
@@ -203,23 +154,4 @@ export function cleanupGrid(gridContainer, camera) {
             gridContainer.remove(child);
         }
     }
-}
-
-export function snapCameraToGrid(camera, itemWidth, itemHeight, padding) {
-    const snapX = Math.round(camera.position.x / (itemWidth + padding)) * (itemWidth + padding);
-    const snapY = Math.round(camera.position.y / (itemHeight + padding)) * (itemHeight + padding);
-    animateToPosition(camera, snapX, snapY);
-}
-
-export function animateToPosition(camera, x, y) {
-    new Tween(camera.position)
-        .to({ x, y }, 500)
-        .easing(Easing.Quadratic.Out)
-        .start();
-}
-
-export function animate(renderer, scene, camera) {
-    requestAnimationFrame(() => animate(renderer, scene, camera));
-    tweenUpdate();
-    renderer.render(scene, camera);
 }
