@@ -13,7 +13,7 @@ const CARD_SETTINGS = {
     }
 };
 
-function createRoundedRectTexture(width, height, radius, resolution = 1024) {
+function createRoundedRectTexture(width, height, radius, color = '#ffffff', resolution = 1024) {
     const canvas = document.createElement('canvas');
     canvas.width = resolution;
     canvas.height = resolution * (height / width);
@@ -22,7 +22,7 @@ function createRoundedRectTexture(width, height, radius, resolution = 1024) {
 
     context.scale(scale, scale);
 
-    context.fillStyle = '#ffffff';
+    context.fillStyle = color;
     context.beginPath();
     context.moveTo(radius, 0);
     context.lineTo(width - radius, 0);
@@ -74,7 +74,8 @@ function createMaterialWithTexture(textureURL, itemWidth, itemHeight, radius = 1
             color: 0xffffff
         });
     } else {
-        const roundedRectTexture = createRoundedRectTexture(itemWidth * 100, itemHeight * 100, radius);
+        const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+        const roundedRectTexture = createRoundedRectTexture(itemWidth * 100, itemHeight * 100, radius, randomColor);
 
         material = new THREE.MeshBasicMaterial({
             map: roundedRectTexture,
@@ -105,9 +106,14 @@ function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, padding, 
     addCard(gridContainer, work.title, description, x, y, itemWidth, itemHeight, textureURL, CARD_SETTINGS, onClick);
 }
 
+function addCategoryCard(gridContainer, category, x, y, itemWidth, itemHeight, radius = 16) {
+    addCard(gridContainer, category.title, '', x, y, itemWidth, itemHeight, null, CARD_SETTINGS, null, radius);
+}
+
 export {
     createRoundedRectTexture,
     createMaterialWithTexture,
     addCard,
-    addWorkCard
+    addWorkCard,
+    addCategoryCard
 };

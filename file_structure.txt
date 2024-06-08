@@ -9,7 +9,13 @@ src/
             pocketbase.js
         utils/
             getURL.js
-            threeUtils.js
+            three/
+                animation.js
+                camera.js
+                card.js
+                grid.js
+                renderer.js
+                scene.js
     routes/
         +layout.svelte
         +page.js
