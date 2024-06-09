@@ -79,13 +79,12 @@
 		renderer = createRenderer();
 		canvasContainer.appendChild(renderer.domElement);
 
-		// Create and set the background texture
-    const gridTexture = createDottedGridTexture(itemWidth + padding, 1, 2048); // Adjusted for better resolution
+		const gridTexture = createDottedGridTexture(40, 1, 4096); // Adjust cellSize and dotSize as needed
 		const backgroundMesh = new THREE.Mesh(
-			new THREE.PlaneGeometry(200, 200), // Ensure this covers the background appropriately
-			new THREE.MeshBasicMaterial({ map: gridTexture })
+			new THREE.PlaneGeometry(400, 400), // Ensure this covers the background appropriately
+			new THREE.MeshBasicMaterial({ map: gridTexture, transparent: true })
 		);
-		backgroundMesh.position.z = -10; // Move the grid further back
+		backgroundMesh.position.z = -200; // Move the grid further back
 		scene.add(backgroundMesh);
 
 		// Create the grid container
