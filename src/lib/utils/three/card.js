@@ -87,37 +87,16 @@ function createMaterialWithTexture(textureURL, itemWidth, itemHeight, radius = 1
     return material;
 }
 
-function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, textureURL = null, settings = CARD_SETTINGS, onClick = null, radius = 16, renderer, camera) {
+function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, textureURL = null, settings = CARD_SETTINGS, onClick = null, radius = 16) {
     const material = createMaterialWithTexture(textureURL, itemWidth, itemHeight, radius);
 
     const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), material);
     cardMesh.position.set(x, y, 0);
     gridContainer.add(cardMesh);
 
-    if (onClick && renderer && camera) {
+    if (onClick) {
         cardMesh.userData = { onClick, description };
         cardMesh.callback = onClick;
-        cardMesh.onClick = (event) => {
-            event.stopPropagation();
-            console.log('Card clicked:', description);
-            onClick();
-        };
-
-        const domElement = renderer.domElement;
-        domElement.addEventListener('click', (event) => {
-            const mouse = new THREE.Vector2();
-            mouse.x = (event.clientX / domElement.clientWidth) * 2 - 1;
-            mouse.y = -(event.clientY / domElement.clientHeight) * 2 + 1;
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(gridContainer.children);
-            if (intersects.length > 0) {
-                const clickedObject = intersects[0].object;
-                if (clickedObject.callback) {
-                    clickedObject.callback();
-                }
-            }
-        });
     }
 }
 
@@ -127,7 +106,7 @@ function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, padding, 
     addCard(gridContainer, work.title, category, x, y, itemWidth, itemHeight, textureURL, CARD_SETTINGS, () => {
         console.log('Category:', category);
         goto(`/category/${category}`);
-    }, 16, renderer, camera);
+    }, 16);
 }
 
 export {
