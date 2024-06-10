@@ -142,7 +142,7 @@
 
             if (dragging) {
                 moved = true;
-                const dx = ((e.clientX !== undefined ? e.clientX : e.touches[0].clientX) - startX) / 500;
+                const dx = ((e.clientX !== undefined ? e.clientX : e.touches[0].clientX) - startX) / 200;
                 const dy = -((e.clientY !== undefined ? e.clientY : e.touches[0].clientY) - startY) / 200;
                 camera.position.x -= dx * camera.zoom;
                 camera.position.y -= dy * camera.zoom;
