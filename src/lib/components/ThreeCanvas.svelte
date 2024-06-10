@@ -79,13 +79,22 @@
 		renderer = createRenderer();
 		canvasContainer.appendChild(renderer.domElement);
 
-		const gridTexture = createDottedGridTexture(40, 1, 4096); // Adjust cellSize and dotSize as needed
+		const cellSize = 40; // Ensure this matches the card positioning
+		const textureSize = 4000; // Texture size as provided
+		const gridTexture = createDottedGridTexture(cellSize, 1, textureSize);
+
+		// Create a plane geometry that is large enough to cover the view
+		const planeSize = 20000; // Large enough to cover the view
 		const backgroundMesh = new THREE.Mesh(
-			new THREE.PlaneGeometry(400, 400), // Ensure this covers the background appropriately
+			new THREE.PlaneGeometry(planeSize, planeSize),
 			new THREE.MeshBasicMaterial({ map: gridTexture, transparent: true })
 		);
+
+		// Ensure the texture scales correctly with the PlaneGeometry
+		backgroundMesh.material.map.repeat.set(planeSize / cellSize, planeSize / cellSize);
+
 		// @ts-ignore
-		backgroundMesh.position.z = -500; // Move the grid further back
+		backgroundMesh.position.z = -10; // Move the grid further back
 		scene.add(backgroundMesh);
 
 		// Create the grid container
