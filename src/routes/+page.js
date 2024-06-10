@@ -1,4 +1,3 @@
-// src/routes/+page.js
 import { getCategories, getWorks, getOwner } from '$lib/services/pocketbase';
 
 export async function load({ fetch }) {

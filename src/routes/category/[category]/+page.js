@@ -1,15 +1,13 @@
-import { getWorksByCategory } from '$lib/services/pocketbase';
+import { getWorksByCategory, getCategories } from '$lib/services/pocketbase';
 
 export async function load({ params, fetch }) {
-  try {
-    const { category } = params;
-    const works = await getWorksByCategory(fetch, category);
-    return {
-      category,
-      works
-    };
-  } catch (error) {
-    console.error('Error loading works by category:', error);
-    throw error;
-  }
+  const { category } = params;
+  const works = await getWorksByCategory(fetch, category);
+  const categories = await getCategories(fetch);
+
+  return {
+    works,
+    categories,
+    category
+  };
 }
