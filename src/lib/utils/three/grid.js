@@ -10,9 +10,9 @@ function getGridPositions(index, cols, itemWidth, itemHeight, padding) {
     return { x, y };
 }
 
-function calculateGridSize(works) {
-    const gridCols = Math.ceil(Math.sqrt(works.length + 1));
-    const gridRows = Math.ceil((works.length + 1) / gridCols);
+function calculateGridSize(works, minCols = 3, minRows = 3) {
+    const gridCols = Math.max(minCols, Math.ceil(Math.sqrt(works.length + 1)));
+    const gridRows = Math.max(minRows, Math.ceil((works.length + 1) / gridCols));
     return { gridCols, gridRows };
 }
 
@@ -34,45 +34,26 @@ function shuffleArray(array) {
     return array;
 }
 
-function createCompleteGrid(gridContainer, works, categories, title, itemWidth, itemHeight, padding, onClick, renderer, camera) {
-    const uniqueCategories = [...new Set(categories.map(cat => cat.title))];
-    const totalCards = works.length + uniqueCategories.length + 1; // Adding 1 for the title card
+function createCompleteGrid(gridContainer, works, categories, title, itemWidth, itemHeight, padding, onClick, renderer, camera, minCols = 3, minRows = 3) {
+    const { gridCols, gridRows } = calculateGridSize(works, minCols, minRows);
+    const totalCards = gridCols * gridRows;
     const positions = generatePositions(totalCards, itemWidth, itemHeight, padding);
 
-    // Use a larger radius for the owner card
-    addCard(gridContainer, title, 'Owner', positions[0].x, positions[0].y, itemWidth, itemHeight, null, null, () => console.log('Owner Card Clicked'), 24, renderer, camera);
+    let extendedWorks = [];
+    while (extendedWorks.length < totalCards) {
+        extendedWorks = extendedWorks.concat(works);
+    }
+    extendedWorks = extendedWorks.slice(0, totalCards);
 
-    // Add all works for the category
-    let positionIndex = 1;
-    works.forEach(work => {
+    let positionIndex = 0;
+    addCard(gridContainer, title, 'Owner', positions[positionIndex].x, positions[positionIndex].y, itemWidth, itemHeight, null, null, () => console.log('Owner Card Clicked'), 24, renderer, camera);
+    positionIndex++;
+
+    extendedWorks.forEach(work => {
         if (positionIndex >= positions.length) return;
         addWorkCard(gridContainer, work, positions[positionIndex].x, positions[positionIndex].y, itemWidth, itemHeight, padding, onClick, renderer, camera);
         positionIndex++;
     });
-
-    // Fill remaining positions with random works if there are any empty spaces
-    fillEmptySpaces(gridContainer, works, itemWidth, itemHeight, padding, renderer, camera);
-}
-
-function fillEmptySpaces(gridContainer, works, itemWidth, itemHeight, padding, renderer, camera) {
-    const bounds = new THREE.Box3().setFromObject(gridContainer);
-    const width = bounds.max.x - bounds.min.x;
-    const height = bounds.max.y - bounds.min.y;
-    const cols = Math.ceil(width / (itemWidth + padding));
-    const rows = Math.ceil(height / (itemHeight + padding));
-    const totalCards = cols * rows;
-
-    // Shuffle the works array
-    const shuffledWorks = shuffleArray([...works]);
-
-    for (let i = 0; i < totalCards; i++) {
-        const { x, y } = getGridPositions(i, cols, itemWidth, itemHeight, padding);
-        if (!isPositionOccupied(gridContainer, x, y, itemWidth, itemHeight)) {
-            const cardIndex = i % shuffledWorks.length;
-            const work = shuffledWorks[cardIndex];
-            addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, padding, () => console.log('Card Clicked:', work.title), renderer, camera);
-        }
-    }
 }
 
 function isPositionOccupied(gridContainer, x, y, itemWidth, itemHeight) {
@@ -120,7 +101,6 @@ export {
     generatePositions,
     shuffleArray,
     createCompleteGrid,
-    fillEmptySpaces,
     isPositionOccupied,
     wrapGrid,
     cleanupGrid
