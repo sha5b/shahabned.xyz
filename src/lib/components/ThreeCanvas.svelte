@@ -49,8 +49,8 @@
 
     function onResize() {
         if (window.innerWidth < 768) {
-            camera.position.z = 35;
-            camera.zoom = 2;
+            camera.position.z = 25;
+            camera.zoom = 4;
         } else {
             camera.position.z = 25;
             camera.zoom = 4;
