@@ -34,33 +34,27 @@ function shuffleArray(array) {
     return array;
 }
 
-function createCompleteGrid(gridContainer, works, categories, title, itemWidth, itemHeight, padding, onClick) {
+function createCompleteGrid(gridContainer, works, categories, title, itemWidth, itemHeight, padding, onClick, renderer, camera) {
     const uniqueCategories = [...new Set(categories.map(cat => cat.title))];
     const totalCards = works.length + uniqueCategories.length + 1; // Adding 1 for the title card
     const positions = generatePositions(totalCards, itemWidth, itemHeight, padding);
 
     // Use a larger radius for the owner card
-    addCard(gridContainer, title, '', positions[0].x, positions[0].y, itemWidth, itemHeight, null, null, null, 24);
+    addCard(gridContainer, title, 'Owner', positions[0].x, positions[0].y, itemWidth, itemHeight, null, null, () => console.log('Owner Card Clicked'), 24, renderer, camera);
 
-    // First, ensure each category is represented at least once
+    // Add all works for the category
     let positionIndex = 1;
-    uniqueCategories.forEach(category => {
-        const work = works.find(w => w.expand.category.title === category);
-        if (work) {
-            addWorkCard(gridContainer, work, positions[positionIndex].x, positions[positionIndex].y, itemWidth, itemHeight, padding, onClick);
-            positionIndex++;
-        }
-    });
-
-    // Add remaining works
     works.forEach(work => {
-        if (positionIndex >= totalCards) return;
-        addWorkCard(gridContainer, work, positions[positionIndex].x, positions[positionIndex].y, itemWidth, itemHeight, padding, onClick);
+        if (positionIndex >= positions.length) return;
+        addWorkCard(gridContainer, work, positions[positionIndex].x, positions[positionIndex].y, itemWidth, itemHeight, padding, onClick, renderer, camera);
         positionIndex++;
     });
+
+    // Fill remaining positions with random works if there are any empty spaces
+    fillEmptySpaces(gridContainer, works, itemWidth, itemHeight, padding, renderer, camera);
 }
 
-function fillEmptySpaces(gridContainer, works, itemWidth, itemHeight, padding) {
+function fillEmptySpaces(gridContainer, works, itemWidth, itemHeight, padding, renderer, camera) {
     const bounds = new THREE.Box3().setFromObject(gridContainer);
     const width = bounds.max.x - bounds.min.x;
     const height = bounds.max.y - bounds.min.y;
@@ -76,7 +70,7 @@ function fillEmptySpaces(gridContainer, works, itemWidth, itemHeight, padding) {
         if (!isPositionOccupied(gridContainer, x, y, itemWidth, itemHeight)) {
             const cardIndex = i % shuffledWorks.length;
             const work = shuffledWorks[cardIndex];
-            addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, padding);
+            addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, padding, () => console.log('Card Clicked:', work.title), renderer, camera);
         }
     }
 }

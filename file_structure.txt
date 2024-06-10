@@ -13,6 +13,7 @@ src/
                 animation.js
                 camera.js
                 card.js
+                dottedGridTexture.js
                 grid.js
                 renderer.js
                 scene.js
@@ -22,5 +23,9 @@ src/
         +page.svelte
         category/
             [category]/
+                +page.js
+                +page.svelte
+        owner/
+            [id]/
                 +page.js
                 +page.svelte

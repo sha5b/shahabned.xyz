@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { getImageURL } from '$lib/utils/getURL';
+import { goto } from '$app/navigation';
 
 const CARD_SETTINGS = {
     color: 0xffffff,
@@ -86,24 +87,47 @@ function createMaterialWithTexture(textureURL, itemWidth, itemHeight, radius = 1
     return material;
 }
 
-function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, textureURL = null, settings = CARD_SETTINGS, onClick = null, radius = 16) {
+function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, textureURL = null, settings = CARD_SETTINGS, onClick = null, radius = 16, renderer, camera) {
     const material = createMaterialWithTexture(textureURL, itemWidth, itemHeight, radius);
 
     const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), material);
     cardMesh.position.set(x, y, 0);
     gridContainer.add(cardMesh);
 
-    if (onClick) {
+    if (onClick && renderer && camera) {
         cardMesh.userData = { onClick, description };
-        // @ts-ignore
         cardMesh.callback = onClick;
+        cardMesh.onClick = (event) => {
+            event.stopPropagation();
+            console.log('Card clicked:', description);
+            onClick();
+        };
+
+        const domElement = renderer.domElement;
+        domElement.addEventListener('click', (event) => {
+            const mouse = new THREE.Vector2();
+            mouse.x = (event.clientX / domElement.clientWidth) * 2 - 1;
+            mouse.y = -(event.clientY / domElement.clientHeight) * 2 + 1;
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(gridContainer.children);
+            if (intersects.length > 0) {
+                const clickedObject = intersects[0].object;
+                if (clickedObject.callback) {
+                    clickedObject.callback();
+                }
+            }
+        });
     }
 }
 
-function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, padding, onClick) {
-    const description = work.expand?.category?.title || 'No Category';
+function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, padding, onClick, renderer, camera) {
+    const category = work?.expand?.category?.title || 'No Category';
     const textureURL = getImageURL('works', work.id, work.thump);
-    addCard(gridContainer, work.title, description, x, y, itemWidth, itemHeight, textureURL, CARD_SETTINGS, onClick);
+    addCard(gridContainer, work.title, category, x, y, itemWidth, itemHeight, textureURL, CARD_SETTINGS, () => {
+        console.log('Category:', category);
+        goto(`/category/${category}`);
+    }, 16, renderer, camera);
 }
 
 export {

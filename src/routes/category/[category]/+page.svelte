@@ -1,11 +1,27 @@
 <script>
+  export let data;
   import ThreeCanvas from '$lib/components/ThreeCanvas.svelte';
 
-  export let category;
-  export let works;
-
-  let title = `Category: ${category}`;
+  const { category, works } = data;
 </script>
 
-<h1>{title}</h1>
-<ThreeCanvas {works} {title} />
+<main>
+  <ThreeCanvas {works} />
+</main>
+
+<style>
+  main {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  h1 {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+  }
+</style>
