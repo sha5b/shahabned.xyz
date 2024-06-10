@@ -84,6 +84,7 @@
 			new THREE.PlaneGeometry(400, 400), // Ensure this covers the background appropriately
 			new THREE.MeshBasicMaterial({ map: gridTexture, transparent: true })
 		);
+		// @ts-ignore
 		backgroundMesh.position.z = -500; // Move the grid further back
 		scene.add(backgroundMesh);
 

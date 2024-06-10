@@ -95,6 +95,7 @@ function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight,
 
     if (onClick) {
         cardMesh.userData = { onClick, description };
+        // @ts-ignore
         cardMesh.callback = onClick;
     }
 }
