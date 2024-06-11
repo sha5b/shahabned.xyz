@@ -1,7 +1,7 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
     import * as THREE from 'three';
-    import { createScene } from '$lib/utils/three/scene';
+    import { createScene } from '$lib/utils/three/scene'; // Make sure this path is correct
     import { createCamera, onWindowResize } from '$lib/utils/three/camera';
     import { createRenderer } from '$lib/utils/three/renderer';
     import { createDottedGridTexture } from '$lib/utils/three/dottedGridTexture';
@@ -79,7 +79,7 @@
     onMount(() => {
         ({ gridCols, gridRows } = calculateGridSize(works));
 
-        scene = createScene();
+        scene = createScene(); // Initialize the scene using createScene
         camera = createCamera();
         camera.position.z = 25; // Set a fixed position for the camera
         camera.zoom = 4; // Set a fixed zoom level for all devices
