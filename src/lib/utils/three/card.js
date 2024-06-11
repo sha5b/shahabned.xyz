@@ -40,12 +40,14 @@ function createRoundedRectTexture(width, height, radius, resolution = 1024) {
     return new THREE.CanvasTexture(canvas);
 }
 
-function createMaterialWithTexture(textureURL, itemWidth, itemHeight, radius = 16) {
+function createMaterialWithTexture(textureURL, itemWidth, itemHeight, radius = 8) {
     let material;
 
     if (textureURL) {
         const loader = new THREE.TextureLoader();
         const texture = loader.load(textureURL, (texture) => {
+            texture.colorSpace = THREE.SRGBColorSpace; // Ensure correct color space
+
             const aspectRatio = texture.image.width / texture.image.height;
             const cardAspectRatio = itemWidth / itemHeight;
 
@@ -64,30 +66,33 @@ function createMaterialWithTexture(textureURL, itemWidth, itemHeight, radius = 1
             texture.wrapT = THREE.ClampToEdgeWrapping;
             texture.repeat.set(repeatX, repeatY);
             texture.offset.set(offsetX, offsetY);
+            material.needsUpdate = true; // Ensure material updates
         });
 
         const roundedRectTexture = createRoundedRectTexture(itemWidth * 100, itemHeight * 100, radius);
 
-        material = new THREE.MeshBasicMaterial({
+        material = new THREE.MeshPhongMaterial({
             map: texture,
             alphaMap: roundedRectTexture,
             transparent: true,
-            color: 0xffffff
+            color: 0xffffff,
+            shininess: 30 // Adjust for more realistic lighting
         });
     } else {
         const roundedRectTexture = createRoundedRectTexture(itemWidth * 100, itemHeight * 100, radius);
 
-        material = new THREE.MeshBasicMaterial({
+        material = new THREE.MeshPhongMaterial({
             map: roundedRectTexture,
             transparent: true,
-            color: 0xffffff
+            color: 0xffffff,
+            shininess: 30 // Adjust for more realistic lighting
         });
     }
 
     return material;
 }
 
-function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, textureURL = null, settings = CARD_SETTINGS, onClick = null, radius = 16) {
+function addCard(gridContainer, title, description, x, y, itemWidth, itemHeight, textureURL = null, settings = CARD_SETTINGS, onClick = null, radius = 8) {
     const material = createMaterialWithTexture(textureURL, itemWidth, itemHeight, radius);
 
     const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), material);
@@ -106,7 +111,7 @@ function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, padding, 
     addCard(gridContainer, work.title, category, x, y, itemWidth, itemHeight, textureURL, CARD_SETTINGS, () => {
         console.log('Category:', category);
         goto(`/category/${category}`);
-    }, 16);
+    }, 8);
 }
 
 export {

@@ -46,7 +46,7 @@ function createCompleteGrid(gridContainer, works, categories, title, itemWidth, 
     extendedWorks = extendedWorks.slice(0, totalCards);
 
     let positionIndex = 0;
-    addCard(gridContainer, title, 'Owner', positions[positionIndex].x, positions[positionIndex].y, itemWidth, itemHeight, null, null, () => console.log('Owner Card Clicked'), 24, renderer, camera);
+    addCard(gridContainer, title, 'Owner', positions[positionIndex].x, positions[positionIndex].y, itemWidth, itemHeight, null, null, () => console.log('Owner Card Clicked'), 8, renderer, camera); // Adjusted radius to 8 for owner card
     positionIndex++;
 
     extendedWorks.forEach(work => {

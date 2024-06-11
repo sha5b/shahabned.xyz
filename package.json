@@ -30,6 +30,7 @@
 	"type": "module",
 	"dependencies": {
 		"@tweenjs/tween.js": "^23.1.2",
+		"@types/three": "^0.165.0",
 		"pixi.js": "^8.1.5",
 		"pocketbase": "^0.21.3",
 		"three": "^0.165.0"

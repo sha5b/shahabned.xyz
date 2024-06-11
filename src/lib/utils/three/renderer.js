@@ -15,5 +15,6 @@ export function createRenderer(settings = RENDERER_SETTINGS) {
 
     const renderer = new THREE.WebGLRenderer({ antialias: settings.antialias });
     renderer.setSize(settings.size.width, settings.size.height);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping; // Adjust tone mapping
     return renderer;
 }
