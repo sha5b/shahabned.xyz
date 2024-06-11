@@ -24,6 +24,7 @@
     let startX, startY;
     let mouse = new THREE.Vector2();
     let moved = false;
+    let loading = true; // Loading state
 
     // Updated dimensions for smaller cards
     const itemWidth = 3; // Previously 4
@@ -92,6 +93,7 @@
         const textureSize = 4000;
         const gridTexture = createDottedGridTexture(cellSize, 1, textureSize);
 
+        // Immediately display the dotted grid texture
         const planeSize = 20000;
         const backgroundMesh = new THREE.Mesh(
             new THREE.PlaneGeometry(planeSize, planeSize),
@@ -102,86 +104,100 @@
         backgroundMesh.position.z = -10;
         scene.add(backgroundMesh);
 
-        gridContainer = new THREE.Group();
-        scene.add(gridContainer);
+        renderer.render(scene, camera); // Render the scene with the grid texture first
 
-        createCompleteGrid(
-            gridContainer,
-            works,
-            categories,
-            title,
-            itemWidth,
-            itemHeight,
-            padding,
-            (work) => {
-                const category = work.expand?.category?.title || 'No Category';
-                console.log('Category:', category);
-            },
-            renderer,
-            camera
-        );
+        // Display spinner
+        const spinner = document.createElement('div');
+        spinner.className = 'spinner';
+        document.body.appendChild(spinner);
 
-        const initialMousePosition = new THREE.Vector3(0, 0, 0);
-        mouse.set(initialMousePosition.x, initialMousePosition.y);
-        gridContainer.children.forEach((child) => {
-            rotateCardTowardsMouse(child, mouse, camera, maxRotation);
-        });
+        // Load the grid and other components
+        setTimeout(() => {
+            gridContainer = new THREE.Group();
+            scene.add(gridContainer);
 
-        wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
-        cleanupGrid(gridContainer, camera);
+            createCompleteGrid(
+                gridContainer,
+                works,
+                categories,
+                title,
+                itemWidth,
+                itemHeight,
+                padding,
+                (work) => {
+                    const category = work.expand?.category?.title || 'No Category';
+                    console.log('Category:', category);
+                },
+                renderer,
+                camera
+            );
 
-        const startDrag = (e) => {
-            dragging = true;
-            moved = false;
-            startX = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
-            startY = e.clientY !== undefined ? e.clientY : e.touches[0].clientY;
-        };
-
-        const moveDrag = (e) => {
-            const mousePosition = getMousePositionInScene(e);
-            mouse.set(mousePosition.x, mousePosition.y);
-
-            if (dragging) {
-                moved = true;
-                const dx = ((e.clientX !== undefined ? e.clientX : e.touches[0].clientX) - startX) / 200;
-                const dy = -((e.clientY !== undefined ? e.clientY : e.touches[0].clientY) - startY) / 200;
-                camera.position.x -= dx * camera.zoom;
-                camera.position.y -= dy * camera.zoom;
-                wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
-                cleanupGrid(gridContainer, camera);
-                startX = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
-                startY = e.clientY !== undefined ? e.clientY : e.touches[0].clientY;
-            }
-
+            const initialMousePosition = new THREE.Vector3(0, 0, 0);
+            mouse.set(initialMousePosition.x, initialMousePosition.y);
             gridContainer.children.forEach((child) => {
                 rotateCardTowardsMouse(child, mouse, camera, maxRotation);
             });
-        };
 
-        const endDrag = (e) => {
-            dragging = false;
-            snapCameraToGrid(camera, itemWidth, itemHeight, padding);
-            if (!moved) {
-                handleClick(e);
-            }
-        };
+            wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
+            cleanupGrid(gridContainer, camera);
 
-        renderer.domElement.addEventListener('mousedown', startDrag);
-        renderer.domElement.addEventListener('mousemove', moveDrag);
-        renderer.domElement.addEventListener('mouseup', endDrag);
-        renderer.domElement.addEventListener('mouseleave', endDrag);
+            const startDrag = (e) => {
+                dragging = true;
+                moved = false;
+                startX = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
+                startY = e.clientY !== undefined ? e.clientY : e.touches[0].clientY;
+            };
 
-        renderer.domElement.addEventListener('touchstart', startDrag);
-        renderer.domElement.addEventListener('touchmove', moveDrag);
-        renderer.domElement.addEventListener('touchend', endDrag);
-        renderer.domElement.addEventListener('touchcancel', endDrag);
+            const moveDrag = (e) => {
+                const mousePosition = getMousePositionInScene(e);
+                mouse.set(mousePosition.x, mousePosition.y);
 
-        animate(renderer, scene, camera);
+                if (dragging) {
+                    moved = true;
+                    const dx = ((e.clientX !== undefined ? e.clientX : e.touches[0].clientX) - startX) / 200;
+                    const dy = -((e.clientY !== undefined ? e.clientY : e.touches[0].clientY) - startY) / 200;
+                    camera.position.x -= dx * camera.zoom;
+                    camera.position.y -= dy * camera.zoom;
+                    wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
+                    cleanupGrid(gridContainer, camera);
+                    startX = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
+                    startY = e.clientY !== undefined ? e.clientY : e.touches[0].clientY;
+                }
 
-        window.addEventListener('resize', () => {
-            onWindowResize(camera, renderer);
-            onResize();
-        });
+                gridContainer.children.forEach((child) => {
+                    rotateCardTowardsMouse(child, mouse, camera, maxRotation);
+                });
+            };
+
+            const endDrag = (e) => {
+                dragging = false;
+                snapCameraToGrid(camera, itemWidth, itemHeight, padding);
+                if (!moved) {
+                    handleClick(e);
+                }
+            };
+
+            renderer.domElement.addEventListener('mousedown', startDrag);
+            renderer.domElement.addEventListener('mousemove', moveDrag);
+            renderer.domElement.addEventListener('mouseup', endDrag);
+            renderer.domElement.addEventListener('mouseleave', endDrag);
+
+            renderer.domElement.addEventListener('touchstart', startDrag);
+            renderer.domElement.addEventListener('touchmove', moveDrag);
+            renderer.domElement.addEventListener('touchend', endDrag);
+            renderer.domElement.addEventListener('touchcancel', endDrag);
+
+            animate(renderer, scene, camera);
+
+            window.addEventListener('resize', () => {
+                onWindowResize(camera, renderer);
+                onResize();
+            });
+
+            // Remove spinner when loading is done
+            loading = false;
+            document.body.removeChild(spinner);
+        }, 1000); // Simulate delay for demonstration, adjust as needed
 
         return () => {
             window.removeEventListener('resize', () => {
