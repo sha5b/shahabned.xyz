@@ -1,7 +1,7 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
     import * as THREE from 'three';
-    import { createScene } from '$lib/utils/three/scene'; // Make sure this path is correct
+    import { createScene } from '$lib/utils/three/scene'; // Ensure this path is correct
     import { createCamera, onWindowResize } from '$lib/utils/three/camera';
     import { createRenderer } from '$lib/utils/three/renderer';
     import { createDottedGridTexture } from '$lib/utils/three/dottedGridTexture';
@@ -25,12 +25,13 @@
     let mouse = new THREE.Vector2();
     let moved = false;
 
-    const itemWidth = 4;
-    const itemHeight = 6;
+    // Updated dimensions for smaller cards
+    const itemWidth = 3; // Previously 4
+    const itemHeight = 4.5; // Previously 6
     const padding = .5;
     let gridCols, gridRows;
 
-    const maxRotation = Math.PI / 3;
+    const maxRotation = Math.PI; // More extreme rotation
 
     function getMousePositionInScene(event) {
         const rect = renderer.domElement.getBoundingClientRect();

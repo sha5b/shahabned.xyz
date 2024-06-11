@@ -27,8 +27,9 @@ export function rotateCardTowardsMouse(card, mouse, camera, maxRotation) {
     const dx = (mouse.x - vector.x);
     const dy = (mouse.y - vector.y);
 
-    const targetRotationX = Math.atan2(dy, camera.position.z);
-    const targetRotationY = Math.atan2(dx, camera.position.z);
+    // Increase the effect of the target rotations
+    const targetRotationX = Math.atan2(dy, camera.position.z) * 3; // Amplify by 3
+    const targetRotationY = Math.atan2(dx, camera.position.z) * 3; // Amplify by 3
 
     const smoothRotationX = THREE.MathUtils.lerp(card.rotation.x, THREE.MathUtils.clamp(-targetRotationX, -maxRotation, maxRotation), 0.1);
     const smoothRotationY = THREE.MathUtils.lerp(card.rotation.y, THREE.MathUtils.clamp(targetRotationY, -maxRotation, maxRotation), 0.1);
