@@ -10,7 +10,7 @@ function getGridPositions(index, cols, itemWidth, itemHeight, padding) {
     return { x, y };
 }
 
-function calculateGridSize(works, minCols = 3, minRows = 3) {
+function calculateGridSize(works, minCols = 5, minRows = 5) {
     const gridCols = Math.max(minCols, Math.ceil(Math.sqrt(works.length + 1)));
     const gridRows = Math.max(minRows, Math.ceil((works.length + 1) / gridCols));
     return { gridCols, gridRows };
@@ -34,7 +34,7 @@ function shuffleArray(array) {
     return array;
 }
 
-function createCompleteGrid(gridContainer, works, categories, title, itemWidth, itemHeight, padding, onClick, renderer, camera, minCols = 3, minRows = 3) {
+function createCompleteGrid(gridContainer, works, categories, title, itemWidth, itemHeight, padding, onClick, renderer, camera, minCols = 5, minRows = 5) {
     const { gridCols, gridRows } = calculateGridSize(works, minCols, minRows);
     const totalCards = gridCols * gridRows;
     const positions = generatePositions(totalCards, itemWidth, itemHeight, padding);

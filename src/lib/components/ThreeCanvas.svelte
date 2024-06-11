@@ -27,7 +27,7 @@
 
     const itemWidth = 4;
     const itemHeight = 6;
-    const padding = 1;
+    const padding = .5;
     let gridCols, gridRows;
 
     const maxRotation = Math.PI / 3;
@@ -48,14 +48,12 @@
     }
 
     function onResize() {
-        if (window.innerWidth < 768) {
-            camera.position.z = 25;
-            camera.zoom = 4;
-        } else {
-            camera.position.z = 25;
-            camera.zoom = 4;
-        }
+        const aspect = window.innerWidth / window.innerHeight;
+        camera.aspect = aspect;
         camera.updateProjectionMatrix();
+        if (renderer) {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
     }
 
     function handleClick(event) {
@@ -83,8 +81,10 @@
 
         scene = createScene();
         camera = createCamera();
-        onResize();
-        renderer = createRenderer();
+        camera.position.z = 25; // Set a fixed position for the camera
+        camera.zoom = 4; // Set a fixed zoom level for all devices
+        renderer = createRenderer(); // Initialize the renderer
+        onResize(); // Ensure renderer is resized after initialization
         canvasContainer.appendChild(renderer.domElement);
 
         const cellSize = 40;
