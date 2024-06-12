@@ -129,9 +129,7 @@
                 (work) => {
                     const category = work.expand?.category?.title || 'No Category';
                     console.log('Category:', category);
-                },
-                renderer,
-                camera
+                }
             );
 
             const initialMousePosition = new THREE.Vector3(0, 0, 0);

@@ -26,14 +26,6 @@ function generatePositions(count, itemWidth, itemHeight, padding) {
 	return positions;
 }
 
-function shuffleArray(array) {
-	for (let i = array.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[array[i], array[j]] = [array[j], array[i]];
-	}
-	return array;
-}
-
 function createCompleteGrid(
 	gridContainer,
 	works,
@@ -43,8 +35,6 @@ function createCompleteGrid(
 	itemHeight,
 	padding,
 	onClick,
-	renderer,
-	camera,
 	minCols = 5,
 	minRows = 5
 ) {
@@ -70,9 +60,7 @@ function createCompleteGrid(
 		null,
 		null,
 		() => console.log('Owner Card Clicked'),
-		8,
-		renderer,
-		camera
+		8
 	); // Adjusted radius to 8 for owner card
 	positionIndex++;
 
@@ -85,21 +73,8 @@ function createCompleteGrid(
 			positions[positionIndex].y,
 			itemWidth,
 			itemHeight,
-			padding,
-			onClick,
-			renderer,
-			camera
 		);
 		positionIndex++;
-	});
-}
-
-function isPositionOccupied(gridContainer, x, y, itemWidth, itemHeight) {
-	return gridContainer.children.some((child) => {
-		return (
-			Math.abs(child.position.x - x) < itemWidth / 2 &&
-			Math.abs(child.position.y - y) < itemHeight / 2
-		);
 	});
 }
 
@@ -140,9 +115,7 @@ export {
 	getGridPositions,
 	calculateGridSize,
 	generatePositions,
-	shuffleArray,
 	createCompleteGrid,
-	isPositionOccupied,
 	wrapGrid,
 	cleanupGrid
 };
