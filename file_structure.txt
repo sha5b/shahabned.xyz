@@ -25,6 +25,9 @@ src/
             [category]/
                 +page.js
                 +page.svelte
+                [work]/
+                    +page.js
+                    +page.svelte
         owner/
             [id]/
                 +page.js

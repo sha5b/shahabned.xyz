@@ -126,11 +126,7 @@ function addWorkCard(
 	x,
 	y,
 	itemWidth,
-	itemHeight,
-	padding,
-	onClick,
-	renderer,
-	camera
+	itemHeight
 ) {
 	const category = work?.expand?.category?.title || 'No Category';
 	const textureURL = getImageURL('works', work.id, work.thump);
