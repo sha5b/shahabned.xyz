@@ -142,7 +142,7 @@ function addWorkCard(
 		CARD_SETTINGS,
 		() => {
 			console.log('Category:', category);
-			goto(`/category/${category}`);
+			goto(`/${category}`);
 		},
 		8
 	);
