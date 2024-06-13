@@ -11,7 +11,8 @@
         wrapGrid,
         cleanupGrid
     } from '$lib/utils/three/grid';
-    import { animate, snapCameraToGrid, rotateCardTowardsMouse } from '$lib/utils/three/animation';
+    import { animate, rotateCardTowardsMouse } from '$lib/utils/three/animation';
+    import { addEventListeners, removeEventListeners } from '$lib/utils/three/eventHandlers';
 
     export let works = [];
     export let categories = [];
@@ -20,10 +21,6 @@
     let scene, camera, renderer;
     let gridContainer;
     let canvasContainer;
-    let dragging = false;
-    let startX, startY;
-    let mouse = new THREE.Vector2();
-    let moved = false;
     let loading = true;
 
     const itemWidth = 3;
@@ -32,21 +29,7 @@
     let gridCols, gridRows;
 
     const maxRotation = Math.PI;
-
-    function getMousePositionInScene(event) {
-        const rect = renderer.domElement.getBoundingClientRect();
-        const clientX = event.clientX !== undefined ? event.clientX : event.touches[0].clientX;
-        const clientY = event.clientY !== undefined ? event.clientY : event.touches[0].clientY;
-        const mouseX = ((clientX - rect.left) / rect.width) * 2 - 1;
-        const mouseY = -((clientY - rect.top) / rect.height) * 2 + 1;
-
-        const mouseVector = new THREE.Vector3(mouseX, mouseY, 0.5);
-        mouseVector.unproject(camera);
-        const dir = mouseVector.sub(camera.position).normalize();
-        const distance = -camera.position.z / dir.z;
-        const mousePosition = camera.position.clone().add(dir.multiplyScalar(distance));
-        return mousePosition;
-    }
+    let mouse = new THREE.Vector2();
 
     function onResize() {
         const aspect = window.innerWidth / window.innerHeight;
@@ -54,28 +37,6 @@
         camera.updateProjectionMatrix();
         if (renderer) {
             renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-    }
-
-    function handleClick(event) {
-        const rect = renderer.domElement.getBoundingClientRect();
-        const clientX = event.clientX !== undefined ? event.clientX : event.touches[0].clientX;
-        const clientY = event.clientY !== undefined ? event.clientY : event.touches[0].clientY;
-        const mouseX = ((clientX - rect.left) / rect.width) * 2 - 1;
-        const mouseY = -((clientY - rect.top) / rect.height) * 2 + 1;
-
-        const mouse = new THREE.Vector2(mouseX, mouseY);
-        const raycaster = new THREE.Raycaster();
-        raycaster.setFromCamera(mouse, camera);
-
-        const intersects = raycaster.intersectObjects(gridContainer.children);
-        if (intersects.length > 0) {
-            const clickedObject = intersects[0].object;
-            // @ts-ignore
-            if (clickedObject.callback) {
-                // @ts-ignore
-                clickedObject.callback();
-            }
         }
     }
 
@@ -140,52 +101,7 @@
             wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
             cleanupGrid(gridContainer, camera);
 
-            const startDrag = (e) => {
-                dragging = true;
-                moved = false;
-                startX = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
-                startY = e.clientY !== undefined ? e.clientY : e.touches[0].clientY;
-            };
-
-            const moveDrag = (e) => {
-                const mousePosition = getMousePositionInScene(e);
-                mouse.set(mousePosition.x, mousePosition.y);
-
-                if (dragging) {
-                    moved = true;
-                    const dx = ((e.clientX !== undefined ? e.clientX : e.touches[0].clientX) - startX) / 200;
-                    const dy = -((e.clientY !== undefined ? e.clientY : e.touches[0].clientY) - startY) / 200;
-                    camera.position.x -= dx * camera.zoom;
-                    camera.position.y -= dy * camera.zoom;
-                    wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
-                    cleanupGrid(gridContainer, camera);
-                    startX = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
-                    startY = e.clientY !== undefined ? e.clientY : e.touches[0].clientY;
-                }
-
-                gridContainer.children.forEach((child) => {
-                    rotateCardTowardsMouse(child, mouse, camera, maxRotation);
-                });
-            };
-
-            const endDrag = (e) => {
-                dragging = false;
-                snapCameraToGrid(camera, itemWidth, itemHeight, padding);
-                if (!moved) {
-                    handleClick(e);
-                }
-            };
-
-            renderer.domElement.addEventListener('mousedown', startDrag);
-            renderer.domElement.addEventListener('mousemove', moveDrag);
-            renderer.domElement.addEventListener('mouseup', endDrag);
-            renderer.domElement.addEventListener('mouseleave', endDrag);
-
-            renderer.domElement.addEventListener('touchstart', startDrag);
-            renderer.domElement.addEventListener('touchmove', moveDrag);
-            renderer.domElement.addEventListener('touchend', endDrag);
-            renderer.domElement.addEventListener('touchcancel', endDrag);
-
+            addEventListeners(renderer, camera, gridContainer, gridCols, gridRows, itemWidth, itemHeight, padding, maxRotation, mouse);
             animate(renderer, scene, camera);
 
             window.addEventListener('resize', () => {
@@ -216,6 +132,7 @@
 
     onDestroy(() => {
         if (renderer) {
+            removeEventListeners(renderer);
             renderer.dispose();
         }
 
