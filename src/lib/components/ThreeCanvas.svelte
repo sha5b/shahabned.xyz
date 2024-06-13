@@ -13,10 +13,12 @@
     } from '$lib/utils/three/grid';
     import { animate, rotateCardTowardsMouse } from '$lib/utils/three/animation';
     import { addEventListeners, removeEventListeners } from '$lib/utils/three/eventHandlers';
+    import { goto } from '$app/navigation'; // Import goto from @sveltejs/kit
 
     export let works = [];
     export let categories = [];
     export let title;
+    export let pageType = 'landing'; // Accept pageType as a prop
 
     let scene, camera, renderer;
     let gridContainer;
@@ -78,6 +80,27 @@
             gridContainer = new THREE.Group();
             scene.add(gridContainer);
 
+            const onClickHandlers = {
+                work: (work) => {
+                    const category = work.expand?.category?.title || 'No Category';
+                    const workId = work.id;
+                    goto(`/${category}/${workId}`);
+                },
+                category: (category) => {
+                    goto(`/${category.title}`);
+                },
+                nextPage: () => {
+                    console.log('Next Page Clicked');
+                }
+            };
+
+            if (pageType === 'landing') {
+                onClickHandlers.work = (work) => {
+                    const category = work.expand?.category?.title || 'No Category';
+                    goto(`/${category}`);
+                };
+            }
+
             createCompleteGrid(
                 gridContainer,
                 works,
@@ -86,10 +109,7 @@
                 itemWidth,
                 itemHeight,
                 padding,
-                (work) => {
-                    const category = work.expand?.category?.title || 'No Category';
-                    console.log('Category:', category);
-                }
+                onClickHandlers
             );
 
             const initialMousePosition = new THREE.Vector3(0, 0, 0);

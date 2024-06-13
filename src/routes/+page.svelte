@@ -6,7 +6,7 @@
 </script>
 
 <main>
-  <ThreeCanvas {works} {owner} {categories}/>
+  <ThreeCanvas {works} {categories} pageType="landing"/>
 </main>
 
 <style>
