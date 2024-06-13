@@ -42,4 +42,4 @@ export const getOwner = async (fetch, id) => {
 
 export const getWorkById = async (fetch, workId) => {
 	return await pb.collection('works').getOne(workId, { expand: 'category' });
-  };
+};

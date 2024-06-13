@@ -12,7 +12,6 @@
         cleanupGrid
     } from '$lib/utils/three/grid';
     import { animate, snapCameraToGrid, rotateCardTowardsMouse } from '$lib/utils/three/animation';
-    import { addCard, addWorkCard } from '$lib/utils/three/card';
 
     export let works = [];
     export let categories = [];
