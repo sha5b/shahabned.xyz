@@ -57,3 +57,17 @@ export const getWorkById = async (fetch, workId) => {
         $autoCancel: false // Disable auto-cancellation
     });
 };
+
+export const getWorkByTitle = async (fetch, title) => {
+    const works = await pb.collection('works').getFullList({
+      filter: `title="${title}"`,
+      expand: 'category',
+      $autoCancel: false // Disable auto-cancellation
+    });
+  
+    if (works.length > 0) {
+      return works[0];
+    } else {
+      throw new Error(`Work with title "${title}" not found`);
+    }
+  };

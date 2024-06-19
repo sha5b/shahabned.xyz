@@ -145,7 +145,7 @@ function addWorkCard(
             if (onClick) {
                 onClick(work); // Use the onClick callback if provided
             } else {
-                goto(`/${category}`);
+                goto(`/${category}/${work.title}`); // Update to navigate to work details using title
             }
         },
         8
