@@ -1,24 +1,16 @@
 <!-- src/routes/[category]/[work]/+page.svelte -->
 <script>
-  export let data;
-  const { work, categories } = data;
+	export let data;
+	const { work, categories } = data;
+	import ThreeCanvas from '$lib/components/ThreeCanvas.svelte';
 </script>
 
-{#if work}
-  <div class="work-details">
-      <h1>{work.title}</h1>
-      <p>{work.synopsis}</p>
-      <!-- Display other details of the work as needed -->
-      {#if work.thump}
-          <img src={work.thump} alt={work.title} />
-      {/if}
-  </div>
-{:else}
-  <p>Loading work details...</p>
-{/if}
+<main>
+	<ThreeCanvas {work} {categories} pageType="work" />
+</main>
 
 <style>
-  .work-details {
-      /* Add your styles here */
-  }
+	.work-details {
+		/* Add your styles here */
+	}
 </style>

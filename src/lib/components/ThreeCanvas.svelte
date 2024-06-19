@@ -5,18 +5,15 @@
     import { createCamera, onWindowResize } from '$lib/utils/three/camera';
     import { createRenderer } from '$lib/utils/three/renderer';
     import { createDottedGridTexture } from '$lib/utils/three/dottedGridTexture';
-    import {
-        calculateGridSize,
-        createCompleteGrid,
-        wrapGrid,
-        cleanupGrid
-    } from '$lib/utils/three/grid';
+    import { calculateGridSize, createCompleteGrid, wrapGrid, cleanupGrid } from '$lib/utils/three/grid';
     import { animate, rotateCardTowardsMouse } from '$lib/utils/three/animation';
     import { addEventListeners, removeEventListeners } from '$lib/utils/three/eventHandlers';
-    import { goto } from '$app/navigation'; // Import goto from @sveltejs/kit
+    import { goto } from '$app/navigation';
+    import { getImageURL } from '$lib/utils/getURL';
 
     export let works = [];
     export let categories = [];
+    export let work; // Accept work as a prop for work page
     export let title;
     export let pageType = 'landing'; // Accept pageType as a prop
 
@@ -43,21 +40,26 @@
     }
 
     onMount(() => {
-        ({ gridCols, gridRows } = calculateGridSize(works));
+        let items = works;
+        if (pageType === 'work') {
+            // Combine thump and gallery items
+            items = [{ id: work.id, thump: work.thump }, ...work.gallery.map((item, index) => ({ id: work.id, thump: item }))];
+        }
+        
+        ({ gridCols, gridRows } = calculateGridSize(items));
 
-        scene = createScene(); // Initialize the scene using createScene
+        scene = createScene();
         camera = createCamera();
-        camera.position.z = 25; // Set a fixed position for the camera
-        camera.zoom = 4; // Set a fixed zoom level for all devices
-        renderer = createRenderer(); // Initialize the renderer
-        onResize(); // Ensure renderer is resized after initialization
+        camera.position.z = 25;
+        camera.zoom = 4;
+        renderer = createRenderer();
+        onResize();
         canvasContainer.appendChild(renderer.domElement);
 
         const cellSize = 40;
         const textureSize = 4000;
         const gridTexture = createDottedGridTexture(cellSize, 1, textureSize);
 
-        // Immediately display the dotted grid texture
         const planeSize = 20000;
         const backgroundMesh = new THREE.Mesh(
             new THREE.PlaneGeometry(planeSize, planeSize),
@@ -68,14 +70,12 @@
         backgroundMesh.position.z = -10;
         scene.add(backgroundMesh);
 
-        renderer.render(scene, camera); // Render the scene with the grid texture first
+        renderer.render(scene, camera);
 
-        // Display spinner
         const spinner = document.createElement('div');
         spinner.className = 'spinner';
         document.body.appendChild(spinner);
 
-        // Load the grid and other components
         setTimeout(() => {
             gridContainer = new THREE.Group();
             scene.add(gridContainer);
@@ -103,7 +103,7 @@
 
             createCompleteGrid(
                 gridContainer,
-                works,
+                items,
                 categories,
                 title,
                 itemWidth,
@@ -129,10 +129,9 @@
                 onResize();
             });
 
-            // Remove spinner when loading is done
             loading = false;
             document.body.removeChild(spinner);
-        }, 1000); // Simulate delay for demonstration, adjust as needed
+        }, 1000);
 
         return () => {
             window.removeEventListener('resize', () => {
