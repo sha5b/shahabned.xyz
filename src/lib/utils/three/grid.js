@@ -37,15 +37,11 @@ function createCompleteGrid(
     onClickHandlers = {},
     minCols = 5,
     minRows = 5,
-    pageType // Add pageType parameter
+    pageType
 ) {
     const { gridCols, gridRows } = calculateGridSize(works, minCols, minRows);
     const totalCards = gridCols * gridRows;
     const positions = generatePositions(totalCards, itemWidth, itemHeight, padding);
-
-    console.log('Grid size:', gridCols, gridRows);
-    console.log('Total cards:', totalCards);
-    console.log('Positions:', positions);
 
     let extendedWorks = [];
     while (extendedWorks.length < totalCards) {
@@ -55,7 +51,7 @@ function createCompleteGrid(
 
     let positionIndex = 0;
 
-    // Conditionally add the owner card only if it's the landing page
+    // Add the owner card if it's the landing page
     if (pageType === 'landing' && positionIndex < positions.length) {
         addCard(
             gridContainer,
@@ -69,8 +65,58 @@ function createCompleteGrid(
             null,
             () => console.log('Owner Card Clicked'),
             8
-        ); // Adjusted radius to 8 for owner card
+        );
         positionIndex++;
+    }
+
+    // Add 3 navigation cards if it's the category page
+    if (pageType === 'category') {
+        const navLabels = ['Back to Landing', 'Next Category', 'Previous Category'];
+        const navHandlers = [
+            onClickHandlers.backToLanding,
+            onClickHandlers.nextCategory,
+            onClickHandlers.prevCategory
+        ];
+
+        for (let i = 0; i < 3; i++) {
+            if (positionIndex < positions.length) {
+                addNavigationCard(
+                    gridContainer,
+                    navLabels[i],
+                    positions[positionIndex].x,
+                    positions[positionIndex].y,
+                    itemWidth,
+                    itemHeight,
+                    navHandlers[i]
+                );
+                positionIndex++;
+            }
+        }
+    }
+
+    // Add 3 navigation cards if it's the work page
+    if (pageType === 'work') {
+        const navLabels = ['Back to Category', 'Next Work', 'Previous Work'];
+        const navHandlers = [
+            onClickHandlers.backToCategory,
+            onClickHandlers.nextWork,
+            onClickHandlers.prevWork
+        ];
+
+        for (let i = 0; i < 3; i++) {
+            if (positionIndex < positions.length) {
+                addNavigationCard(
+                    gridContainer,
+                    navLabels[i],
+                    positions[positionIndex].x,
+                    positions[positionIndex].y,
+                    itemWidth,
+                    itemHeight,
+                    navHandlers[i]
+                );
+                positionIndex++;
+            }
+        }
     }
 
     extendedWorks.forEach((work) => {
@@ -82,7 +128,7 @@ function createCompleteGrid(
             positions[positionIndex].y,
             itemWidth,
             itemHeight,
-            onClickHandlers.work // Pass the onClick handler for works
+            onClickHandlers.work
         );
         positionIndex++;
     });
@@ -97,21 +143,45 @@ function createCompleteGrid(
             positions[positionIndex].y,
             itemWidth,
             itemHeight,
-            onClickHandlers.category // Pass the onClick handler for categories
+            onClickHandlers.category
         );
         positionIndex++;
     });
 
-    // Add Navigation Cards
-    if (positionIndex < positions.length) {
+    // Add Navigation Cards for category and work pages at the end
+    if ((pageType === 'category' || pageType === 'work') && positionIndex < positions.length) {
         addNavigationCard(
             gridContainer,
-            'Next Page',
+            'Back',
             positions[positionIndex].x,
             positions[positionIndex].y,
             itemWidth,
             itemHeight,
-            onClickHandlers.nextPage // Pass the onClick handler for next page
+            pageType === 'category' ? onClickHandlers.backToLanding : onClickHandlers.backToCategory
+        );
+        positionIndex++;
+    }
+    if ((pageType === 'category' || pageType === 'work') && positionIndex < positions.length) {
+        addNavigationCard(
+            gridContainer,
+            'Next',
+            positions[positionIndex].x,
+            positions[positionIndex].y,
+            itemWidth,
+            itemHeight,
+            pageType === 'category' ? onClickHandlers.nextCategory : onClickHandlers.nextWork
+        );
+        positionIndex++;
+    }
+    if ((pageType === 'category' || pageType === 'work') && positionIndex < positions.length) {
+        addNavigationCard(
+            gridContainer,
+            'Previous',
+            positions[positionIndex].x,
+            positions[positionIndex].y,
+            itemWidth,
+            itemHeight,
+            pageType === 'category' ? onClickHandlers.prevCategory : onClickHandlers.prevWork
         );
         positionIndex++;
     }

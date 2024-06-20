@@ -9,7 +9,6 @@
     import { animate, rotateCardTowardsMouse } from '$lib/utils/three/animation';
     import { addEventListeners, removeEventListeners } from '$lib/utils/three/eventHandlers';
     import { goto } from '$app/navigation';
-    import { getImageURL } from '$lib/utils/getURL';
 
     export let works = [];
     export let categories = [];
@@ -87,6 +86,20 @@
                 },
                 nextPage: () => {
                     console.log('Next Page Clicked');
+                },
+                backToLanding: () => goto('/'),
+                backToCategory: (category) => goto(`/${category}`),
+                nextCategory: (category) => {
+                    console.log('Next category clicked', category);
+                },
+                nextWork: (work) => {
+                    console.log('Next work clicked', work);
+                },
+                prevCategory: (category) => {
+                    console.log('Previous category clicked', category);
+                },
+                prevWork: (work) => {
+                    console.log('Previous work clicked', work);
                 }
             };
 
