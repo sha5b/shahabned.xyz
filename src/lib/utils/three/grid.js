@@ -26,6 +26,13 @@ function generatePositions(count, itemWidth, itemHeight, padding) {
     return positions;
 }
 
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
 function createCompleteGrid(
     gridContainer,
     works,
@@ -49,87 +56,75 @@ function createCompleteGrid(
     }
     extendedWorks = extendedWorks.slice(0, totalCards);
 
-    let positionIndex = 0;
+    let additionalCards = [];
 
     // Add the owner card if it's the landing page
-    if (pageType === 'landing' && positionIndex < positions.length) {
-        addCard(
-            gridContainer,
+    if (pageType === 'landing') {
+        additionalCards.push({
+            type: 'owner',
             title,
-            'Owner',
-            positions[positionIndex].x,
-            positions[positionIndex].y,
-            itemWidth,
-            itemHeight,
-            null,
-            null,
-            () => console.log('Owner Card Clicked'),
-            8
-        );
-        positionIndex++;
+            onClick: () => console.log('Owner Card Clicked')
+        });
     }
 
     // Add 3 navigation cards if it's the category page
     if (pageType === 'category') {
-        const navLabels = ['Back to Landing', 'Next Category', 'Previous Category'];
-        const navHandlers = [
-            onClickHandlers.backToLanding,
-            onClickHandlers.nextCategory,
-            onClickHandlers.prevCategory
-        ];
-
-        for (let i = 0; i < 3; i++) {
-            if (positionIndex < positions.length) {
-                addNavigationCard(
-                    gridContainer,
-                    navLabels[i],
-                    positions[positionIndex].x,
-                    positions[positionIndex].y,
-                    itemWidth,
-                    itemHeight,
-                    navHandlers[i]
-                );
-                positionIndex++;
-            }
-        }
+        additionalCards.push({ type: 'navigation', label: 'Back to Landing', onClick: onClickHandlers.backToLanding });
+        additionalCards.push({ type: 'navigation', label: 'Next Category', onClick: onClickHandlers.nextCategory });
+        additionalCards.push({ type: 'navigation', label: 'Previous Category', onClick: onClickHandlers.prevCategory });
     }
 
     // Add 3 navigation cards if it's the work page
     if (pageType === 'work') {
-        const navLabels = ['Back to Category', 'Next Work', 'Previous Work'];
-        const navHandlers = [
-            onClickHandlers.backToCategory,
-            onClickHandlers.nextWork,
-            onClickHandlers.prevWork
-        ];
-
-        for (let i = 0; i < 3; i++) {
-            if (positionIndex < positions.length) {
-                addNavigationCard(
-                    gridContainer,
-                    navLabels[i],
-                    positions[positionIndex].x,
-                    positions[positionIndex].y,
-                    itemWidth,
-                    itemHeight,
-                    navHandlers[i]
-                );
-                positionIndex++;
-            }
-        }
+        additionalCards.push({ type: 'navigation', label: 'Back to Category', onClick: onClickHandlers.backToCategory });
+        additionalCards.push({ type: 'navigation', label: 'Next Work', onClick: onClickHandlers.nextWork });
+        additionalCards.push({ type: 'navigation', label: 'Previous Work', onClick: onClickHandlers.prevWork });
     }
 
-    extendedWorks.forEach((work) => {
+    // Combine the additional cards and work cards, then shuffle
+    extendedWorks = extendedWorks.concat(additionalCards);
+    shuffleArray(extendedWorks);
+
+    let positionIndex = 0;
+
+    extendedWorks.forEach((item) => {
         if (positionIndex >= positions.length) return;
-        addWorkCard(
-            gridContainer,
-            work,
-            positions[positionIndex].x,
-            positions[positionIndex].y,
-            itemWidth,
-            itemHeight,
-            onClickHandlers.work
-        );
+
+        if (item.type === 'navigation') {
+            addNavigationCard(
+                gridContainer,
+                item.label,
+                positions[positionIndex].x,
+                positions[positionIndex].y,
+                itemWidth,
+                itemHeight,
+                item.onClick
+            );
+        } else if (item.type === 'owner') {
+            addCard(
+                gridContainer,
+                item.title,
+                'Owner',
+                positions[positionIndex].x,
+                positions[positionIndex].y,
+                itemWidth,
+                itemHeight,
+                null,
+                null,
+                item.onClick,
+                8
+            );
+        } else {
+            addWorkCard(
+                gridContainer,
+                item,
+                positions[positionIndex].x,
+                positions[positionIndex].y,
+                itemWidth,
+                itemHeight,
+                onClickHandlers.work
+            );
+        }
         positionIndex++;
     });
 
