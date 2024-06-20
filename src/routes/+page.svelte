@@ -2,11 +2,11 @@
   export let data;
   import ThreeCanvas from '$lib/components/ThreeCanvas.svelte';
 
-  const { works, owner, categories } = data;
+  const { works, owner, categories, pageType } = data;
 </script>
 
 <main>
-  <ThreeCanvas {works} {categories} pageType="landing"/>
+  <ThreeCanvas {works} {categories} {pageType}/>
 </main>
 
 <style>

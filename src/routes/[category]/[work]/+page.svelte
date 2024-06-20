@@ -1,12 +1,12 @@
 <!-- src/routes/[category]/[work]/+page.svelte -->
 <script>
 	export let data;
-	const { work, categories } = data;
+	const { work, categories, pageType } = data;
 	import ThreeCanvas from '$lib/components/ThreeCanvas.svelte';
 </script>
 
 <main>
-	<ThreeCanvas {work} {categories} pageType="work" />
+	<ThreeCanvas {work} {categories} {pageType} />
 </main>
 
 <style>
