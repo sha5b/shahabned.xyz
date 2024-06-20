@@ -5,6 +5,7 @@ import { wrapGrid, cleanupGrid } from './grid';
 let dragging = false;
 let startX, startY;
 let moved = false;
+const DRAG_THRESHOLD = 5; // Threshold in pixels to distinguish between a drag and a click
 
 function getMousePositionInScene(event, renderer, camera) {
 	const rect = renderer.domElement.getBoundingClientRect();
@@ -67,15 +68,20 @@ function moveDrag(
 	mouse.set(mousePosition.x, mousePosition.y);
 
 	if (dragging) {
-		moved = true;
-		const dx = ((e.clientX !== undefined ? e.clientX : e.touches[0].clientX) - startX) / 200;
-		const dy = -((e.clientY !== undefined ? e.clientY : e.touches[0].clientY) - startY) / 200;
-		camera.position.x -= dx * camera.zoom;
-		camera.position.y -= dy * camera.zoom;
-		wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
-		cleanupGrid(gridContainer, camera);
-		startX = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
-		startY = e.clientY !== undefined ? e.clientY : e.touches[0].clientY;
+		const currentX = e.clientX !== undefined ? e.clientX : e.touches[0].clientX;
+		const currentY = e.clientY !== undefined ? e.clientY : e.touches[0].clientY;
+		const dx = currentX - startX;
+		const dy = currentY - startY;
+
+		if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+			moved = true;
+			camera.position.x -= (dx / 200) * camera.zoom;
+			camera.position.y += (dy / 200) * camera.zoom; // Adjusted for correct direction
+			wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
+			cleanupGrid(gridContainer, camera);
+			startX = currentX;
+			startY = currentY;
+		}
 	}
 
 	gridContainer.children.forEach((child) => {
