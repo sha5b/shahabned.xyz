@@ -42,6 +42,7 @@
         let items = works;
         if (pageType === 'work' && work) {
             // Combine thump and gallery items
+            // @ts-ignore
             items = [{ id: work.id, thump: work.thump }, ...work.gallery.map((item, index) => ({ id: work.id, thump: item }))];
         }
         
