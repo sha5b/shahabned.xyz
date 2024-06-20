@@ -36,7 +36,8 @@ function createCompleteGrid(
     padding,
     onClickHandlers = {},
     minCols = 5,
-    minRows = 5
+    minRows = 5,
+    pageType // Add pageType parameter
 ) {
     const { gridCols, gridRows } = calculateGridSize(works, minCols, minRows);
     const totalCards = gridCols * gridRows;
@@ -54,8 +55,8 @@ function createCompleteGrid(
 
     let positionIndex = 0;
 
-    // Ensure positions are not accessed out of bounds
-    if (positionIndex < positions.length) {
+    // Conditionally add the owner card only if it's the landing page
+    if (pageType === 'landing' && positionIndex < positions.length) {
         addCard(
             gridContainer,
             title,

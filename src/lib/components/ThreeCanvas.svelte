@@ -13,8 +13,8 @@
 
     export let works = [];
     export let categories = [];
-    export let work; // Accept work as a prop for work page
-    export let title;
+    export let work = null; // Accept work as a prop for work page
+    export let title = '';
     export let pageType = 'landing'; // Accept pageType as a prop
 
     let scene, camera, renderer;
@@ -41,7 +41,7 @@
 
     onMount(() => {
         let items = works;
-        if (pageType === 'work') {
+        if (pageType === 'work' && work) {
             // Combine thump and gallery items
             items = [{ id: work.id, thump: work.thump }, ...work.gallery.map((item, index) => ({ id: work.id, thump: item }))];
         }
@@ -71,10 +71,6 @@
         scene.add(backgroundMesh);
 
         renderer.render(scene, camera);
-
-        const spinner = document.createElement('div');
-        spinner.className = 'spinner';
-        document.body.appendChild(spinner);
 
         setTimeout(() => {
             gridContainer = new THREE.Group();
@@ -109,7 +105,10 @@
                 itemWidth,
                 itemHeight,
                 padding,
-                onClickHandlers
+                onClickHandlers,
+                5,
+                5,
+                pageType // Pass the pageType parameter
             );
 
             const initialMousePosition = new THREE.Vector3(0, 0, 0);
@@ -130,7 +129,6 @@
             });
 
             loading = false;
-            document.body.removeChild(spinner);
         }, 1000);
 
         return () => {

@@ -8,6 +8,7 @@ export async function load({ params, fetch }) {
   return {
     works,
     categories,
-    category
+    category,
+    pageType: 'category'
   };
 }

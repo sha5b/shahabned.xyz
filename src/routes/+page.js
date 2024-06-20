@@ -8,6 +8,7 @@ export async function load({ fetch }) {
   return {
     categories,
     works,
-    owner
+    owner,
+    pageType: 'landing'
   };
 }

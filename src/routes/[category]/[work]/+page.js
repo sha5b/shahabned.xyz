@@ -8,7 +8,8 @@ export async function load({ params, fetch }) {
         const categories = await getCategories(fetch);
         return {
             work: workDetails,
-            categories
+            categories,
+            pageType: 'work'
         };
     } catch (error) {
         console.error('Error fetching work:', error);
