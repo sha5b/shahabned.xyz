@@ -10,7 +10,7 @@
 	  createCompleteGrid,
 	  wrapGrid,
 	  cleanupGrid,
-	  createImageGrid
+	  createImageGrid // Ensure correct import
 	} from '$lib/utils/three/grid';
 	import { animate, rotateCardTowardsMouse } from '$lib/utils/three/animation';
 	import { addEventListeners, removeEventListeners } from '$lib/utils/three/eventHandlers';
@@ -146,6 +146,15 @@
 			if (child.geometry) child.geometry.dispose();
 		  });
 		}
+		if (scene) {
+		  scene.traverse(object => {
+			if (object.geometry) object.geometry.dispose();
+			if (object.material) {
+			  if (object.material.map) object.material.map.dispose();
+			  object.material.dispose();
+			}
+		  });
+		}
 	  };
 	});
   
@@ -159,6 +168,15 @@
 		  if (child.material && child.material.map) child.material.map.dispose();
 		  if (child.material) child.material.dispose();
 		  if (child.geometry) child.geometry.dispose();
+		});
+	  }
+	  if (scene) {
+		scene.traverse(object => {
+		  if (object.geometry) object.geometry.dispose();
+		  if (object.material) {
+			if (object.material.map) object.material.map.dispose();
+			object.material.dispose();
+		  }
 		});
 	  }
 	});
