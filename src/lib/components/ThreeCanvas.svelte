@@ -61,6 +61,8 @@
 	  gridContainer = new THREE.Group();
 	  scene.add(gridContainer);
   
+	  const currentCategory = work?.expand?.category?.title;
+  
 	  const onClickHandlers = {
 		work: (work) => {
 		  if (pageType === 'work') {
@@ -72,7 +74,7 @@
 		category: (category) => goto(`/${category.title}`),
 		nextPage: () => console.log('Next Page Clicked'),
 		backToLanding: () => goto('/'),
-		backToCategory: (category) => goto(`/${category}`),
+		backToCategory: () => goto(`/${currentCategory}`),
 		nextCategory: (category) => console.log('Next category clicked', category),
 		nextWork: (work) => console.log('Next work clicked', work),
 		prevCategory: (category) => console.log('Previous category clicked', category),
