@@ -52,20 +52,16 @@ function createMaterial(textureURL, itemWidth, itemHeight, radius = 8) {
 			const aspectRatio = texture.image.width / texture.image.height;
 			const cardAspectRatio = itemWidth / itemHeight;
 
-			let repeatX = 1, repeatY = 1, offsetX = 0, offsetY = 0;
-
 			if (aspectRatio > cardAspectRatio) {
-				repeatX = cardAspectRatio / aspectRatio;
-				offsetX = (1 - repeatX) / 2;
+				texture.repeat.set(cardAspectRatio / aspectRatio, 1);
+				texture.offset.set((1 - texture.repeat.x) / 2, 0);
 			} else {
-				repeatY = aspectRatio / cardAspectRatio;
-				offsetY = (1 - repeatY) / 2;
+				texture.repeat.set(1, aspectRatio / cardAspectRatio);
+				texture.offset.set(0, (1 - texture.repeat.y) / 2);
 			}
 
 			texture.wrapS = THREE.ClampToEdgeWrapping;
 			texture.wrapT = THREE.ClampToEdgeWrapping;
-			texture.repeat.set(repeatX, repeatY);
-			texture.offset.set(offsetX, offsetY);
 			material.needsUpdate = true;
 		});
 
@@ -137,4 +133,4 @@ function addNavigationCard(gridContainer, label, x, y, itemWidth, itemHeight, on
 	addCard(gridContainer, cardMesh, x, y);
 }
 
-export { createRoundedRectTexture, createCardMesh, addCard, addWorkCard, addCategoryCard, addNavigationCard };
+export { createRoundedRectTexture, createMaterial, createCardMesh, addCard, addWorkCard, addCategoryCard, addNavigationCard };
