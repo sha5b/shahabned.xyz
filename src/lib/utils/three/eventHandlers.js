@@ -23,7 +23,13 @@ function getMousePositionInScene(event, renderer, camera) {
   return mousePosition;
 }
 
-function handleClick(event, renderer, camera, gridContainer) {
+function handleClick(event, renderer, camera, gridContainer, loading, lastClickTime) {
+  const now = Date.now();
+  if (loading || now - lastClickTime < 500) {
+    return; // If still loading or clicked too recently, ignore the click
+  }
+  lastClickTime = now;
+
   const rect = renderer.domElement.getBoundingClientRect();
   const clientX = event.clientX !== undefined ? event.clientX : event.touches[0].clientX;
   const clientY = event.clientY !== undefined ? event.clientY : event.touches[0].clientY;
@@ -88,11 +94,11 @@ function moveDrag(
   });
 }
 
-function endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer) {
+function endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer, loading, lastClickTime) {
   dragging = false;
   snapCameraToGrid(camera, itemWidth, itemHeight, padding);
   if (!moved) {
-    handleClick(e, renderer, camera, gridContainer);
+    handleClick(e, renderer, camera, gridContainer, loading, lastClickTime);
   }
 }
 
@@ -106,8 +112,11 @@ export function addEventListeners(
   itemHeight,
   padding,
   maxRotation,
-  mouse
+  mouse,
+  loading
 ) {
+  const lastClickTime = 0; // Initialize lastClickTime
+
   renderer.domElement.addEventListener('mousedown', (e) => startDrag(e));
   renderer.domElement.addEventListener('mousemove', (e) =>
     moveDrag(
@@ -125,10 +134,10 @@ export function addEventListeners(
     )
   );
   renderer.domElement.addEventListener('mouseup', (e) =>
-    endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer)
+    endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer, loading, lastClickTime)
   );
   renderer.domElement.addEventListener('mouseleave', (e) =>
-    endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer)
+    endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer, loading, lastClickTime)
   );
 
   renderer.domElement.addEventListener('touchstart', (e) => startDrag(e));
@@ -148,10 +157,10 @@ export function addEventListeners(
     )
   );
   renderer.domElement.addEventListener('touchend', (e) =>
-    endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer)
+    endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer, loading, lastClickTime)
   );
   renderer.domElement.addEventListener('touchcancel', (e) =>
-    endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer)
+    endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer, loading, lastClickTime)
   );
 }
 

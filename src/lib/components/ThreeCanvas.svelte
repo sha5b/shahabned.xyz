@@ -10,7 +10,7 @@
 	  createCompleteGrid,
 	  wrapGrid,
 	  cleanupGrid,
-	  createImageGrid // Ensure correct import
+	  createImageGrid
 	} from '$lib/utils/three/grid';
 	import { animate, rotateCardTowardsMouse } from '$lib/utils/three/animation';
 	import { addEventListeners, removeEventListeners } from '$lib/utils/three/eventHandlers';
@@ -26,6 +26,7 @@
 	let gridContainer;
 	let canvasContainer;
 	let loading = true;
+	let lastClickTime = 0;
   
 	const itemWidth = 3;
 	const itemHeight = 4.5;
@@ -98,6 +99,8 @@
   
 	  wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
 	  cleanupGrid(gridContainer, camera);
+  
+	  loading = false;  // Mark loading as false after grid is initialized
 	}
   
 	function onResize() {
@@ -126,7 +129,7 @@
 	  initializeBackground();
 	  initializeGrid(items, categories, title, pageType);
   
-	  addEventListeners(renderer, camera, gridContainer, gridCols, gridRows, itemWidth, itemHeight, padding, maxRotation, mouse);
+	  addEventListeners(renderer, camera, gridContainer, gridCols, gridRows, itemWidth, itemHeight, padding, maxRotation, mouse, loading);
 	  animate(renderer, scene, camera);
   
 	  window.addEventListener('resize', onResize);
