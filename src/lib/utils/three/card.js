@@ -73,6 +73,12 @@ function createMaterial(textureURL, itemWidth, itemHeight, radius = 8) {
       color: 0xffffff,
       shininess: 30
     });
+
+    // Ensure material and texture are immutable
+    texture.onUpdate = function() {
+      this.needsUpdate = false;
+    };
+
   } else {
     material = new THREE.MeshPhongMaterial({
       map: roundedRectTexture,

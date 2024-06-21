@@ -89,6 +89,13 @@
     // Use different function to create grid based on page type
     if (pageType === 'work') {
       createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, onClickHandlers);
+      // Add navigation card for going back to the category
+      const backToCategoryCard = new THREE.Group();
+      gridContainer.add(backToCategoryCard);
+      const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+      cardMesh.position.set(0, 0, 0);
+      cardMesh.callback = onClickHandlers.backToCategory;
+      backToCategoryCard.add(cardMesh);
     } else {
       createCompleteGrid(gridContainer, items, categories, title, itemWidth, itemHeight, padding, onClickHandlers, 5, 5, pageType);
     }
