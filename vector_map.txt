@@ -1,0 +1,216 @@
+ThreeCanvas.svelte
+   ├── scene.js
+   |    └── createScene()
+   ├── renderer.js
+   |    └── createRenderer(settings)
+   |          └── settings
+   ├── camera.js
+   |    ├── createCamera(settings)
+   |    |      └── settings
+   |    └── onWindowResize()
+   ├── dottedGridTexture.js
+   |    └── createDottedGridTexture(cellSize, dotSize, textureSize)
+   |          ├── cellSize
+   |          ├── dotSize
+   |          └── textureSize
+   ├── grid.js
+   |    ├── calculateGridSize(items)
+   |    |      └── items
+   |    ├── generatePositions(count, itemWidth, itemHeight, padding)
+   |    |      ├── count
+   |    |      ├── itemWidth
+   |    |      ├── itemHeight
+   |    |      └── padding
+   |    ├── createCompleteGrid(gridContainer, items, categories, title, itemWidth, itemHeight, padding, onClickHandlers, minCols, minRows, pageType)
+   |    |      ├── gridContainer
+   |    |      ├── items
+   |    |      ├── categories
+   |    |      ├── title
+   |    |      ├── itemWidth
+   |    |      ├── itemHeight
+   |    |      ├── padding
+   |    |      ├── onClickHandlers
+   |    |      ├── minCols
+   |    |      ├── minRows
+   |    |      └── pageType
+   |    ├── createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, onClickHandlers)
+   |    |      ├── gridContainer
+   |    |      ├── items
+   |    |      ├── itemWidth
+   |    |      ├── itemHeight
+   |    |      ├── padding
+   |    |      └── onClickHandlers
+   |    ├── wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding)
+   |    |      ├── gridContainer
+   |    |      ├── camera
+   |    |      ├── gridCols
+   |    |      ├── gridRows
+   |    |      ├── itemWidth
+   |    |      ├── itemHeight
+   |    |      └── padding
+   |    └── cleanupGrid(gridContainer, camera)
+   |           ├── gridContainer
+   |           └── camera
+   ├── card.js
+   |    ├── createRoundedRectTexture(width, height, radius, resolution)
+   |    |      ├── width
+   |    |      ├── height
+   |    |      ├── radius
+   |    |      └── resolution
+   |    ├── createMaterial(textureURL, itemWidth, itemHeight, radius)
+   |    |      ├── textureURL
+   |    |      ├── itemWidth
+   |    |      ├── itemHeight
+   |    |      └── radius
+   |    ├── createCardMesh(itemWidth, itemHeight, textureURL, radius, onClick)
+   |    |      ├── itemWidth
+   |    |      ├── itemHeight
+   |    |      ├── textureURL
+   |    |      ├── radius
+   |    |      └── onClick
+   |    ├── addCard(gridContainer, cardMesh, x, y)
+   |    |      ├── gridContainer
+   |    |      ├── cardMesh
+   |    |      ├── x
+   |    |      └── y
+   |    ├── addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick)
+   |    |      ├── gridContainer
+   |    |      ├── work
+   |    |      ├── x
+   |    |      ├── y
+   |    |      ├── itemWidth
+   |    |      ├── itemHeight
+   |    |      └── onClick
+   |    ├── addCategoryCard(gridContainer, category, x, y, itemWidth, itemHeight, onClick)
+   |    |      ├── gridContainer
+   |    |      ├── category
+   |    |      ├── x
+   |    |      ├── y
+   |    |      ├── itemWidth
+   |    |      ├── itemHeight
+   |    |      └── onClick
+   |    ├── addNavigationCard(gridContainer, label, x, y, itemWidth, itemHeight, onClick)
+   |    |      ├── gridContainer
+   |    |      ├── label
+   |    |      ├── x
+   |    |      ├── y
+   |    |      ├── itemWidth
+   |    |      ├── itemHeight
+   |    |      └── onClick
+   |    └── addImageCard(gridContainer, image, x, y, itemWidth, itemHeight)
+   |           ├── gridContainer
+   |           ├── image
+   |           ├── x
+   |           ├── y
+   |           ├── itemWidth
+   |           └── itemHeight
+   ├── animation.js
+   |    ├── snapCameraToGrid(camera, itemWidth, itemHeight, padding)
+   |    |      ├── camera
+   |    |      ├── itemWidth
+   |    |      ├── itemHeight
+   |    |      └── padding
+   |    ├── animateToPosition(camera, x, y)
+   |    |      ├── camera
+   |    |      ├── x
+   |    |      └── y
+   |    ├── animate(renderer, scene, camera)
+   |    |      ├── renderer
+   |    |      ├── scene
+   |    |      └── camera
+   |    ├── rotateCardTowardsMouse(card, mouse, camera, maxRotation)
+   |    |      ├── card
+   |    |      ├── mouse
+   |    |      ├── camera
+   |    |      └── maxRotation
+   |    └── updateCardTransparency(gridContainer, camera, maxDistance)
+   |           ├── gridContainer
+   |           ├── camera
+   |           └── maxDistance
+   └── eventHandlers.js
+        ├── getMousePositionInScene(event, renderer, camera)
+        |      ├── event
+        |      ├── renderer
+        |      └── camera
+        ├── handleClick(event, renderer, camera, gridContainer, loading, lastClickTime)
+        |      ├── event
+        |      ├── renderer
+        |      ├── camera
+        |      ├── gridContainer
+        |      ├── loading
+        |      └── lastClickTime
+        ├── startDrag(e)
+        |      └── e
+        ├── moveDrag(e, renderer, camera, gridContainer, gridCols, gridRows, itemWidth, itemHeight, padding, maxRotation, mouse)
+        |      ├── e
+        |      ├── renderer
+        |      ├── camera
+        |      ├── gridContainer
+        |      ├── gridCols
+        |      ├── gridRows
+        |      ├── itemWidth
+        |      ├── itemHeight
+        |      ├── padding
+        |      ├── maxRotation
+        |      └── mouse
+        ├── endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer, loading, lastClickTime)
+        |      ├── e
+        |      ├── camera
+        |      ├── itemWidth
+        |      ├── itemHeight
+        |      ├── padding
+        |      ├── renderer
+        |      ├── gridContainer
+        |      ├── loading
+        |      └── lastClickTime
+        ├── addEventListeners(renderer, camera, gridContainer, gridCols, gridRows, itemWidth, itemHeight, padding, maxRotation, mouse, loading)
+        |      ├── renderer
+        |      ├── camera
+        |      ├── gridContainer
+        |      ├── gridCols
+        |      ├── gridRows
+        |      ├── itemWidth
+        |      ├── itemHeight
+        |      ├── padding
+        |      ├── maxRotation
+        |      ├── mouse
+        |      └── loading
+        └── removeEventListeners(renderer)
+               └── renderer
+
+pocketbase.js
+   ├── fetchWorkByTitle(fetch, title)
+   |      ├── fetch
+   |      └── title
+   ├── fetchOwner(fetch, id)
+   |      ├── fetch
+   |      └── id
+   ├── fetchCategories(fetch)
+   |      └── fetch
+   └── fetchWorks(fetch, options)
+          ├── fetch
+          └── options
+
+routes/
+   ├── +layout.svelte
+   ├── +page.svelte
+   ├── +page.js
+   |    └── load({ fetch })
+   |          └── fetch
+   ├── [category]/+page.svelte
+   ├── [category]/+page.js
+   |    └── load({ params, fetch })
+   |          ├── params
+   |          └── fetch
+   ├── [category]/[title]/+page.svelte
+   └── [category]/[title]/+page.js
+        └── load({ params, fetch })
+              ├── params
+              └── fetch
+
+routes/owner/[id]/
+   ├── +page.svelte
+   └── +page.js
+        └── load({ params, fetch })
+              ├── params
+              └── fetch

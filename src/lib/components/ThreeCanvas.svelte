@@ -10,7 +10,7 @@
     createCompleteGrid,
     wrapGrid,
     cleanupGrid,
-    createImageGrid // Ensure correct import
+    createImageGrid
   } from '$lib/utils/three/grid';
   import { animate, rotateCardTowardsMouse } from '$lib/utils/three/animation';
   import { addEventListeners, removeEventListeners } from '$lib/utils/three/eventHandlers';
@@ -37,9 +37,15 @@
   let mouse = new THREE.Vector2();
 
   function initializeRenderer() {
-    renderer = createRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    canvasContainer.appendChild(renderer.domElement);
+    if (!renderer) {
+      renderer = createRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      if (canvasContainer) {
+        canvasContainer.appendChild(renderer.domElement);
+      } else {
+        console.error('canvasContainer is not defined');
+      }
+    }
   }
 
   function initializeBackground() {
@@ -58,6 +64,8 @@
   }
 
   function initializeGrid(items, categories, title, pageType) {
+    if (!scene) return;
+
     ({ gridCols, gridRows } = calculateGridSize(items));
     gridContainer = new THREE.Group();
     scene.add(gridContainer);
@@ -76,25 +84,33 @@
       nextPage: () => console.log('Next Page Clicked'),
       backToLanding: () => goto('/'),
       backToCategory: () => goto(`/${currentCategory}`),
-      nextCategory: (category) => console.log('Next category clicked', category),
-      nextWork: (work) => console.log('Next work clicked', work),
-      prevCategory: (category) => console.log('Previous category clicked', category),
-      prevWork: (work) => console.log('Previous work clicked', work)
+      nextCategory: (category) => {
+        window.location.href = `/${category.title}`;  // Force page reload
+      },
+      prevCategory: (category) => {
+        window.location.href = `/${category.title}`;  // Force page reload
+      }
     };
 
     if (pageType === 'landing') {
       onClickHandlers.work = (work) => goto(`/${work.expand?.category?.title || 'No Category'}`);
     }
 
-    // Use different function to create grid based on page type
+    if (pageType === 'category') {
+      const currentIndex = categories.findIndex(cat => cat.title === title);
+      const nextCategory = categories[(currentIndex + 1) % categories.length];
+      const prevCategory = categories[(currentIndex - 1 + categories.length) % categories.length];
+
+      onClickHandlers.nextCategory = () => window.location.href = `/${nextCategory.title}`;
+      onClickHandlers.prevCategory = () => window.location.href = `/${prevCategory.title}`;
+    }
+
     if (pageType === 'work') {
       createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, onClickHandlers);
-      // Add navigation card for going back to the category
       const backToCategoryCard = new THREE.Group();
       gridContainer.add(backToCategoryCard);
       const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), new THREE.MeshBasicMaterial({ color: 0xffffff }));
       cardMesh.position.set(0, 0, 0);
-      // @ts-ignore
       cardMesh.callback = onClickHandlers.backToCategory;
       backToCategoryCard.add(cardMesh);
     } else {
@@ -112,19 +128,35 @@
   }
 
   function onResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    if (camera) {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    }
     if (renderer) {
       renderer.setSize(window.innerWidth, window.innerHeight);
     }
   }
 
-  onMount(() => {
-    console.log('Mounted', { works, categories, work, pageType });
+  function resetScene() {
+    if (gridContainer) {
+      gridContainer.children.forEach((child) => {
+        if (child.material && child.material.map) child.material.map.dispose();
+        if (child.material) child.material.dispose();
+        if (child.geometry) child.geometry.dispose();
+      });
+      scene.remove(gridContainer);
+      gridContainer = null;
+    }
+    initializeGrid(works, categories, title, pageType);
+  }
 
+  $: if (pageType && categories.length && works.length) {
+    resetScene();
+  }
+
+  onMount(() => {
     let items = works;
     if (pageType === 'work' && work) {
-      // @ts-ignore
       items = [{ id: work.id, thump: work.thump }, ...work.gallery.map((item) => ({ id: work.id, thump: item }))];
     }
 
