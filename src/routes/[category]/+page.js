@@ -1,9 +1,18 @@
-import { getWorksByCategory, getCategories } from '$lib/services/pocketbase';
+import { fetchCategories, fetchWorks } from '$lib/services/pocketbase';
 
 export async function load({ params, fetch }) {
   const { category } = params;
-  const works = await getWorksByCategory(fetch, category);
-  const categories = await getCategories(fetch);
+  const categories = await fetchCategories(fetch);
+  const categoryDetails = categories.find(cat => cat.title === category);
+  
+  if (!categoryDetails) {
+    return {
+      status: 404,
+      error: new Error('Category not found')
+    };
+  }
+
+  const works = await fetchWorks(fetch, { categoryId: categoryDetails.id });
 
   return {
     works,

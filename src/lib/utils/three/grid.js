@@ -10,9 +10,9 @@ function getGridPositions(index, cols, itemWidth, itemHeight, padding) {
     return { x, y };
 }
 
-function calculateGridSize(works, minCols = 5, minRows = 5) {
-    const gridCols = Math.max(minCols, Math.ceil(Math.sqrt(works.length + 1)));
-    const gridRows = Math.max(minRows, Math.ceil((works.length + 1) / gridCols));
+function calculateGridSize(items, minCols = 5, minRows = 5) {
+    const gridCols = Math.max(minCols, Math.ceil(Math.sqrt(items.length + 1)));
+    const gridRows = Math.max(minRows, Math.ceil((items.length + 1) / gridCols));
     return { gridCols, gridRows };
 }
 
@@ -35,7 +35,7 @@ function shuffleArray(array) {
 
 function createCompleteGrid(
     gridContainer,
-    works,
+    items,
     categories,
     title,
     itemWidth,
@@ -46,15 +46,15 @@ function createCompleteGrid(
     minRows = 5,
     pageType
 ) {
-    const { gridCols, gridRows } = calculateGridSize(works, minCols, minRows);
+    const { gridCols, gridRows } = calculateGridSize(items, minCols, minRows);
     const totalCards = gridCols * gridRows;
     const positions = generatePositions(totalCards, itemWidth, itemHeight, padding);
 
-    let extendedWorks = [];
-    while (extendedWorks.length < totalCards) {
-        extendedWorks = extendedWorks.concat(works);
+    let extendedItems = [];
+    while (extendedItems.length < totalCards) {
+        extendedItems = extendedItems.concat(items);
     }
-    extendedWorks = extendedWorks.slice(0, totalCards);
+    extendedItems = extendedItems.slice(0, totalCards);
 
     let additionalCards = [];
 
@@ -82,12 +82,12 @@ function createCompleteGrid(
     }
 
     // Combine the additional cards and work cards, then shuffle
-    extendedWorks = extendedWorks.concat(additionalCards);
-    shuffleArray(extendedWorks);
+    extendedItems = extendedItems.concat(additionalCards);
+    shuffleArray(extendedItems);
 
     let positionIndex = 0;
 
-    extendedWorks.forEach((item) => {
+    extendedItems.forEach((item) => {
         if (positionIndex >= positions.length) return;
 
         if (item.type === 'navigation') {
