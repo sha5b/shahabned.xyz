@@ -1,9 +1,10 @@
-import { fetchWorks, fetchCategories } from '$lib/services/pocketbase';
+// src/routes/[category]/[title]/+page.js
+import { fetchCategories, fetchWorkByTitle } from '$lib/services/pocketbase';
 
 export async function load({ params, fetch }) {
-  const { work } = params;
+  const { title } = params;
   try {
-    const workDetails = await fetchWorks(fetch, { workId: work });
+    const workDetails = await fetchWorkByTitle(fetch, title);
     const categories = await fetchCategories(fetch);
 
     return {
