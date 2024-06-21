@@ -3,18 +3,6 @@ import * as THREE from 'three';
 import { getImageURL } from '$lib/utils/getURL';
 import { goto } from '$app/navigation';
 
-const CARD_SETTINGS = {
-  color: 0xffffff,
-  text: {
-    color: '#000000',
-    font: '30px Oxanium'
-  },
-  canvas: {
-    width: 512,
-    height: 256
-  }
-};
-
 function createRoundedRectTexture(width, height, radius, resolution = 1024) {
   const canvas = document.createElement('canvas');
   canvas.width = resolution;
@@ -97,6 +85,7 @@ function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick =
 
   if (onClick) {
     cardMesh.userData = { onClick };
+    // @ts-ignore
     cardMesh.callback = onClick;
   }
 

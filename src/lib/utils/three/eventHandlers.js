@@ -43,7 +43,9 @@ function handleClick(event, renderer, camera, gridContainer, loading, lastClickT
   const intersects = raycaster.intersectObjects(gridContainer.children);
   if (intersects.length > 0) {
     const clickedObject = intersects[0].object;
+    // @ts-ignore
     if (clickedObject.callback) {
+      // @ts-ignore
       clickedObject.callback();
     }
   }

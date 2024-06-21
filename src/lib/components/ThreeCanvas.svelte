@@ -94,6 +94,7 @@
       gridContainer.add(backToCategoryCard);
       const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), new THREE.MeshBasicMaterial({ color: 0xffffff }));
       cardMesh.position.set(0, 0, 0);
+      // @ts-ignore
       cardMesh.callback = onClickHandlers.backToCategory;
       backToCategoryCard.add(cardMesh);
     } else {
@@ -123,6 +124,7 @@
 
     let items = works;
     if (pageType === 'work' && work) {
+      // @ts-ignore
       items = [{ id: work.id, thump: work.thump }, ...work.gallery.map((item) => ({ id: work.id, thump: item }))];
     }
 
