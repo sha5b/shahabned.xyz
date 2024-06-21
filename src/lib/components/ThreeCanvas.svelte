@@ -85,7 +85,7 @@
   
 	  // Use different function to create grid based on page type
 	  if (pageType === 'work') {
-		createImageGrid(gridContainer, items, itemWidth, itemHeight, padding);
+		createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, onClickHandlers);
 	  } else {
 		createCompleteGrid(gridContainer, items, categories, title, itemWidth, itemHeight, padding, onClickHandlers, 5, 5, pageType);
 	  }

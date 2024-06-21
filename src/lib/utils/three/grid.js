@@ -126,7 +126,7 @@ function createCompleteGrid(gridContainer, items, categories, title, itemWidth, 
 }
 
 // New function to create a grid of ImageCards
-function createImageGrid(gridContainer, items, itemWidth, itemHeight, padding) {
+function createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, onClickHandlers) {
   const { gridCols, gridRows } = calculateGridSize(items);
   const totalCards = gridCols * gridRows;
   const positions = generatePositions(totalCards, itemWidth, itemHeight, padding);
@@ -140,17 +140,39 @@ function createImageGrid(gridContainer, items, itemWidth, itemHeight, padding) {
   }
   extendedItems = extendedItems.slice(0, totalCards);
 
+  // Add navigation cards
+  const navigationCards = [
+    { label: 'Back to Category', onClick: onClickHandlers.backToCategory },
+    { label: 'Next Work', onClick: onClickHandlers.nextWork },
+    { label: 'Previous Work', onClick: onClickHandlers.prevWork }
+  ];
+
+  extendedItems = extendedItems.concat(navigationCards);
+  shuffleArray(extendedItems);
+
   extendedItems.forEach((item) => {
     if (positionIndex >= positions.length) return;
 
-    addImageCard(
-      gridContainer,
-      item,
-      positions[positionIndex].x,
-      positions[positionIndex].y,
-      itemWidth,
-      itemHeight
-    );
+    if (item.label) {
+      addNavigationCard(
+        gridContainer,
+        item.label,
+        positions[positionIndex].x,
+        positions[positionIndex].y,
+        itemWidth,
+        itemHeight,
+        item.onClick
+      );
+    } else {
+      addImageCard(
+        gridContainer,
+        item,
+        positions[positionIndex].x,
+        positions[positionIndex].y,
+        itemWidth,
+        itemHeight
+      );
+    }
 
     positionIndex++;
   });
