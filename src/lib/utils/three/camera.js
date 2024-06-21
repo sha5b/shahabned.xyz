@@ -5,7 +5,7 @@ const CAMERA_SETTINGS = {
 	aspect: typeof window !== 'undefined' ? window.innerWidth / window.innerHeight : 1,
 	near: 0.1,
 	far: 1000,
-	position: { z: 20 }
+	position: { z: 25, zoom: 4 }
 };
 
 export function createCamera(settings = CAMERA_SETTINGS) {
@@ -16,6 +16,8 @@ export function createCamera(settings = CAMERA_SETTINGS) {
 		settings.far
 	);
 	camera.position.z = settings.position.z;
+	camera.zoom = settings.position.zoom;
+	camera.updateProjectionMatrix(); // Ensure the camera updates its projection matrix
 	return camera;
 }
 

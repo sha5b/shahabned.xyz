@@ -2,7 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import * as THREE from 'three';
 	import { createScene } from '$lib/utils/three/scene';
-	import { createCamera, onWindowResize } from '$lib/utils/three/camera';
+	import { createCamera } from '$lib/utils/three/camera';
 	import { createRenderer } from '$lib/utils/three/renderer';
 	import { createDottedGridTexture } from '$lib/utils/three/dottedGridTexture';
 	import {
@@ -17,9 +17,9 @@
 
 	export let works = [];
 	export let categories = [];
-	export let work = null; // Accept work as a prop for work page
+	export let work = null;
 	export let title = '';
-	export let pageType = 'landing'; // Accept pageType as a prop
+	export let pageType = 'landing';
 
 	let scene, camera, renderer;
 	let gridContainer;
@@ -34,9 +34,60 @@
 	const maxRotation = Math.PI;
 	let mouse = new THREE.Vector2();
 
+	function initializeRenderer() {
+		renderer = createRenderer();
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		canvasContainer.appendChild(renderer.domElement);
+	}
+
+	function initializeBackground() {
+		const cellSize = 40;
+		const textureSize = 4000;
+		const gridTexture = createDottedGridTexture(cellSize, 1, textureSize);
+		const planeSize = 20000;
+		const backgroundMesh = new THREE.Mesh(
+			new THREE.PlaneGeometry(planeSize, planeSize),
+			new THREE.MeshBasicMaterial({ map: gridTexture, transparent: true })
+		);
+
+		backgroundMesh.material.map.repeat.set(planeSize / cellSize, planeSize / cellSize);
+		backgroundMesh.position.z = -10;
+		scene.add(backgroundMesh);
+	}
+
+	function initializeGrid(items, categories, title, pageType) {
+		({ gridCols, gridRows } = calculateGridSize(items));
+		gridContainer = new THREE.Group();
+		scene.add(gridContainer);
+
+		const onClickHandlers = {
+			work: (work) => goto(`/${work.expand?.category?.title || 'No Category'}/${work.id}`),
+			category: (category) => goto(`/${category.title}`),
+			nextPage: () => console.log('Next Page Clicked'),
+			backToLanding: () => goto('/'),
+			backToCategory: (category) => goto(`/${category}`),
+			nextCategory: (category) => console.log('Next category clicked', category),
+			nextWork: (work) => console.log('Next work clicked', work),
+			prevCategory: (category) => console.log('Previous category clicked', category),
+			prevWork: (work) => console.log('Previous work clicked', work)
+		};
+
+		if (pageType === 'landing') {
+			onClickHandlers.work = (work) => goto(`/${work.expand?.category?.title || 'No Category'}`);
+		}
+
+		createCompleteGrid(gridContainer, items, categories, title, itemWidth, itemHeight, padding, onClickHandlers, 5, 5, pageType);
+
+		const initialMousePosition = new THREE.Vector3(0, 0, 0);
+		mouse.set(initialMousePosition.x, initialMousePosition.y);
+		gridContainer.children.forEach((child) => rotateCardTowardsMouse(child, mouse, camera, maxRotation));
+
+		wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
+		cleanupGrid(gridContainer, camera);
+	}
+
 	function onResize() {
-		const aspect = window.innerWidth / window.innerHeight;
-		camera.aspect = aspect;
+		camera.aspect = window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();
 		if (renderer) {
 			renderer.setSize(window.innerWidth, window.innerHeight);
@@ -48,131 +99,28 @@
 
 		let items = works;
 		if (pageType === 'work' && work) {
-			// Combine thump and gallery items
-			items = [
-				{ id: work.id, thump: work.thump },
-				...work.gallery.map((item, index) => ({ id: work.id, thump: item }))
-			];
+			items = [{ id: work.id, thump: work.thump }, ...work.gallery.map((item) => ({ id: work.id, thump: item }))];
 		}
-
-		console.log('Items', items);
-
-		({ gridCols, gridRows } = calculateGridSize(items));
 
 		scene = createScene();
 		camera = createCamera();
-		camera.position.z = 25;
-		camera.zoom = 4;
-		renderer = createRenderer();
-		onResize();
-		canvasContainer.appendChild(renderer.domElement);
+		camera.position.z = 25; // Ensure camera position is set correctly
+		camera.zoom = 4; // Ensure zoom is set correctly
+		camera.updateProjectionMatrix(); // Update projection matrix after setting zoom
 
-		const cellSize = 40;
-		const textureSize = 4000;
-		const gridTexture = createDottedGridTexture(cellSize, 1, textureSize);
+		initializeRenderer();
+		initializeBackground();
+		initializeGrid(items, categories, title, pageType);
 
-		const planeSize = 20000;
-		const backgroundMesh = new THREE.Mesh(
-			new THREE.PlaneGeometry(planeSize, planeSize),
-			new THREE.MeshBasicMaterial({ map: gridTexture, transparent: true })
-		);
+		addEventListeners(renderer, camera, gridContainer, gridCols, gridRows, itemWidth, itemHeight, padding, maxRotation, mouse);
+		animate(renderer, scene, camera);
 
-		backgroundMesh.material.map.repeat.set(planeSize / cellSize, planeSize / cellSize);
-		backgroundMesh.position.z = -10;
-		scene.add(backgroundMesh);
+		window.addEventListener('resize', onResize);
 
-		renderer.render(scene, camera);
-
-		setTimeout(() => {
-			gridContainer = new THREE.Group();
-			scene.add(gridContainer);
-
-			const onClickHandlers = {
-				work: (work) => {
-					const category = work.expand?.category?.title || 'No Category';
-					const workId = work.id;
-					goto(`/${category}/${workId}`);
-				},
-				category: (category) => {
-					goto(`/${category.title}`);
-				},
-				nextPage: () => {
-					console.log('Next Page Clicked');
-				},
-				backToLanding: () => goto('/'),
-				backToCategory: (category) => goto(`/${category}`),
-				nextCategory: (category) => {
-					console.log('Next category clicked', category);
-				},
-				nextWork: (work) => {
-					console.log('Next work clicked', work);
-				},
-				prevCategory: (category) => {
-					console.log('Previous category clicked', category);
-				},
-				prevWork: (work) => {
-					console.log('Previous work clicked', work);
-				}
-			};
-
-			if (pageType === 'landing') {
-				onClickHandlers.work = (work) => {
-					const category = work.expand?.category?.title || 'No Category';
-					goto(`/${category}`);
-				};
-			}
-
-			console.log('Creating grid with items', items);
-			createCompleteGrid(
-				gridContainer,
-				items,
-				categories,
-				title,
-				itemWidth,
-				itemHeight,
-				padding,
-				onClickHandlers,
-				5,
-				5,
-				pageType // Pass the pageType parameter
-			);
-
-			const initialMousePosition = new THREE.Vector3(0, 0, 0);
-			mouse.set(initialMousePosition.x, initialMousePosition.y);
-			gridContainer.children.forEach((child) => {
-				rotateCardTowardsMouse(child, mouse, camera, maxRotation);
-			});
-
-			wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
-			cleanupGrid(gridContainer, camera);
-
-			addEventListeners(
-				renderer,
-				camera,
-				gridContainer,
-				gridCols,
-				gridRows,
-				itemWidth,
-				itemHeight,
-				padding,
-				maxRotation,
-				mouse
-			);
-			animate(renderer, scene, camera);
-
-			window.addEventListener('resize', () => {
-				onWindowResize(camera, renderer);
-				onResize();
-			});
-
-			loading = false;
-		}, 1000);
+		loading = false;
 
 		return () => {
-			window.removeEventListener('resize', () => {
-				onWindowResize(camera, renderer);
-				onResize();
-			});
+			window.removeEventListener('resize', onResize);
 			if (renderer) renderer.dispose();
 			if (gridContainer) {
 				gridContainer.children.forEach((child) => {
@@ -189,7 +137,6 @@
 			removeEventListeners(renderer);
 			renderer.dispose();
 		}
-
 		if (gridContainer) {
 			gridContainer.children.forEach((child) => {
 				if (child.material && child.material.map) child.material.map.dispose();
