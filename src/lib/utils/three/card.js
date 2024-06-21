@@ -134,4 +134,23 @@ function addNavigationCard(gridContainer, label, x, y, itemWidth, itemHeight, on
   addCard(gridContainer, cardMesh, x, y);
 }
 
-export { createRoundedRectTexture, createMaterial, createCardMesh, addCard, addWorkCard, addCategoryCard, addNavigationCard };
+// New function to add ImageCard
+function addImageCard(gridContainer, image, x, y, itemWidth, itemHeight) {
+  const textureURL = getImageURL('works', image.id, image.thump);
+  const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
+    console.log('Image card clicked:', image);
+  });
+
+  addCard(gridContainer, cardMesh, x, y);
+}
+
+export {
+  createRoundedRectTexture,
+  createMaterial,
+  createCardMesh,
+  addCard,
+  addWorkCard,
+  addCategoryCard,
+  addNavigationCard,
+  addImageCard // Export the new function
+};

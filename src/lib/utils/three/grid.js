@@ -1,6 +1,6 @@
-// grid.js
+// src/lib/utils/three/grid.js
 import * as THREE from 'three';
-import { addCard, addWorkCard, addCategoryCard, addNavigationCard, createCardMesh } from '$lib/utils/three/card';
+import { addCard, addWorkCard, addCategoryCard, addNavigationCard, createCardMesh, addImageCard } from '$lib/utils/three/card';
 
 function getGridPositions(index, cols, itemWidth, itemHeight, padding) {
   const gap = padding;
@@ -12,8 +12,8 @@ function getGridPositions(index, cols, itemWidth, itemHeight, padding) {
 }
 
 function calculateGridSize(items, minCols = 5, minRows = 5) {
-  const gridCols = Math.max(minCols, Math.ceil(Math.sqrt(items.length + 1)));
-  const gridRows = Math.max(minRows, Math.ceil((items.length + 1) / gridCols));
+  const gridCols = Math.max(minCols, Math.ceil(Math.sqrt(items.length)));
+  const gridRows = Math.max(minRows, Math.ceil(items.length / gridCols));
   return { gridCols, gridRows };
 }
 
@@ -125,6 +125,37 @@ function createCompleteGrid(gridContainer, items, categories, title, itemWidth, 
   });
 }
 
+// New function to create a grid of ImageCards
+function createImageGrid(gridContainer, items, itemWidth, itemHeight, padding) {
+  const { gridCols, gridRows } = calculateGridSize(items);
+  const totalCards = gridCols * gridRows;
+  const positions = generatePositions(totalCards, itemWidth, itemHeight, padding);
+
+  let positionIndex = 0;
+
+  // Ensure items are repeated to fill the grid if necessary
+  let extendedItems = [];
+  while (extendedItems.length < totalCards) {
+    extendedItems = extendedItems.concat(items);
+  }
+  extendedItems = extendedItems.slice(0, totalCards);
+
+  extendedItems.forEach((item) => {
+    if (positionIndex >= positions.length) return;
+
+    addImageCard(
+      gridContainer,
+      item,
+      positions[positionIndex].x,
+      positions[positionIndex].y,
+      itemWidth,
+      itemHeight
+    );
+
+    positionIndex++;
+  });
+}
+
 function wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding) {
   const wrapOffsetX = gridCols * (itemWidth + padding);
   const wrapOffsetY = gridRows * (itemHeight + padding);
@@ -164,5 +195,6 @@ export {
   generatePositions,
   createCompleteGrid,
   wrapGrid,
-  cleanupGrid
+  cleanupGrid,
+  createImageGrid // Export the new function
 };

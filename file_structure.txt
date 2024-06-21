@@ -29,6 +29,6 @@ src/
         [category]/
             +page.js
             +page.svelte
-            [work]/
+            [title]/
                 +page.js
                 +page.svelte

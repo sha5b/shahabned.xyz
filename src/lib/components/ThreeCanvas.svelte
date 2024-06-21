@@ -1,4 +1,3 @@
-<!-- src/lib/components/ThreeCanvas.svelte -->
 <script>
 	import { onMount, onDestroy } from 'svelte';
 	import * as THREE from 'three';
@@ -10,7 +9,8 @@
 	  calculateGridSize,
 	  createCompleteGrid,
 	  wrapGrid,
-	  cleanupGrid
+	  cleanupGrid,
+	  createImageGrid // Ensure correct import
 	} from '$lib/utils/three/grid';
 	import { animate, rotateCardTowardsMouse } from '$lib/utils/three/animation';
 	import { addEventListeners, removeEventListeners } from '$lib/utils/three/eventHandlers';
@@ -62,7 +62,13 @@
 	  scene.add(gridContainer);
   
 	  const onClickHandlers = {
-		work: (work) => goto(`/${work.expand?.category?.title || 'No Category'}/${work.title}`),
+		work: (work) => {
+		  if (pageType === 'work') {
+			console.log('Work card clicked:', work);
+		  } else {
+			goto(`/${work.expand?.category?.title || 'No Category'}/${work.title}`);
+		  }
+		},
 		category: (category) => goto(`/${category.title}`),
 		nextPage: () => console.log('Next Page Clicked'),
 		backToLanding: () => goto('/'),
@@ -77,7 +83,12 @@
 		onClickHandlers.work = (work) => goto(`/${work.expand?.category?.title || 'No Category'}`);
 	  }
   
-	  createCompleteGrid(gridContainer, items, categories, title, itemWidth, itemHeight, padding, onClickHandlers, 5, 5, pageType);
+	  // Use different function to create grid based on page type
+	  if (pageType === 'work') {
+		createImageGrid(gridContainer, items, itemWidth, itemHeight, padding);
+	  } else {
+		createCompleteGrid(gridContainer, items, categories, title, itemWidth, itemHeight, padding, onClickHandlers, 5, 5, pageType);
+	  }
   
 	  const initialMousePosition = new THREE.Vector3(0, 0, 0);
 	  mouse.set(initialMousePosition.x, initialMousePosition.y);
@@ -105,9 +116,9 @@
   
 	  scene = createScene();
 	  camera = createCamera();
-	  camera.position.z = 25; // Ensure camera position is set correctly
-	  camera.zoom = 4; // Ensure zoom is set correctly
-	  camera.updateProjectionMatrix(); // Update projection matrix after setting zoom
+	  camera.position.z = 25;
+	  camera.zoom = 4;
+	  camera.updateProjectionMatrix();
   
 	  initializeRenderer();
 	  initializeBackground();
