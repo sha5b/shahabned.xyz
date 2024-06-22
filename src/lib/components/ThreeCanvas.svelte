@@ -2,7 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import * as THREE from 'three';
   import { createScene } from '$lib/utils/three/scene';
-  import { createCamera } from '$lib/utils/three/camera';
+  import { createCamera, onWindowResize } from '$lib/utils/three/camera';
   import { createRenderer } from '$lib/utils/three/renderer';
   import { createDottedGridTexture } from '$lib/utils/three/dottedGridTexture';
   import {
@@ -132,16 +132,6 @@
     loading = false;  // Mark loading as false after grid is initialized
   }
 
-  function onResize() {
-    if (camera) {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-    }
-    if (renderer) {
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-  }
-
   function resetScene() {
     if (gridContainer) {
       gridContainer.children.forEach((child) => {
@@ -178,12 +168,11 @@
     addEventListeners(renderer, camera, gridContainer, gridCols, gridRows, itemWidth, itemHeight, padding, maxRotation, mouse, loading);
     animate(renderer, scene, camera);
 
-    window.addEventListener('resize', onResize);
-
-    loading = false;
+    window.addEventListener('resize', () => onWindowResize(camera, renderer));
 
     return () => {
-      window.removeEventListener('resize', onResize);
+      window.removeEventListener('resize', () => onWindowResize(camera, renderer));
+      removeEventListeners(renderer);
       if (renderer) renderer.dispose();
       if (gridContainer) {
         gridContainer.children.forEach((child) => {
