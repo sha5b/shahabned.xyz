@@ -70,7 +70,8 @@
     gridContainer = new THREE.Group();
     scene.add(gridContainer);
 
-    const currentCategory = work?.expand?.category?.title;
+    const currentCategoryIndex = categories.findIndex(cat => cat.title === title);
+    const currentCategory = categories[currentCategoryIndex];
 
     const onClickHandlers = {
       work: (work) => {
@@ -83,12 +84,16 @@
       category: (category) => goto(`/${category.title}`),
       nextPage: () => console.log('Next Page Clicked'),
       backToLanding: () => goto('/'),
-      backToCategory: () => goto(`/${currentCategory}`),
-      nextCategory: (category) => {
-        window.location.href = `/${category.title}`;  // Force page reload
+      backToCategory: () => goto(`/${currentCategory.title}`),
+      nextCategory: () => {
+        const nextCategoryIndex = (currentCategoryIndex + 1) % categories.length;
+        const nextCategory = categories[nextCategoryIndex];
+        window.location.href = `/${nextCategory.title}`;
       },
-      prevCategory: (category) => {
-        window.location.href = `/${category.title}`;  // Force page reload
+      prevCategory: () => {
+        const prevCategoryIndex = (currentCategoryIndex - 1 + categories.length) % categories.length;
+        const prevCategory = categories[prevCategoryIndex];
+        window.location.href = `/${prevCategory.title}`;
       }
     };
 

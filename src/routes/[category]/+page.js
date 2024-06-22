@@ -18,6 +18,7 @@ export async function load({ params, fetch }) {
     works,
     categories,
     category,
+    title: category,
     pageType: 'category'
   };
 }
