@@ -116,74 +116,49 @@ export function addEventListeners(
 ) {
   const lastClickTime = 0;
 
-  const handleMouseDown = (e) => startDrag(e);
-  const handleMouseMove = (e) => moveDrag(
-    e,
-    renderer,
-    camera,
-    gridContainer,
-    gridCols,
-    gridRows,
-    itemWidth,
-    itemHeight,
-    padding,
-    maxRotation,
-    mouse
-  );
-  const handleMouseUp = (e) => endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer, loading, lastClickTime);
-  const handleMouseLeave = (e) => endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer, loading, lastClickTime);
-
-  const handleTouchStart = (e) => startDrag(e);
-  const handleTouchMove = (e) => moveDrag(
-    e,
-    renderer,
-    camera,
-    gridContainer,
-    gridCols,
-    gridRows,
-    itemWidth,
-    itemHeight,
-    padding,
-    maxRotation,
-    mouse
-  );
-  const handleTouchEnd = (e) => endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer, loading, lastClickTime);
-  const handleTouchCancel = (e) => endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer, loading, lastClickTime);
-
-  renderer.domElement.addEventListener('mousedown', handleMouseDown);
-  renderer.domElement.addEventListener('mousemove', handleMouseMove);
-  renderer.domElement.addEventListener('mouseup', handleMouseUp);
-  renderer.domElement.addEventListener('mouseleave', handleMouseLeave);
-
-  renderer.domElement.addEventListener('touchstart', handleTouchStart);
-  renderer.domElement.addEventListener('touchmove', handleTouchMove);
-  renderer.domElement.addEventListener('touchend', handleTouchEnd);
-  renderer.domElement.addEventListener('touchcancel', handleTouchCancel);
-
-  renderer.domElement._eventHandlers = {
-    handleMouseDown,
-    handleMouseMove,
-    handleMouseUp,
-    handleMouseLeave,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
-    handleTouchCancel
+  const handleEvent = (e) => {
+    switch (e.type) {
+      case 'mousedown':
+      case 'touchstart':
+        startDrag(e);
+        break;
+      case 'mousemove':
+      case 'touchmove':
+        moveDrag(
+          e,
+          renderer,
+          camera,
+          gridContainer,
+          gridCols,
+          gridRows,
+          itemWidth,
+          itemHeight,
+          padding,
+          maxRotation,
+          mouse
+        );
+        break;
+      case 'mouseup':
+      case 'touchend':
+      case 'mouseleave':
+      case 'touchcancel':
+        endDrag(e, camera, itemWidth, itemHeight, padding, renderer, gridContainer, loading, lastClickTime);
+        break;
+    }
   };
+
+  ['mousedown', 'mousemove', 'mouseup', 'mouseleave', 'touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(type => {
+    renderer.domElement.addEventListener(type, handleEvent);
+  });
+
+  renderer.domElement._eventHandlers = { handleEvent };
 }
 
 export function removeEventListeners(renderer) {
-  const handlers = renderer.domElement._eventHandlers;
-
-  if (handlers) {
-    renderer.domElement.removeEventListener('mousedown', handlers.handleMouseDown);
-    renderer.domElement.removeEventListener('mousemove', handlers.handleMouseMove);
-    renderer.domElement.removeEventListener('mouseup', handlers.handleMouseUp);
-    renderer.domElement.removeEventListener('mouseleave', handlers.handleMouseLeave);
-
-    renderer.domElement.removeEventListener('touchstart', handlers.handleTouchStart);
-    renderer.domElement.removeEventListener('touchmove', handlers.handleTouchMove);
-    renderer.domElement.removeEventListener('touchend', handlers.handleTouchEnd);
-    renderer.domElement.removeEventListener('touchcancel', handlers.handleTouchCancel);
+  const handleEvent = renderer.domElement._eventHandlers.handleEvent;
+  if (handleEvent) {
+    ['mousedown', 'mousemove', 'mouseup', 'mouseleave', 'touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(type => {
+      renderer.domElement.removeEventListener(type, handleEvent);
+    });
   }
 }
