@@ -1,4 +1,3 @@
-// src/lib/utils/three/card.js
 import * as THREE from 'three';
 import { getImageURL } from '$lib/utils/getURL';
 import { goto } from '$app/navigation';
@@ -62,7 +61,6 @@ function createMaterial(textureURL, itemWidth, itemHeight, radius = 8) {
       shininess: 30
     });
 
-    // Ensure material and texture are immutable
     texture.onUpdate = function() {
       this.needsUpdate = false;
     };
@@ -85,7 +83,6 @@ function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick =
 
   if (onClick) {
     cardMesh.userData = { onClick };
-    // @ts-ignore
     cardMesh.callback = onClick;
   }
 
@@ -129,7 +126,6 @@ function addNavigationCard(gridContainer, label, x, y, itemWidth, itemHeight, on
   addCard(gridContainer, cardMesh, x, y);
 }
 
-// New function to add ImageCard
 function addImageCard(gridContainer, image, x, y, itemWidth, itemHeight) {
   const textureURL = getImageURL('works', image.id, image.thump);
   const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
@@ -147,5 +143,5 @@ export {
   addWorkCard,
   addCategoryCard,
   addNavigationCard,
-  addImageCard // Export the new function
+  addImageCard
 };

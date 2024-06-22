@@ -1,4 +1,3 @@
-// src/lib/utils/three/grid.js
 import * as THREE from 'three';
 import { addCard, addWorkCard, addCategoryCard, addNavigationCard, createCardMesh, addImageCard } from '$lib/utils/three/card';
 
@@ -125,7 +124,6 @@ function createCompleteGrid(gridContainer, items, categories, title, itemWidth, 
   });
 }
 
-// New function to create a grid of ImageCards
 function createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, onClickHandlers) {
   const { gridCols, gridRows } = calculateGridSize(items);
   const totalCards = gridCols * gridRows;
@@ -133,14 +131,12 @@ function createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, o
 
   let positionIndex = 0;
 
-  // Ensure items are repeated to fill the grid if necessary
   let extendedItems = [];
   while (extendedItems.length < totalCards) {
     extendedItems = extendedItems.concat(items);
   }
   extendedItems = extendedItems.slice(0, totalCards);
 
-  // Add navigation cards
   const navigationCards = [
     { label: 'Back to Category', onClick: onClickHandlers.backToCategory },
     { label: 'Next Work', onClick: onClickHandlers.nextWork },
@@ -218,5 +214,5 @@ export {
   createCompleteGrid,
   wrapGrid,
   cleanupGrid,
-  createImageGrid // Export the new function
+  createImageGrid
 };
