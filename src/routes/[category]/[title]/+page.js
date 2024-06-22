@@ -1,8 +1,7 @@
-// src/routes/[category]/[title]/+page.js
 import { fetchCategories, fetchWorkByTitle, fetchWorks } from '$lib/services/pocketbase';
 
 export async function load({ params, fetch }) {
-  const { title } = params;
+  const { category, title } = params;
   try {
     const workDetails = await fetchWorkByTitle(fetch, title);
     const categories = await fetchCategories(fetch);
@@ -11,7 +10,8 @@ export async function load({ params, fetch }) {
     return {
       work: workDetails,
       categories,
-      worksInCategory, // Pass works in the same category
+      worksInCategory,
+      title: category, // Pass the category title
       pageType: 'work'
     };
   } catch (error) {
