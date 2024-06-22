@@ -1,3 +1,4 @@
+// eventHandlers.js
 import * as THREE from 'three';
 import { snapCameraToGrid, rotateCardTowardsMouse } from './animation';
 import { wrapGrid, cleanupGrid } from './grid';
@@ -5,7 +6,7 @@ import { wrapGrid, cleanupGrid } from './grid';
 let dragging = false;
 let startX, startY;
 let moved = false;
-const DRAG_THRESHOLD = 5;
+const DRAG_THRESHOLD = 5; // Threshold in pixels to distinguish between a drag and a click
 
 function getMousePositionInScene(event, renderer, camera) {
   const rect = renderer.domElement.getBoundingClientRect();
@@ -25,7 +26,7 @@ function getMousePositionInScene(event, renderer, camera) {
 function handleClick(event, renderer, camera, gridContainer, loading, lastClickTime) {
   const now = Date.now();
   if (loading || now - lastClickTime < 500) {
-    return;
+    return; // If still loading or clicked too recently, ignore the click
   }
   lastClickTime = now;
 
@@ -42,7 +43,9 @@ function handleClick(event, renderer, camera, gridContainer, loading, lastClickT
   const intersects = raycaster.intersectObjects(gridContainer.children);
   if (intersects.length > 0) {
     const clickedObject = intersects[0].object;
+    // @ts-ignore
     if (clickedObject.callback) {
+      // @ts-ignore
       clickedObject.callback();
     }
   }
@@ -80,7 +83,7 @@ function moveDrag(
     if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
       moved = true;
       camera.position.x -= (dx / 200) * camera.zoom;
-      camera.position.y += (dy / 200) * camera.zoom;
+      camera.position.y += (dy / 200) * camera.zoom; // Adjusted for correct direction
       wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
       cleanupGrid(gridContainer, camera);
       startX = currentX;
@@ -114,7 +117,7 @@ export function addEventListeners(
   mouse,
   loading
 ) {
-  const lastClickTime = 0;
+  const lastClickTime = 0; // Initialize lastClickTime
 
   const handleMouseDown = (e) => startDrag(e);
   const handleMouseMove = (e) => moveDrag(
@@ -160,6 +163,7 @@ export function addEventListeners(
   renderer.domElement.addEventListener('touchend', handleTouchEnd);
   renderer.domElement.addEventListener('touchcancel', handleTouchCancel);
 
+  // Store event handler references for later removal
   renderer.domElement._eventHandlers = {
     handleMouseDown,
     handleMouseMove,
