@@ -101,23 +101,8 @@
       onClickHandlers.work = (work) => goto(`/${work.expand?.category?.title || 'No Category'}`);
     }
 
-    if (pageType === 'category') {
-      const currentIndex = categories.findIndex(cat => cat.title === title);
-      const nextCategory = categories[(currentIndex + 1) % categories.length];
-      const prevCategory = categories[(currentIndex - 1 + categories.length) % categories.length];
-
-      onClickHandlers.nextCategory = () => window.location.href = `/${nextCategory.title}`;
-      onClickHandlers.prevCategory = () => window.location.href = `/${prevCategory.title}`;
-    }
-
     if (pageType === 'work') {
       createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, onClickHandlers);
-      const backToCategoryCard = new THREE.Group();
-      gridContainer.add(backToCategoryCard);
-      const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-      cardMesh.position.set(0, 0, 0);
-      cardMesh.callback = onClickHandlers.backToCategory;
-      backToCategoryCard.add(cardMesh);
     } else {
       createCompleteGrid(gridContainer, items, categories, title, itemWidth, itemHeight, padding, onClickHandlers, 5, 5, pageType);
     }
