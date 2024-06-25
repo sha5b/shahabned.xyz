@@ -1,3 +1,4 @@
+//src/lib/three/grid.js
 import * as THREE from 'three';
 import { addCard, addWorkCard, addCategoryCard, addNavigationCard, createCardMesh, addImageCard } from '$lib/utils/three/card';
 

@@ -1,3 +1,4 @@
+//src/lib/three/scene.js
 import * as THREE from 'three';
 
 export function createScene() {
