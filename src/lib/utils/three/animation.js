@@ -1,4 +1,3 @@
-//src/lib/three/animation.js
 import { Tween, Easing, update as tweenUpdate } from '@tweenjs/tween.js';
 import * as THREE from 'three';
 

@@ -1,4 +1,3 @@
-//src/routes/[category]/+page.js
 import { fetchCategories, fetchWorks } from '$lib/services/pocketbase';
 
 export async function load({ params, fetch }) {

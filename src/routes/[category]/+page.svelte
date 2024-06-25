@@ -1,5 +1,4 @@
 <script>
-  //src/routes/[category]/+page.svelte
   export let data;
   import ThreeCanvas from '$lib/components/ThreeCanvas.svelte';
 

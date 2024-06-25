@@ -1,14 +1,6 @@
 import * as THREE from 'three';
-import {
-  addCard,
-  addWorkCard,
-  addCategoryCard,
-  addNavigationCard,
-  createCardMesh,
-  addImageCard
-} from '$lib/utils/three/card';
+import { addCard, addWorkCard, addCategoryCard, addNavigationCard, createCardMesh, addImageCard } from '$lib/utils/three/card';
 
-// Utility functions for grid positioning
 function getGridPositions(index, cols, itemWidth, itemHeight, padding) {
   const gap = padding;
   const row = Math.floor(index / cols);
@@ -41,51 +33,6 @@ function shuffleArray(array) {
   }
 }
 
-// Card addition helper function
-function addCardsToGrid(gridContainer, items, positions, itemWidth, itemHeight, onClickHandlers) {
-  let positionIndex = 0;
-
-  items.forEach((item) => {
-    if (positionIndex >= positions.length) return;
-
-    if (item.type === 'navigation') {
-      addNavigationCard(
-        gridContainer,
-        item.label,
-        positions[positionIndex].x,
-        positions[positionIndex].y,
-        itemWidth,
-        itemHeight,
-        item.onClick
-      );
-    } else if (item.type === 'owner') {
-      const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, item.onClick);
-      addCard(gridContainer, cardMesh, positions[positionIndex].x, positions[positionIndex].y);
-    } else if (item.type === 'image') {
-      addImageCard(
-        gridContainer,
-        item,
-        positions[positionIndex].x,
-        positions[positionIndex].y,
-        itemWidth,
-        itemHeight
-      );
-    } else {
-      addWorkCard(
-        gridContainer,
-        item,
-        positions[positionIndex].x,
-        positions[positionIndex].y,
-        itemWidth,
-        itemHeight,
-        onClickHandlers.work
-      );
-    }
-    positionIndex++;
-  });
-}
-
-// Main functions to create grids
 function createCompleteGrid(gridContainer, items, categories, title, itemWidth, itemHeight, padding, onClickHandlers = {}, minCols = 5, minRows = 5, pageType) {
   const { gridCols, gridRows } = calculateGridSize(items, minCols, minRows);
   const totalCards = gridCols * gridRows;
@@ -100,7 +47,11 @@ function createCompleteGrid(gridContainer, items, categories, title, itemWidth, 
   let additionalCards = [];
 
   if (pageType === 'landing') {
-    additionalCards.push({ type: 'owner', title, onClick: () => console.log('Owner Card Clicked') });
+    additionalCards.push({
+      type: 'owner',
+      title,
+      onClick: () => console.log('Owner Card Clicked')
+    });
   }
 
   if (pageType === 'category') {
@@ -126,9 +77,38 @@ function createCompleteGrid(gridContainer, items, categories, title, itemWidth, 
   extendedItems = extendedItems.concat(additionalCards);
   shuffleArray(extendedItems);
 
-  addCardsToGrid(gridContainer, extendedItems, positions, itemWidth, itemHeight, onClickHandlers);
+  let positionIndex = 0;
 
-  let positionIndex = extendedItems.length;
+  extendedItems.forEach((item) => {
+    if (positionIndex >= positions.length) return;
+
+    if (item.type === 'navigation') {
+      addNavigationCard(
+        gridContainer,
+        item.label,
+        positions[positionIndex].x,
+        positions[positionIndex].y,
+        itemWidth,
+        itemHeight,
+        item.onClick
+      );
+    } else if (item.type === 'owner') {
+      const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, item.onClick);
+      addCard(gridContainer, cardMesh, positions[positionIndex].x, positions[positionIndex].y);
+    } else {
+      addWorkCard(
+        gridContainer,
+        item,
+        positions[positionIndex].x,
+        positions[positionIndex].y,
+        itemWidth,
+        itemHeight,
+        onClickHandlers.work
+      );
+    }
+    positionIndex++;
+  });
+
   categories.forEach((category) => {
     if (positionIndex >= positions.length) return;
     addCategoryCard(
@@ -149,6 +129,8 @@ function createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, o
   const totalCards = gridCols * gridRows;
   const positions = generatePositions(totalCards, itemWidth, itemHeight, padding);
 
+  let positionIndex = 0;
+
   let extendedItems = [];
   while (extendedItems.length < totalCards) {
     extendedItems = extendedItems.concat(items);
@@ -156,18 +138,42 @@ function createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, o
   extendedItems = extendedItems.slice(0, totalCards);
 
   const navigationCards = [
-    { type: 'navigation', label: 'Back to Category', onClick: onClickHandlers.backToCategory },
-    { type: 'navigation', label: 'Next Work', onClick: onClickHandlers.nextWork },
-    { type: 'navigation', label: 'Previous Work', onClick: onClickHandlers.prevWork }
+    { label: 'Back to Category', onClick: onClickHandlers.backToCategory },
+    { label: 'Next Work', onClick: onClickHandlers.nextWork },
+    { label: 'Previous Work', onClick: onClickHandlers.prevWork }
   ];
 
   extendedItems = extendedItems.concat(navigationCards);
   shuffleArray(extendedItems);
 
-  addCardsToGrid(gridContainer, extendedItems, positions, itemWidth, itemHeight, onClickHandlers);
+  extendedItems.forEach((item) => {
+    if (positionIndex >= positions.length) return;
+
+    if (item.label) {
+      addNavigationCard(
+        gridContainer,
+        item.label,
+        positions[positionIndex].x,
+        positions[positionIndex].y,
+        itemWidth,
+        itemHeight,
+        item.onClick
+      );
+    } else {
+      addImageCard(
+        gridContainer,
+        item,
+        positions[positionIndex].x,
+        positions[positionIndex].y,
+        itemWidth,
+        itemHeight
+      );
+    }
+
+    positionIndex++;
+  });
 }
 
-// Grid management functions
 function wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding) {
   const wrapOffsetX = gridCols * (itemWidth + padding);
   const wrapOffsetY = gridRows * (itemHeight + padding);

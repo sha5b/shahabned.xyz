@@ -1,5 +1,4 @@
 <script>
-  //src/lib/components/ThreeCanvas.svelte
   import { onMount, onDestroy } from 'svelte';
   import * as THREE from 'three';
   import { createScene } from '$lib/utils/three/scene';
@@ -23,11 +22,11 @@
   export let title = '';
   export let pageType = 'landing';
 
-  console.log('Works', works)
   let scene, camera, renderer;
   let gridContainer;
   let canvasContainer;
   let loading = true;
+  let lastClickTime = 0;
 
   const itemWidth = 3;
   const itemHeight = 4.5;
@@ -71,25 +70,10 @@
     gridContainer = new THREE.Group();
     scene.add(gridContainer);
 
-    const onClickHandlers = createOnClickHandlers(categories, title, pageType);
-
-    if (pageType === 'work') {
-      createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, onClickHandlers);
-    } else {
-      createCompleteGrid(gridContainer, items, categories, title, itemWidth, itemHeight, padding, onClickHandlers, 5, 5, pageType);
-    }
-
-    initializeMouseRotation();
-    wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
-    cleanupGrid(gridContainer, camera);
-    loading = false;
-  }
-
-  function createOnClickHandlers(categories, title, pageType) {
     const currentCategoryIndex = categories.findIndex(cat => cat.title === title);
     const currentCategory = categories[currentCategoryIndex];
 
-    return {
+    const onClickHandlers = {
       work: (work) => {
         if (pageType === 'work') {
           console.log('Work card clicked:', work);
@@ -101,20 +85,39 @@
       nextPage: () => console.log('Next Page Clicked'),
       backToLanding: () => goto('/'),
       backToCategory: () => goto(`/${currentCategory.title}`),
-      nextCategory: (nextCategory) => goto(`/${nextCategory.title}`),
-      prevCategory: (prevCategory) => goto(`/${prevCategory.title}`)
+      nextCategory: (nextCategory) => {
+        goto(`/${nextCategory.title}`);
+      },
+      prevCategory: (prevCategory) => {
+        goto(`/${prevCategory.title}`);
+      }
     };
-  }
 
-  function initializeMouseRotation() {
+    if (pageType === 'landing') {
+      onClickHandlers.work = (work) => goto(`/${work.expand?.category?.title || 'No Category'}`);
+    }
+
+    if (pageType === 'work') {
+      createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, onClickHandlers);
+    } else {
+      createCompleteGrid(gridContainer, items, categories, title, itemWidth, itemHeight, padding, onClickHandlers, 5, 5, pageType);
+    }
+
     const initialMousePosition = new THREE.Vector3(0, 0, 0);
     mouse.set(initialMousePosition.x, initialMousePosition.y);
     gridContainer.children.forEach((child) => rotateCardTowardsMouse(child, mouse, camera, maxRotation));
+
+    wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding);
+    cleanupGrid(gridContainer, camera);
+
+    loading = false;  // Mark loading as false after grid is initialized
   }
 
   function resetScene() {
     if (gridContainer) {
-      gridContainer.children.forEach((child) => disposeResources(child));
+      gridContainer.children.forEach((child) => {
+        disposeResources(child);
+      });
       scene.remove(gridContainer);
       gridContainer = null;
     }
@@ -165,10 +168,14 @@
   function disposeScene() {
     if (renderer) renderer.dispose();
     if (gridContainer) {
-      gridContainer.children.forEach((child) => disposeResources(child));
+      gridContainer.children.forEach((child) => {
+        disposeResources(child);
+      });
     }
     if (scene) {
-      scene.traverse(object => disposeResources(object));
+      scene.traverse(object => {
+        disposeResources(object);
+      });
     }
   }
 

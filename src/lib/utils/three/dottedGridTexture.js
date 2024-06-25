@@ -1,4 +1,3 @@
-//src/lib/three/dottedGridTexture.js
 import * as THREE from 'three';
 
 export function createDottedGridTexture(cellSize, dotSize, textureSize) {

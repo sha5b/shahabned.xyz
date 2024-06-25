@@ -1,4 +1,3 @@
-//src/lib/three/renderer.js
 import * as THREE from 'three';
 
 const RENDERER_SETTINGS = {
