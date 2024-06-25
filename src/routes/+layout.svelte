@@ -1,3 +1,6 @@
+<script>
+	//src/routes/+layout.svelte
+</script>
 <main>
 	<slot />
 </main>
