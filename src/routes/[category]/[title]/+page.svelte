@@ -10,9 +10,3 @@
 	<ThreeCanvas {work} {works} {categories} {title} {pageType} />
   </main>
   
-  <style>
-	.work-details {
-	  /* Add your styles here */
-	}
-  </style>
-  
