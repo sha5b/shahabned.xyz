@@ -1,5 +1,5 @@
 <script>
-  //src/lib/components/ThreeCanvas.svelte
+  //...other imports
   import { onMount, onDestroy } from 'svelte';
   import * as THREE from 'three';
   import { createScene } from '$lib/utils/three/scene';
@@ -95,6 +95,16 @@
         const prevCategoryIndex = (currentCategoryIndex - 1 + categories.length) % categories.length;
         const prevCategory = categories[prevCategoryIndex];
         window.location.href = `/${prevCategory.title}`;
+      },
+      nextWork: () => {
+        const currentIndex = works.findIndex(w => w.id === work.id);
+        const nextWork = works[(currentIndex + 1) % works.length];
+        window.location.href = `/${nextWork.expand?.category?.title || 'No Category'}/${nextWork.title}`;
+      },
+      prevWork: () => {
+        const currentIndex = works.findIndex(w => w.id === work.id);
+        const prevWork = works[(currentIndex - 1 + works.length) % works.length];
+        window.location.href = `/${prevWork.expand?.category?.title || 'No Category'}/${prevWork.title}`;
       }
     };
 

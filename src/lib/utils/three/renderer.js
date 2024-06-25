@@ -1,4 +1,4 @@
-//src/lib/three/renderer.js
+//src/lib/utils/three/renderer.js
 import * as THREE from 'three';
 
 const RENDERER_SETTINGS = {
@@ -16,5 +16,6 @@ export function createRenderer(settings = RENDERER_SETTINGS) {
 
   const renderer = new THREE.WebGLRenderer({ antialias: settings.antialias });
   renderer.setSize(settings.size.width, settings.size.height);
+  renderer.resetState();
   return renderer;
 }

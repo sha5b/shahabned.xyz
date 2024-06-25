@@ -1,4 +1,4 @@
-//src/lib/three/eventHandlers.js
+//src/lib/utils/three/eventHandlers.js
 import * as THREE from 'three';
 import { snapCameraToGrid, rotateCardTowardsMouse } from './animation';
 import { wrapGrid, cleanupGrid } from './grid';

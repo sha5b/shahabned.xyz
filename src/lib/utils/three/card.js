@@ -1,4 +1,4 @@
-//src/lib/three/card.js
+//src/lib/utils/three/card.js
 import * as THREE from 'three';
 import { getImageURL } from '$lib/utils/getURL';
 import { goto } from '$app/navigation';

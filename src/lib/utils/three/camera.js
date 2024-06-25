@@ -1,4 +1,4 @@
-//src/lib/three/camera.js
+//src/lib/utils/three/camera.js
 import * as THREE from 'three';
 
 const CAMERA_SETTINGS = {
