@@ -1,4 +1,4 @@
-//src/lib/utils/three/card.js
+// src/lib/utils/three/card.js
 import * as THREE from 'three';
 import { getImageURL } from '$lib/utils/getURL';
 import { goto } from '$app/navigation';
@@ -25,6 +25,26 @@ function createRoundedRectTexture(width, height, radius, resolution = 1024) {
   context.quadraticCurveTo(0, 0, radius, 0);
   context.closePath();
   context.fill();
+
+  return new THREE.CanvasTexture(canvas);
+}
+
+function createTextTexture(text, width = 1024, height = 256) {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext('2d');
+
+  context.clearRect(0, 0, width, height);
+
+  context.fillStyle = 'rgba(255, 255, 255, 0)';
+  context.fillRect(0, 0, width, height);
+
+  context.fillStyle = 'black';
+  context.font = '72px Oxanium';
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.fillText(text, width / 2, height / 2);
 
   return new THREE.CanvasTexture(canvas);
 }
@@ -81,11 +101,33 @@ function createMaterial(textureURL, itemWidth, itemHeight, radius = 8) {
 function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick = null) {
   const material = createMaterial(textureURL, itemWidth, itemHeight, radius);
   const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), material);
+  cardMesh.receiveShadow = true;  // Enable shadow receiving
 
   if (onClick) {
     cardMesh.userData = { onClick };
     cardMesh.callback = onClick;
   }
+
+  return cardMesh;
+}
+
+function createNavigationCardMesh(itemWidth, itemHeight, label, onClick) {
+  const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick);
+
+  const textTexture = createTextTexture(label);
+  const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
+  const textMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(itemWidth, itemHeight / 4),
+    textMaterial
+  );
+
+  textMesh.position.set(0, 0, 0.5); // Position the text slightly above the card
+  textMesh.castShadow = true;  // Enable shadow casting
+
+  // Ensure the text mesh is not part of the interactive area of the card
+  textMesh.raycast = () => {};
+
+  cardMesh.add(textMesh);
 
   return cardMesh;
 }
@@ -123,7 +165,7 @@ function addCategoryCard(gridContainer, category, x, y, itemWidth, itemHeight, o
 }
 
 function addNavigationCard(gridContainer, label, x, y, itemWidth, itemHeight, onClick) {
-  const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick);
+  const cardMesh = createNavigationCardMesh(itemWidth, itemHeight, label, onClick);
   addCard(gridContainer, cardMesh, x, y);
 }
 
@@ -138,6 +180,7 @@ function addImageCard(gridContainer, image, x, y, itemWidth, itemHeight) {
 
 export {
   createRoundedRectTexture,
+  createTextTexture,
   createMaterial,
   createCardMesh,
   addCard,

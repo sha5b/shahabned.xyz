@@ -1,4 +1,4 @@
-//src/lib/utils/three/grid.js
+// src/lib/utils/three/grid.js
 import * as THREE from 'three';
 import { addCard, addWorkCard, addCategoryCard, addNavigationCard, createCardMesh, addImageCard } from '$lib/utils/three/card';
 
@@ -60,9 +60,9 @@ function createCompleteGrid(gridContainer, items, categories, title, itemWidth, 
     const nextCategory = categories[(currentIndex + 1) % categories.length];
     const prevCategory = categories[(currentIndex - 1 + categories.length) % categories.length];
 
-    additionalCards.push({ type: 'navigation', label: 'Back to Landing', onClick: onClickHandlers.backToLanding });
-    additionalCards.push({ type: 'navigation', label: 'Next Category', onClick: () => onClickHandlers.nextCategory(nextCategory) });
-    additionalCards.push({ type: 'navigation', label: 'Previous Category', onClick: () => onClickHandlers.prevCategory(prevCategory) });
+    additionalCards.push({ type: 'navigation', label: 'Back', onClick: onClickHandlers.backToLanding });
+    additionalCards.push({ type: 'navigation', label: 'Next', onClick: () => onClickHandlers.nextCategory(nextCategory) });
+    additionalCards.push({ type: 'navigation', label: 'Previous', onClick: () => onClickHandlers.prevCategory(prevCategory) });
   }
 
   if (pageType === 'work') {
@@ -70,9 +70,9 @@ function createCompleteGrid(gridContainer, items, categories, title, itemWidth, 
     const nextWork = items[(currentIndex + 1) % items.length];
     const prevWork = items[(currentIndex - 1 + items.length) % items.length];
 
-    additionalCards.push({ type: 'navigation', label: 'Back to Category', onClick: onClickHandlers.backToCategory });
-    additionalCards.push({ type: 'navigation', label: 'Next Work', onClick: () => onClickHandlers.nextWork(nextWork) });
-    additionalCards.push({ type: 'navigation', label: 'Previous Work', onClick: () => onClickHandlers.prevWork(prevWork) });
+    additionalCards.push({ type: 'navigation', label: 'Back', onClick: onClickHandlers.backToCategory });
+    additionalCards.push({ type: 'navigation', label: 'Next', onClick: () => onClickHandlers.nextWork(nextWork) });
+    additionalCards.push({ type: 'navigation', label: 'Previous', onClick: () => onClickHandlers.prevWork(prevWork) });
   }
 
   extendedItems = extendedItems.concat(additionalCards);
@@ -139,9 +139,9 @@ function createImageGrid(gridContainer, items, itemWidth, itemHeight, padding, o
   extendedItems = extendedItems.slice(0, totalCards);
 
   const navigationCards = [
-    { label: 'Back to Category', onClick: onClickHandlers.backToCategory },
-    { label: 'Next Work', onClick: onClickHandlers.nextWork },
-    { label: 'Previous Work', onClick: onClickHandlers.prevWork }
+    { label: 'Back', onClick: onClickHandlers.backToCategory },
+    { label: 'Next', onClick: onClickHandlers.nextWork },
+    { label: 'Previous', onClick: onClickHandlers.prevWork }
   ];
 
   extendedItems = extendedItems.concat(navigationCards);
