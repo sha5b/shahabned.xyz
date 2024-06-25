@@ -202,19 +202,9 @@ function cleanupGrid(gridContainer, camera) {
   for (let i = gridContainer.children.length - 1; i >= 0; i--) {
     const child = gridContainer.children[i];
     if (!bounds.containsPoint(child.position)) {
-      disposeResources(child);
       gridContainer.remove(child);
     }
   }
-}
-
-function disposeResources(object) {
-  if (object.geometry) object.geometry.dispose();
-  if (object.material) {
-    if (object.material.map) object.material.map.dispose();
-    object.material.dispose();
-  }
-  if (object.texture) object.texture.dispose();
 }
 
 export {

@@ -85,11 +85,15 @@
       nextPage: () => console.log('Next Page Clicked'),
       backToLanding: () => goto('/'),
       backToCategory: () => goto(`/${currentCategory.title}`),
-      nextCategory: (nextCategory) => {
-        goto(`/${nextCategory.title}`);
+      nextCategory: () => {
+        const nextCategoryIndex = (currentCategoryIndex + 1) % categories.length;
+        const nextCategory = categories[nextCategoryIndex];
+        window.location.href = `/${nextCategory.title}`;
       },
-      prevCategory: (prevCategory) => {
-        goto(`/${prevCategory.title}`);
+      prevCategory: () => {
+        const prevCategoryIndex = (currentCategoryIndex - 1 + categories.length) % categories.length;
+        const prevCategory = categories[prevCategoryIndex];
+        window.location.href = `/${prevCategory.title}`;
       }
     };
 
@@ -116,21 +120,14 @@
   function resetScene() {
     if (gridContainer) {
       gridContainer.children.forEach((child) => {
-        disposeResources(child);
+        if (child.material && child.material.map) child.material.map.dispose();
+        if (child.material) child.material.dispose();
+        if (child.geometry) child.geometry.dispose();
       });
       scene.remove(gridContainer);
       gridContainer = null;
     }
     initializeGrid(works, categories, title, pageType);
-  }
-
-  function disposeResources(object) {
-    if (object.geometry) object.geometry.dispose();
-    if (object.material) {
-      if (object.material.map) object.material.map.dispose();
-      object.material.dispose();
-    }
-    if (object.texture) object.texture.dispose();
   }
 
   $: if (pageType && categories.length && works.length) {
@@ -161,26 +158,47 @@
     return () => {
       window.removeEventListener('resize', () => onWindowResize(camera, renderer));
       removeEventListeners(renderer);
-      disposeScene();
+      if (renderer) renderer.dispose();
+      if (gridContainer) {
+        gridContainer.children.forEach((child) => {
+          if (child.material && child.material.map) child.material.map.dispose();
+          if (child.material) child.material.dispose();
+          if (child.geometry) child.geometry.dispose();
+        });
+      }
+      if (scene) {
+        scene.traverse(object => {
+          if (object.geometry) object.geometry.dispose();
+          if (object.material) {
+            if (object.material.map) object.material.map.dispose();
+            object.material.dispose();
+          }
+        });
+      }
     };
   });
 
-  function disposeScene() {
-    if (renderer) renderer.dispose();
+  onDestroy(() => {
+    if (renderer) {
+      removeEventListeners(renderer);
+      renderer.dispose();
+    }
     if (gridContainer) {
       gridContainer.children.forEach((child) => {
-        disposeResources(child);
+        if (child.material && child.material.map) child.material.map.dispose();
+        if (child.material) child.material.dispose();
+        if (child.geometry) child.geometry.dispose();
       });
     }
     if (scene) {
       scene.traverse(object => {
-        disposeResources(object);
+        if (object.geometry) object.geometry.dispose();
+        if (object.material) {
+          if (object.material.map) object.material.map.dispose();
+          object.material.dispose();
+        }
       });
     }
-  }
-
-  onDestroy(() => {
-    disposeScene();
   });
 </script>
 
