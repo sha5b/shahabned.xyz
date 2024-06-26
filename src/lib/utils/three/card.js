@@ -35,17 +35,14 @@ function createIconTexture(icon, color, width = 640, height = 1024) {
   canvas.height = height;
   const context = canvas.getContext('2d');
 
-  // Clear the canvas
   context.clearRect(0, 0, width, height);
 
-  // Draw smaller black circle
-  const radius = Math.min(width, height) / 4; // Reduce the size to half
+  const radius = Math.min(width, height) / 4;
   context.fillStyle = 'black';
   context.beginPath();
   context.arc(width / 2, height / 2, radius, 0, Math.PI * 2);
   context.fill();
 
-  // Draw icon with category color
   context.fillStyle = color;
   context.font = `${radius}px 'Material Icons'`;
   context.textAlign = 'center';
@@ -104,11 +101,21 @@ function createMaterial(textureURL, itemWidth, itemHeight, radius = 8) {
   return material;
 }
 
+function parseHexColor(hex) {
+  try {
+    return new THREE.Color(hex);
+  } catch (e) {
+    console.error(`Invalid color: ${hex}`);
+    return new THREE.Color(0xffffff);
+  }
+}
+
 function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick = null, cardColor = null) {
   let material;
   if (cardColor) {
+    const parsedColor = parseHexColor(cardColor);
     material = new THREE.MeshPhongMaterial({
-      color: cardColor,
+      color: parsedColor,
       shininess: 30,
       transparent: true,
     });
@@ -117,7 +124,7 @@ function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick =
   }
   
   const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), material);
-  cardMesh.receiveShadow = true;  // Enable shadow receiving
+  cardMesh.receiveShadow = true;
 
   if (onClick) {
     cardMesh.userData = { onClick };
@@ -131,15 +138,16 @@ function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick =
 function createNavigationCardMesh(itemWidth, itemHeight, icon, color, onClick) {
   const radius = 8;
   const roundedRectTexture = createRoundedRectTexture(itemWidth * 100, itemHeight * 100, radius);
+  const parsedColor = parseHexColor(color);
   const cardMaterial = new THREE.MeshPhongMaterial({
     map: roundedRectTexture,
     transparent: true,
-    color: color,
+    color: parsedColor,
     shininess: 30
   });
 
   const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), cardMaterial);
-  cardMesh.receiveShadow = true;  // Enable shadow receiving
+  cardMesh.receiveShadow = true;
 
   if (onClick) {
     cardMesh.userData = { onClick };
@@ -154,10 +162,8 @@ function createNavigationCardMesh(itemWidth, itemHeight, icon, color, onClick) {
     iconMaterial
   );
 
-  iconMesh.position.set(0, 0, 0.5); // Position the icon slightly above the card
-  iconMesh.castShadow = true;  // Enable shadow casting
-
-  // Ensure the icon mesh is not part of the interactive area of the card
+  iconMesh.position.set(0, 0, 0.5);
+  iconMesh.castShadow = true;
   iconMesh.raycast = () => {};
 
   cardMesh.add(iconMesh);
