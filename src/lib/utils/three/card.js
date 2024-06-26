@@ -105,6 +105,7 @@ function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick =
 
   if (onClick) {
     cardMesh.userData = { onClick };
+    // @ts-ignore
     cardMesh.callback = onClick;
   }
 
@@ -139,7 +140,7 @@ function addCard(gridContainer, cardMesh, x, y) {
 
 function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
   const category = work?.expand?.category?.title || 'No Category';
-  const textureURL = getImageURL('works', work.id, work.thump);
+  const textureURL = getImageURL('works', work.id, work.thump, '0x600');
   const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
     if (onClick) {
       onClick(work);

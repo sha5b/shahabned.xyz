@@ -148,6 +148,7 @@
   onMount(() => {
     let items = works;
     if (pageType === 'work' && work) {
+      // @ts-ignore
       items = [{ id: work.id, thump: work.thump }, ...work.gallery.map((item) => ({ id: work.id, thump: item }))];
     }
 
