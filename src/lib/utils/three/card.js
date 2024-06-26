@@ -1,8 +1,9 @@
+//src/lib/utils/three/card.js
 import * as THREE from 'three';
 import { getImageURL } from '$lib/utils/getURL';
 import { goto } from '$app/navigation';
 
-function createRoundedRectTexture(width, height, radius, resolution = 1024) {
+function createRoundedRectTexture(width, height, radius, resolution = 1024, color = '#f5f5f5') {
   const canvas = document.createElement('canvas');
   canvas.width = resolution;
   canvas.height = resolution * (height / width);
@@ -11,7 +12,7 @@ function createRoundedRectTexture(width, height, radius, resolution = 1024) {
 
   context.scale(scale, scale);
 
-  context.fillStyle = '#ffffff';
+  context.fillStyle = color;
   context.beginPath();
   context.moveTo(radius, 0);
   context.lineTo(width - radius, 0);
@@ -28,7 +29,7 @@ function createRoundedRectTexture(width, height, radius, resolution = 1024) {
   return new THREE.CanvasTexture(canvas);
 }
 
-function createIconTexture(icon, color, width = 1024, height = 1024) {
+function createIconTexture(icon, color, width = 640, height = 1024) {
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
@@ -37,15 +38,15 @@ function createIconTexture(icon, color, width = 1024, height = 1024) {
   // Clear the canvas
   context.clearRect(0, 0, width, height);
 
-  // Draw smaller circle with category color
+  // Draw smaller black circle
   const radius = Math.min(width, height) / 4; // Reduce the size to half
-  context.fillStyle = color;
+  context.fillStyle = 'black';
   context.beginPath();
   context.arc(width / 2, height / 2, radius, 0, Math.PI * 2);
   context.fill();
 
-  // Draw smaller white icon
-  context.fillStyle = 'white';
+  // Draw icon with category color
+  context.fillStyle = color;
   context.font = `${radius}px 'Material Icons'`;
   context.textAlign = 'center';
   context.textBaseline = 'middle';
@@ -103,8 +104,18 @@ function createMaterial(textureURL, itemWidth, itemHeight, radius = 8) {
   return material;
 }
 
-function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick = null) {
-  const material = createMaterial(textureURL, itemWidth, itemHeight, radius);
+function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick = null, cardColor = null) {
+  let material;
+  if (cardColor) {
+    material = new THREE.MeshPhongMaterial({
+      color: cardColor,
+      shininess: 30,
+      transparent: true,
+    });
+  } else {
+    material = createMaterial(textureURL, itemWidth, itemHeight, radius);
+  }
+  
   const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), material);
   cardMesh.receiveShadow = true;  // Enable shadow receiving
 
@@ -118,7 +129,23 @@ function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick =
 }
 
 function createNavigationCardMesh(itemWidth, itemHeight, icon, color, onClick) {
-  const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick);
+  const radius = 8;
+  const roundedRectTexture = createRoundedRectTexture(itemWidth * 100, itemHeight * 100, radius);
+  const cardMaterial = new THREE.MeshPhongMaterial({
+    map: roundedRectTexture,
+    transparent: true,
+    color: color,
+    shininess: 30
+  });
+
+  const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), cardMaterial);
+  cardMesh.receiveShadow = true;  // Enable shadow receiving
+
+  if (onClick) {
+    cardMesh.userData = { onClick };
+    // @ts-ignore
+    cardMesh.callback = onClick;
+  }
 
   const iconTexture = createIconTexture(icon, color);
   const iconMaterial = new THREE.MeshBasicMaterial({ map: iconTexture, transparent: true });
