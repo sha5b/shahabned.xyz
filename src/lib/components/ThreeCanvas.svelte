@@ -10,8 +10,7 @@
 		calculateGridSize,
 		createCompleteGrid,
 		wrapGrid,
-		cleanupGrid,
-		createImageGrid
+		cleanupGrid
 	} from '$lib/utils/three/grid';
 	import { animate, rotateCardTowardsMouse } from '$lib/utils/three/animation';
 	import { addEventListeners, removeEventListeners } from '$lib/utils/three/eventHandlers';
@@ -133,13 +132,13 @@
 				disposeGridContainer();
 				const currentIndex = works.findIndex((w) => w.id === work.id);
 				const nextWork = works[(currentIndex + 1) % works.length];
-				window.location.href = `/${nextWork.expand?.category?.title}`;
+				window.location.href = `/${nextWork.expand?.category?.title}/${nextWork.title}`;
 			},
 			prevWork: () => {
 				disposeGridContainer();
 				const currentIndex = works.findIndex((w) => w.id === work.id);
 				const prevWork = works[(currentIndex - 1 + works.length) % works.length];
-				window.location.href = `/${prevWork.expand?.category?.title}`;
+				window.location.href = `/${prevWork.expand?.category?.title}/${prevWork.title}`;
 			}
 		};
 
@@ -150,30 +149,19 @@
 			};
 		}
 
-		if (pageType === 'work') {
-			createImageGrid(
-				gridContainer,
-				items,
-				itemWidth,
-				itemHeight,
-				padding,
-				onClickHandlers
-			);
-		} else {
-			createCompleteGrid(
-				gridContainer,
-				items,
-				categories,
-				title,
-				itemWidth,
-				itemHeight,
-				padding,
-				onClickHandlers,
-				5,
-				5,
-				pageType
-			);
-		}
+		createCompleteGrid(
+			gridContainer,
+			items,
+			categories,
+			title,
+			itemWidth,
+			itemHeight,
+			padding,
+			onClickHandlers,
+			5,
+			5,
+			pageType
+		);
 
 		const initialMousePosition = new THREE.Vector3(0, 0, 0);
 		mouse.set(initialMousePosition.x, initialMousePosition.y);
