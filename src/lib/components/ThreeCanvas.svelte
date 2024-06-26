@@ -1,5 +1,4 @@
 <script>
-  //...other imports
   import { onMount, onDestroy } from 'svelte';
   import * as THREE from 'three';
   import { createScene } from '$lib/utils/three/scene';
@@ -64,6 +63,31 @@
     scene.add(backgroundMesh);
   }
 
+  function disposeMaterial(material) {
+    if (material.map) {
+      material.map.dispose();
+    }
+    if (material.alphaMap) {
+      material.alphaMap.dispose();
+    }
+    material.dispose();
+  }
+
+  function disposeCardMesh(cardMesh) {
+    if (cardMesh.material) disposeMaterial(cardMesh.material);
+    if (cardMesh.geometry) cardMesh.geometry.dispose();
+  }
+
+  function disposeGridContainer() {
+    if (gridContainer) {
+      gridContainer.children.forEach((child) => {
+        disposeCardMesh(child);
+      });
+      scene.remove(gridContainer);
+      gridContainer = null;
+    }
+  }
+
   function initializeGrid(items, categories, title, pageType) {
     if (!scene) return;
 
@@ -76,32 +100,49 @@
 
     const onClickHandlers = {
       work: (work) => {
+        disposeGridContainer();
         if (pageType === 'work') {
           console.log('Work card clicked:', work);
         } else {
           goto(`/${work.expand?.category?.title || 'No Category'}/${work.title}`);
         }
       },
-      category: (category) => goto(`/${category.title}`),
-      nextPage: () => console.log('Next Page Clicked'),
-      backToLanding: () => goto('/'),
-      backToCategory: () => goto(`/${currentCategory.title}`),
+      category: (category) => {
+        disposeGridContainer();
+        goto(`/${category.title}`);
+      },
+      nextPage: () => {
+        disposeGridContainer();
+        console.log('Next Page Clicked');
+      },
+      backToLanding: () => {
+        disposeGridContainer();
+        goto('/');
+      },
+      backToCategory: () => {
+        disposeGridContainer();
+        goto(`/${currentCategory.title}`);
+      },
       nextCategory: () => {
+        disposeGridContainer();
         const nextCategoryIndex = (currentCategoryIndex + 1) % categories.length;
         const nextCategory = categories[nextCategoryIndex];
         window.location.href = `/${nextCategory.title}`;
       },
       prevCategory: () => {
+        disposeGridContainer();
         const prevCategoryIndex = (currentCategoryIndex - 1 + categories.length) % categories.length;
         const prevCategory = categories[prevCategoryIndex];
         window.location.href = `/${prevCategory.title}`;
       },
       nextWork: () => {
+        disposeGridContainer();
         const currentIndex = works.findIndex(w => w.id === work.id);
         const nextWork = works[(currentIndex + 1) % works.length];
         window.location.href = `/${nextWork.expand?.category?.title || 'No Category'}/${nextWork.title}`;
       },
       prevWork: () => {
+        disposeGridContainer();
         const currentIndex = works.findIndex(w => w.id === work.id);
         const prevWork = works[(currentIndex - 1 + works.length) % works.length];
         window.location.href = `/${prevWork.expand?.category?.title || 'No Category'}/${prevWork.title}`;
@@ -109,7 +150,10 @@
     };
 
     if (pageType === 'landing') {
-      onClickHandlers.work = (work) => goto(`/${work.expand?.category?.title || 'No Category'}`);
+      onClickHandlers.work = (work) => {
+        disposeGridContainer();
+        goto(`/${work.expand?.category?.title || 'No Category'}`);
+      };
     }
 
     if (pageType === 'work') {
@@ -129,15 +173,7 @@
   }
 
   function resetScene() {
-    if (gridContainer) {
-      gridContainer.children.forEach((child) => {
-        if (child.material && child.material.map) child.material.map.dispose();
-        if (child.material) child.material.dispose();
-        if (child.geometry) child.geometry.dispose();
-      });
-      scene.remove(gridContainer);
-      gridContainer = null;
-    }
+    disposeGridContainer();
     initializeGrid(works, categories, title, pageType);
   }
 
@@ -148,7 +184,6 @@
   onMount(() => {
     let items = works;
     if (pageType === 'work' && work) {
-      // @ts-ignore
       items = [{ id: work.id, thump: work.thump }, ...work.gallery.map((item) => ({ id: work.id, thump: item }))];
     }
 
@@ -173,17 +208,14 @@
       if (renderer) renderer.dispose();
       if (gridContainer) {
         gridContainer.children.forEach((child) => {
-          if (child.material && child.material.map) child.material.map.dispose();
-          if (child.material) child.material.dispose();
-          if (child.geometry) child.geometry.dispose();
+          disposeCardMesh(child);
         });
       }
       if (scene) {
         scene.traverse(object => {
           if (object.geometry) object.geometry.dispose();
           if (object.material) {
-            if (object.material.map) object.material.map.dispose();
-            object.material.dispose();
+            disposeMaterial(object.material);
           }
         });
       }
@@ -197,17 +229,14 @@
     }
     if (gridContainer) {
       gridContainer.children.forEach((child) => {
-        if (child.material && child.material.map) child.material.map.dispose();
-        if (child.material) child.material.dispose();
-        if (child.geometry) child.geometry.dispose();
+        disposeCardMesh(child);
       });
     }
     if (scene) {
       scene.traverse(object => {
         if (object.geometry) object.geometry.dispose();
         if (object.material) {
-          if (object.material.map) object.material.map.dispose();
-          object.material.dispose();
+          disposeMaterial(object.material);
         }
       });
     }

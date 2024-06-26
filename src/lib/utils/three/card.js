@@ -140,7 +140,7 @@ function addCard(gridContainer, cardMesh, x, y) {
 
 function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
   const category = work?.expand?.category?.title || 'No Category';
-  const textureURL = getImageURL('works', work.id, work.thump, '0x600');
+  const textureURL = getImageURL('works', work.id, work.thump, '400x600');
   const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
     if (onClick) {
       onClick(work);
