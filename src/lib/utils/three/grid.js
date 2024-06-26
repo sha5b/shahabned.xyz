@@ -47,7 +47,10 @@ function createCompleteGrid(gridContainer, items, categories, title, itemWidth, 
 
   let additionalCards = [];
 
+  console.log('Current pageType:', pageType); // Add this line for debugging
+
   if (pageType === 'landing') {
+    console.log('Entering lading block'); // Add this line for debugging
     additionalCards.push({
       type: 'owner',
       title,
@@ -56,27 +59,31 @@ function createCompleteGrid(gridContainer, items, categories, title, itemWidth, 
   }
 
   if (pageType === 'category') {
+    console.log('Entering work block'); // Add this line for debugging
     const currentIndex = categories.findIndex(cat => cat.title === title);
     const nextCategory = categories[(currentIndex + 1) % categories.length];
     const prevCategory = categories[(currentIndex - 1 + categories.length) % categories.length];
 
-    additionalCards.push({ type: 'navigation', icon: 'redo', color: categories[currentIndex].color, onClick: onClickHandlers.backToLanding });
-    additionalCards.push({ type: 'navigation', icon: 'skip_next', color: categories[currentIndex].color, onClick: () => onClickHandlers.nextCategory(nextCategory) });
-    additionalCards.push({ type: 'navigation', icon: 'skip_previous', color: categories[currentIndex].color, onClick: () => onClickHandlers.prevCategory(prevCategory) });
+    additionalCards.push({ type: 'navigation', icon: 'north', color: categories[currentIndex].color, onClick: onClickHandlers.backToLanding });
+    additionalCards.push({ type: 'navigation', icon: 'east', color: categories[currentIndex].color, onClick: () => onClickHandlers.nextCategory(nextCategory) });
+    additionalCards.push({ type: 'navigation', icon: 'west', color: categories[currentIndex].color, onClick: () => onClickHandlers.prevCategory(prevCategory) });
   }
 
   if (pageType === 'work') {
+    console.log('Entering work block'); // Add this line for debugging
     const currentIndex = items.findIndex(item => item.id === title);
     const nextWork = items[(currentIndex + 1) % items.length];
     const prevWork = items[(currentIndex - 1 + items.length) % items.length];
+    console.log('Current Work Color:', items[currentIndex].expand.category.color); // Add this line for debugging
 
-    additionalCards.push({ type: 'navigation', icon: 'redo', color: items[currentIndex].expand.category.color, onClick: onClickHandlers.backToCategory });
-    additionalCards.push({ type: 'navigation', icon: 'skip_next', color: items[currentIndex].expand.category.color, onClick: () => onClickHandlers.nextWork(nextWork) });
-    additionalCards.push({ type: 'navigation', icon: 'skip_previous', color: items[currentIndex].expand.category.color, onClick: () => onClickHandlers.prevWork(prevWork) });
+
+    additionalCards.push({ type: 'navigation', icon: 'north', color: items[currentIndex].expand.category.color, onClick: onClickHandlers.backToCategory });
+    additionalCards.push({ type: 'navigation', icon: 'east', color: items[currentIndex].expand.category.color, onClick: () => onClickHandlers.nextWork(nextWork) });
+    additionalCards.push({ type: 'navigation', icon: 'west', color: items[currentIndex].expand.category.color, onClick: () => onClickHandlers.prevWork(prevWork) });
   }
 
   extendedItems = extendedItems.concat(additionalCards);
-  shuffleArray(extendedItems);
+  shuffleArray(extendedItems); 
 
   let positionIndex = 0;
 
