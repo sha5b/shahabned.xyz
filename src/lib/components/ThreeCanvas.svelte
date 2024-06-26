@@ -1,4 +1,5 @@
 <script>
+  // src/lib/components/ThreeCanvas.svelte
   import { onMount, onDestroy } from 'svelte';
   import * as THREE from 'three';
   import { createScene } from '$lib/utils/three/scene';

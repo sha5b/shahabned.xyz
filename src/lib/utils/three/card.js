@@ -1,4 +1,3 @@
-// src/lib/utils/three/card.js
 import * as THREE from 'three';
 import { getImageURL } from '$lib/utils/getURL';
 import { goto } from '$app/navigation';
@@ -29,22 +28,28 @@ function createRoundedRectTexture(width, height, radius, resolution = 1024) {
   return new THREE.CanvasTexture(canvas);
 }
 
-function createTextTexture(text, width = 1024, height = 256) {
+function createIconTexture(icon, color, width = 1024, height = 1024) {
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
   const context = canvas.getContext('2d');
 
+  // Clear the canvas
   context.clearRect(0, 0, width, height);
 
-  context.fillStyle = 'rgba(255, 255, 255, 0)';
-  context.fillRect(0, 0, width, height);
+  // Draw smaller circle with category color
+  const radius = Math.min(width, height) / 4; // Reduce the size to half
+  context.fillStyle = color;
+  context.beginPath();
+  context.arc(width / 2, height / 2, radius, 0, Math.PI * 2);
+  context.fill();
 
-  context.fillStyle = 'black';
-  context.font = '72px Oxanium';
+  // Draw smaller white icon
+  context.fillStyle = 'white';
+  context.font = `${radius}px 'Material Icons'`;
   context.textAlign = 'center';
   context.textBaseline = 'middle';
-  context.fillText(text, width / 2, height / 2);
+  context.fillText(icon, width / 2, height / 2);
 
   return new THREE.CanvasTexture(canvas);
 }
@@ -112,23 +117,23 @@ function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick =
   return cardMesh;
 }
 
-function createNavigationCardMesh(itemWidth, itemHeight, label, onClick) {
+function createNavigationCardMesh(itemWidth, itemHeight, icon, color, onClick) {
   const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick);
 
-  const textTexture = createTextTexture(label);
-  const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
-  const textMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(itemWidth, itemHeight / 4),
-    textMaterial
+  const iconTexture = createIconTexture(icon, color);
+  const iconMaterial = new THREE.MeshBasicMaterial({ map: iconTexture, transparent: true });
+  const iconMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(itemWidth, itemHeight),
+    iconMaterial
   );
 
-  textMesh.position.set(0, 0, 0.5); // Position the text slightly above the card
-  textMesh.castShadow = true;  // Enable shadow casting
+  iconMesh.position.set(0, 0, 0.5); // Position the icon slightly above the card
+  iconMesh.castShadow = true;  // Enable shadow casting
 
-  // Ensure the text mesh is not part of the interactive area of the card
-  textMesh.raycast = () => {};
+  // Ensure the icon mesh is not part of the interactive area of the card
+  iconMesh.raycast = () => {};
 
-  cardMesh.add(textMesh);
+  cardMesh.add(iconMesh);
 
   return cardMesh;
 }
@@ -165,8 +170,8 @@ function addCategoryCard(gridContainer, category, x, y, itemWidth, itemHeight, o
   addCard(gridContainer, cardMesh, x, y);
 }
 
-function addNavigationCard(gridContainer, label, x, y, itemWidth, itemHeight, onClick) {
-  const cardMesh = createNavigationCardMesh(itemWidth, itemHeight, label, onClick);
+function addNavigationCard(gridContainer, icon, color, x, y, itemWidth, itemHeight, onClick) {
+  const cardMesh = createNavigationCardMesh(itemWidth, itemHeight, icon, color, onClick);
   addCard(gridContainer, cardMesh, x, y);
 }
 
@@ -181,7 +186,7 @@ function addImageCard(gridContainer, image, x, y, itemWidth, itemHeight) {
 
 export {
   createRoundedRectTexture,
-  createTextTexture,
+  createIconTexture,
   createMaterial,
   createCardMesh,
   addCard,
