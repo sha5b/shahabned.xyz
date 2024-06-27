@@ -52,7 +52,7 @@ function createIconTexture(icon, color, width = 640, height = 1024) {
 	return new THREE.CanvasTexture(canvas);
 }
 
-function createTextTexture(text, width, height, fontSize = 24, color = 'black') {
+function createTextTexture(text, width, height, fontSize = 18, color = 'black') {
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -175,7 +175,7 @@ function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick =
     }
 
     if (text) {
-        const textTexture = createTextTexture(text, itemWidth * 100, itemHeight * 100, 24, textColor); // Use textColor here
+        const textTexture = createTextTexture(text, itemWidth * 100, itemHeight * 100, 18, textColor); // Use textColor here
         const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
         const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), textMaterial);
         
