@@ -227,10 +227,13 @@ function addCard(gridContainer, cardMesh, x, y) {
 	gridContainer.add(cardMesh);
 }
 
-function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
+function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick, pageType) {
     const category = work?.expand?.category?.title || 'No Category';
     const textureURL = getImageURL('works', work.id, work.thump, '400x600');
     const textColor = work.expand.category.color; // Assuming the color is available here
+
+    // Conditionally set the text
+    const text = pageType === 'landing' ? category : work.title;
 
     const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
         if (onClick) {
@@ -238,7 +241,7 @@ function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) 
         } else {
             goto(`/${category}/${work.title}`);
         }
-    }, null, work.title, textColor); // Pass work title as text and color
+    }, null, text, textColor); // Pass the conditional text and color
 
     addCard(gridContainer, cardMesh, x, y);
 }

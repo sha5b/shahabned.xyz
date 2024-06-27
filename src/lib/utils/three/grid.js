@@ -103,42 +103,42 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
 }
 
 function addCardToGrid(gridContainer, item, position, itemWidth, itemHeight, onClickHandlers, pageType) {
-	if (item.type === 'navigation') {
-		addNavigationCard(
-			gridContainer,
-			item.icon,
-			item.color,
-			position.x,
-			position.y,
-			itemWidth,
-			itemHeight,
-			item.onClick
-		);
-	} else if (item.type === 'owner') {
-		const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, item.onClick);
-		addCard(gridContainer, cardMesh, position.x, position.y);
-	} else if (pageType === 'work') {
-		addImageCard(
-			gridContainer,
-			item,
-			position.x,
-			position.y,
-			itemWidth,
-			itemHeight,
-		);
-	} else {
-		addWorkCard(
-			gridContainer,
-			item,
-			position.x,
-			position.y,
-			itemWidth,
-			itemHeight,
-			onClickHandlers.work
-		);
-	}
+    if (item.type === 'navigation') {
+        addNavigationCard(
+            gridContainer,
+            item.icon,
+            item.color,
+            position.x,
+            position.y,
+            itemWidth,
+            itemHeight,
+            item.onClick
+        );
+    } else if (item.type === 'owner') {
+        const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, item.onClick);
+        addCard(gridContainer, cardMesh, position.x, position.y);
+    } else if (pageType === 'work') {
+        addImageCard(
+            gridContainer,
+            item,
+            position.x,
+            position.y,
+            itemWidth,
+            itemHeight,
+        );
+    } else {
+        addWorkCard(
+            gridContainer,
+            item,
+            position.x,
+            position.y,
+            itemWidth,
+            itemHeight,
+            onClickHandlers.work,
+            pageType  // Pass pageType here
+        );
+    }
 }
-
 function addCategoriesToGrid(gridContainer, categories, positions, extendedItems, itemWidth, itemHeight, onClickHandlers) {
 	categories.forEach((category, index) => {
 		if (index + extendedItems.length >= positions.length) return;
