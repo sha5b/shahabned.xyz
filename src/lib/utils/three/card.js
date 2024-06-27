@@ -52,6 +52,48 @@ function createIconTexture(icon, color, width = 640, height = 1024) {
 	return new THREE.CanvasTexture(canvas);
 }
 
+function createTextTexture(text, width, height, fontSize = 24, color = 'black') {
+	const canvas = document.createElement('canvas');
+	canvas.width = width;
+	canvas.height = height;
+	const context = canvas.getContext('2d');
+
+	context.clearRect(0, 0, width, height);
+	context.fillStyle = color;
+	context.font = `${fontSize}px Oxanium`;
+	context.textAlign = 'left';
+	context.textBaseline = 'bottom';
+
+	// Calculate the maximum width for the text
+	const maxWidth = width - 10; // 10 pixels padding from the edge
+
+	// Split the text into lines
+	const words = text.split(' ');
+	let line = '';
+	const lines = [];
+	for (let n = 0; n < words.length; n++) {
+		const testLine = line + words[n] + ' ';
+		const metrics = context.measureText(testLine);
+		const testWidth = metrics.width;
+		if (testWidth > maxWidth && n > 0) {
+			lines.push(line);
+			line = words[n] + ' ';
+		} else {
+			line = testLine;
+		}
+	}
+	lines.push(line);
+
+	// Draw each line of text
+	let y = height - 10; // 10 pixels padding from the bottom
+	for (let i = lines.length - 1; i >= 0; i--) {
+		context.fillText(lines[i], 10, y);
+		y -= fontSize;
+	}
+
+	return new THREE.CanvasTexture(canvas);
+}
+
 function createMaterial(textureURL, itemWidth, itemHeight, radius = 8) {
 	const roundedRectTexture = createRoundedRectTexture(itemWidth * 100, itemHeight * 100, radius);
 	let material;
@@ -103,42 +145,47 @@ function createMaterial(textureURL, itemWidth, itemHeight, radius = 8) {
 function parseHexColor(hex) {
 	try {
 		return new THREE.Color(hex);
-	} catch (e) {
+	} catch {
 		console.error(`Invalid color: ${hex}`);
 		return new THREE.Color(0xffffff);
 	}
 }
 
-function createCardMesh(
-	itemWidth,
-	itemHeight,
-	textureURL,
-	radius = 8,
-	onClick = null,
-	cardColor = null
-) {
-	let material;
-	if (cardColor) {
-		const parsedColor = parseHexColor(cardColor);
-		material = new THREE.MeshPhongMaterial({
-			color: parsedColor,
-			shininess: 30,
-			transparent: true
-		});
-	} else {
-		material = createMaterial(textureURL, itemWidth, itemHeight, radius);
-	}
+function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick = null, cardColor = null, text = null) {
+    let material;
+    if (cardColor) {
+        const parsedColor = parseHexColor(cardColor);
+        material = new THREE.MeshPhongMaterial({
+            color: parsedColor,
+            shininess: 30,
+            transparent: true
+        });
+    } else {
+        material = createMaterial(textureURL, itemWidth, itemHeight, radius);
+    }
 
-	const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), material);
-	cardMesh.receiveShadow = true;
+    const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), material);
+    cardMesh.receiveShadow = true;
 
-	if (onClick) {
-		cardMesh.userData = { onClick };
-		// @ts-ignore
-		cardMesh.callback = onClick;
-	}
+    if (onClick) {
+        cardMesh.userData = { onClick };
+        // @ts-ignore
+        cardMesh.callback = onClick;
+    }
 
-	return cardMesh;
+    if (text) {
+        const textTexture = createTextTexture(text, itemWidth * 100, itemHeight * 100);
+        const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
+        const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), textMaterial);
+        
+        textMesh.position.set(0, 0, 0.1);
+        textMesh.castShadow = true;
+        textMesh.raycast = () => {};
+        
+        cardMesh.add(textMesh);
+    }
+
+    return cardMesh;
 }
 
 function createNavigationCardMesh(itemWidth, itemHeight, icon, color, onClick) {
@@ -180,30 +227,30 @@ function addCard(gridContainer, cardMesh, x, y) {
 }
 
 function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
-	const category = work?.expand?.category?.title || 'No Category';
-	const textureURL = getImageURL('works', work.id, work.thump, '400x600');
-	const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
-		if (onClick) {
-			onClick(work);
-		} else {
-			goto(`/${category}/${work.title}`);
-		}
-	});
+    const category = work?.expand?.category?.title || 'No Category';
+    const textureURL = getImageURL('works', work.id, work.thump, '400x600');
+    const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
+        if (onClick) {
+            onClick(work);
+        } else {
+            goto(`/${category}/${work.title}`);
+        }
+    }, null, work.title); // Pass work title as text
 
-	addCard(gridContainer, cardMesh, x, y);
+    addCard(gridContainer, cardMesh, x, y);
 }
 
 function addCategoryCard(gridContainer, category, x, y, itemWidth, itemHeight, onClick) {
-	const textureURL = getImageURL('categories', category.id, category.thump);
-	const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
-		if (onClick) {
-			onClick(category);
-		} else {
-			goto(`/${category.title}`);
-		}
-	});
-
-	addCard(gridContainer, cardMesh, x, y);
+    const textureURL = getImageURL('categories', category.id, category.thump, '400x600');
+    const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
+        if (onClick) {
+            onClick(category);
+        } else {
+            goto(`/${category.title}`);
+        }
+    }, null, category.title); // Pass category title as text
+	
+    addCard(gridContainer, cardMesh, x, y);
 }
 
 function addNavigationCard(gridContainer, icon, color, x, y, itemWidth, itemHeight, onClick) {
@@ -212,7 +259,7 @@ function addNavigationCard(gridContainer, icon, color, x, y, itemWidth, itemHeig
 }
 
 function addImageCard(gridContainer, image, x, y, itemWidth, itemHeight) {
-	const textureURL = getImageURL('works', image.id, image.thump);
+	const textureURL = getImageURL('works', image.id, image.thump, '400x600');
 	const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
 		console.log('Image card clicked:', image);
 	});
