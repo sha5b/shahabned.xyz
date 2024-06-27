@@ -40,6 +40,120 @@ function shuffleArray(array) {
 	}
 }
 
+function createLandingPageCards(title) {
+	return [{
+		type: 'owner',
+		title,
+		onClick: () => console.log('Owner Card Clicked')
+	}];
+}
+
+function createCategoryPageCards(categories, title, onClickHandlers) {
+	const currentIndex = categories.findIndex((cat) => cat.title === title);
+	const nextCategory = categories[(currentIndex + 1) % categories.length];
+	const prevCategory = categories[(currentIndex - 1 + categories.length) % categories.length];
+
+	return [
+		{
+			type: 'navigation',
+			icon: 'north',
+			color: categories[currentIndex].color,
+			onClick: onClickHandlers.backToLanding
+		},
+		{
+			type: 'navigation',
+			icon: 'east',
+			color: categories[currentIndex].color,
+			onClick: () => onClickHandlers.nextCategory(nextCategory)
+		},
+		{
+			type: 'navigation',
+			icon: 'west',
+			color: categories[currentIndex].color,
+			onClick: () => onClickHandlers.prevCategory(prevCategory)
+		}
+	];
+}
+
+function createWorkPageCards(items, title, onClickHandlers, work) {
+	const currentIndex = items.findIndex((item) => item.id === title);
+	const nextWork = items[(currentIndex + 1) % items.length];
+	const prevWork = items[(currentIndex - 1 + items.length) % items.length];
+
+	return [
+		{
+			type: 'navigation',
+			icon: 'north',
+			color: work.expand.category.color,
+			onClick: onClickHandlers.backToCategory
+		},
+		{
+			type: 'navigation',
+			icon: 'east',
+			color: work.expand.category.color,
+			onClick: () => onClickHandlers.nextWork(nextWork)
+		},
+		{
+			type: 'navigation',
+			icon: 'west',
+			color: work.expand.category.color,
+			onClick: () => onClickHandlers.prevWork(prevWork)
+		}
+	];
+}
+
+function addCardToGrid(gridContainer, item, position, itemWidth, itemHeight, onClickHandlers, pageType) {
+	if (item.type === 'navigation') {
+		addNavigationCard(
+			gridContainer,
+			item.icon,
+			item.color,
+			position.x,
+			position.y,
+			itemWidth,
+			itemHeight,
+			item.onClick
+		);
+	} else if (item.type === 'owner') {
+		const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, item.onClick);
+		addCard(gridContainer, cardMesh, position.x, position.y);
+	} else if (pageType === 'work') {
+		addImageCard(
+			gridContainer,
+			item,
+			position.x,
+			position.y,
+			itemWidth,
+			itemHeight,
+		);
+	} else {
+		addWorkCard(
+			gridContainer,
+			item,
+			position.x,
+			position.y,
+			itemWidth,
+			itemHeight,
+			onClickHandlers.work
+		);
+	}
+}
+
+function addCategoriesToGrid(gridContainer, categories, positions, extendedItems, itemWidth, itemHeight, onClickHandlers) {
+	categories.forEach((category, index) => {
+		if (index + extendedItems.length >= positions.length) return;
+		addCategoryCard(
+			gridContainer,
+			category,
+			positions[index + extendedItems.length].x,
+			positions[index + extendedItems.length].y,
+			itemWidth,
+			itemHeight,
+			onClickHandlers.category
+		);
+	});
+}
+
 function createCompleteGrid(
 	gridContainer,
 	items,
@@ -58,155 +172,36 @@ function createCompleteGrid(
 	const totalCards = gridCols * gridRows;
 	const positions = generatePositions(totalCards, itemWidth, itemHeight, padding);
 
-	let extendedItems = [];
+	let extendedItems = [...items];
 	while (extendedItems.length < totalCards) {
 		extendedItems = extendedItems.concat(items);
 	}
 	extendedItems = extendedItems.slice(0, totalCards);
 
 	let additionalCards = [];
-
-	if (pageType === 'landing') {
-		additionalCards.push({
-			type: 'owner',
-			title,
-			onClick: () => console.log('Owner Card Clicked')
-		});
-	}
-
-	if (pageType === 'category') {
-		const currentIndex = categories.findIndex((cat) => cat.title === title);
-		const nextCategory = categories[(currentIndex + 1) % categories.length];
-		const prevCategory = categories[(currentIndex - 1 + categories.length) % categories.length];
-
-		additionalCards.push({
-			type: 'navigation',
-			icon: 'north',
-			color: categories[currentIndex].color,
-			onClick: onClickHandlers.backToLanding
-		});
-		additionalCards.push({
-			type: 'navigation',
-			icon: 'east',
-			color: categories[currentIndex].color,
-			onClick: () => onClickHandlers.nextCategory(nextCategory)
-		});
-		additionalCards.push({
-			type: 'navigation',
-			icon: 'west',
-			color: categories[currentIndex].color,
-			onClick: () => onClickHandlers.prevCategory(prevCategory)
-		});
-	}
-
-	if (pageType === 'work') {
-		const currentIndex = items.findIndex((item) => item.id === title);
-		const nextWork = items[(currentIndex + 1) % items.length];
-		const prevWork = items[(currentIndex - 1 + items.length) % items.length];
-
-		additionalCards.push({
-			type: 'navigation',
-			icon: 'north',
-			color: work.expand.category.color,
-			onClick: onClickHandlers.backToCategory
-		});
-		additionalCards.push({
-			type: 'navigation',
-			icon: 'east',
-			color: work.expand.category.color,
-			onClick: () => onClickHandlers.nextWork(nextWork)
-		});
-		additionalCards.push({
-			type: 'navigation',
-			icon: 'west',
-			color: work.expand.category.color,
-			onClick: () => onClickHandlers.prevWork(prevWork)
-		});
-
-		extendedItems = extendedItems.concat(additionalCards);
-		shuffleArray(extendedItems);
-
-		let positionIndex = 0;
-
-		extendedItems.forEach((item) => {
-			if (positionIndex >= positions.length) return;
-
-			if (item.type === 'navigation') {
-				addNavigationCard(
-					gridContainer,
-					item.icon,
-					item.color,
-					positions[positionIndex].x,
-					positions[positionIndex].y,
-					itemWidth,
-					itemHeight,
-					item.onClick
-				);
-			} else {
-				addImageCard(
-					gridContainer,
-					item,
-					positions[positionIndex].x,
-					positions[positionIndex].y,
-					itemWidth,
-					itemHeight
-				);
-			}
-
-			positionIndex++;
-		});
-		return;
+	switch (pageType) {
+		case 'landing':
+			additionalCards = createLandingPageCards(title);
+			break;
+		case 'category':
+			additionalCards = createCategoryPageCards(categories, title, onClickHandlers);
+			break;
+		case 'work':
+			additionalCards = createWorkPageCards(items, title, onClickHandlers, work);
+			break;
 	}
 
 	extendedItems = extendedItems.concat(additionalCards);
 	shuffleArray(extendedItems);
 
-	let positionIndex = 0;
-
-	extendedItems.forEach((item) => {
-		if (positionIndex >= positions.length) return;
-
-		if (item.type === 'navigation') {
-			addNavigationCard(
-				gridContainer,
-				item.icon,
-				item.color,
-				positions[positionIndex].x,
-				positions[positionIndex].y,
-				itemWidth,
-				itemHeight,
-				item.onClick
-			);
-		} else if (item.type === 'owner') {
-			const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, item.onClick);
-			addCard(gridContainer, cardMesh, positions[positionIndex].x, positions[positionIndex].y);
-		} else {
-			addWorkCard(
-				gridContainer,
-				item,
-				positions[positionIndex].x,
-				positions[positionIndex].y,
-				itemWidth,
-				itemHeight,
-				onClickHandlers.work
-			);
-		}
-		positionIndex++;
+	extendedItems.forEach((item, index) => {
+		if (index >= positions.length) return;
+		addCardToGrid(gridContainer, item, positions[index], itemWidth, itemHeight, onClickHandlers, pageType);
 	});
 
-	categories.forEach((category) => {
-		if (positionIndex >= positions.length) return;
-		addCategoryCard(
-			gridContainer,
-			category,
-			positions[positionIndex].x,
-			positions[positionIndex].y,
-			itemWidth,
-			itemHeight,
-			onClickHandlers.category
-		);
-		positionIndex++;
-	});
+	if (pageType !== 'work') {
+		addCategoriesToGrid(gridContainer, categories, positions, extendedItems, itemWidth, itemHeight, onClickHandlers);
+	}
 }
 
 function wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeight, padding) {
