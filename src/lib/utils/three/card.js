@@ -51,8 +51,7 @@ function createIconTexture(icon, color, width = 640, height = 1024) {
 
 	return new THREE.CanvasTexture(canvas);
 }
-
-function createTextTexture(text, width, height, fontSize = 18, color = 'black') {
+function createTextTexture(title, date, type, format, width, height, fontSize = 18, color = 'black', pageType = 'category') {
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -64,31 +63,63 @@ function createTextTexture(text, width, height, fontSize = 18, color = 'black') 
     context.textAlign = 'left';
     context.textBaseline = 'bottom';
 
-    // Calculate the maximum width for the text
-    const maxWidth = width - 10; // 10 pixels padding from the edge
+    // Function to draw text with specified alignment and position
+    const drawText = (text, x, y, align = 'left', baseline = 'bottom', bold = false) => {
+        if (typeof text !== 'string') return;
 
-    // Split the text into lines
-    const words = text.split(' ');
-    let line = '';
-    const lines = [];
-    for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + ' ';
-        const metrics = context.measureText(testLine);
-        const testWidth = metrics.width;
-        if (testWidth > maxWidth && n > 0) {
-            lines.push(line);
-            line = words[n] + ' ';
-        } else {
-            line = testLine;
+        context.textAlign = align;
+        context.textBaseline = baseline;
+        context.font = bold ? `bold ${fontSize}px Oxanium` : `${fontSize}px Oxanium`;
+
+        // Calculate the maximum width for the text
+        const maxWidth = width - 20; // 10 pixels padding from both edges
+
+        // Split the text into lines
+        const words = text.split(' ');
+        let line = '';
+        const lines = [];
+        for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = context.measureText(testLine);
+            const testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {
+                lines.push(line);
+                line = words[n] + ' ';
+            } else {
+                line = testLine;
+            }
+        }
+        lines.push(line);
+
+        // Draw each line of text
+        for (let i = 0; i < lines.length; i++) {
+            context.fillText(lines[i], x, y);
+            y += fontSize;
+        }
+    };
+
+    if (pageType !== 'landing') {
+        // Format date
+        const formattedDate = date ? new Intl.DateTimeFormat('en-US', {
+            year: 'numeric', month: 'short'
+        }).format(new Date(date)) : '';
+
+        // Draw date at top left and type at top right
+        if (formattedDate || type) {
+            drawText(formattedDate, 10, 10 + fontSize, 'left', 'top');
+            drawText(type, width - 10, 10 + fontSize, 'right', 'top');
+        }
+
+        // Draw format above title with some padding
+        const paddingBetweenFormatAndTitle = 20;
+        if (format) {
+            drawText(format, 10, height - 40 - paddingBetweenFormatAndTitle - fontSize, 'left', 'bottom');
         }
     }
-    lines.push(line);
 
-    // Draw each line of text
-    let y = height - 10; // 10 pixels padding from the bottom
-    for (let i = lines.length - 1; i >= 0; i--) {
-        context.fillText(lines[i], 10, y);
-        y -= fontSize;
+    // Draw title at bottom left in bold
+    if (title) {
+        drawText(title, 10, height - 40, 'left', 'bottom', true);
     }
 
     return new THREE.CanvasTexture(canvas);
@@ -152,7 +183,7 @@ function parseHexColor(hex) {
 	}
 }
 
-function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick = null, cardColor = null, text = null, textColor = 'black') {
+function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick = null, cardColor = null, mainText = null, mainTextColor = 'black', date = '', type = '', format = '', pageType = 'category') {
     let material;
     if (cardColor) {
         const parsedColor = parseHexColor(cardColor);
@@ -174,20 +205,20 @@ function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick =
         cardMesh.callback = onClick;
     }
 
-    if (text) {
-        const textTexture = createTextTexture(text, itemWidth * 100, itemHeight * 100, 18, textColor); // Use textColor here
-        const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
-        const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), textMaterial);
-        
-        textMesh.position.set(0, 0, 0.1);
-        textMesh.castShadow = true;
-        textMesh.raycast = () => {};
-        
-        cardMesh.add(textMesh);
-    }
+    // Create the combined text texture
+    const textTexture = createTextTexture(mainText || '', date || '', type || '', format || '', itemWidth * 100, itemHeight * 100, 18, mainTextColor, pageType);
+    const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
+    const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), textMaterial);
+
+    textMesh.position.set(0, 0, 0.1);
+    textMesh.castShadow = true;
+    textMesh.raycast = () => {};
+
+    cardMesh.add(textMesh);
 
     return cardMesh;
 }
+
 
 function createNavigationCardMesh(itemWidth, itemHeight, icon, color, onClick) {
 	const radius = 8;
@@ -232,19 +263,33 @@ function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick, 
     const textureURL = getImageURL('works', work.id, work.thump, '400x600');
     const textColor = work.expand.category.color; // Assuming the color is available here
 
-    // Conditionally set the text
-    const text = pageType === 'landing' ? category : work.title;
+    // Conditionally set the main text
+    const mainText = pageType === 'landing' ? category : work.title;
 
-    const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
-        if (onClick) {
-            onClick(work);
-        } else {
-            goto(`/${category}/${work.title}`);
-        }
-    }, null, text, textColor); // Pass the conditional text and color
+    const cardMesh = createCardMesh(
+        itemWidth,
+        itemHeight,
+        textureURL,
+        8,
+        () => {
+            if (onClick) {
+                onClick(work);
+            } else {
+                goto(`/${category}/${work.title}`);
+            }
+        },
+        null,
+        mainText || '',
+        textColor,
+        work.date || '', // date at the top left
+        work.type || '', // type at the top right
+        work.format || '', // format above the title
+        pageType // Pass pageType to createCardMesh
+    );
 
     addCard(gridContainer, cardMesh, x, y);
 }
+
 
 function addCategoryCard(gridContainer, category, x, y, itemWidth, itemHeight, onClick) {
     const textureURL = getImageURL('category', category.id, category.thump, '400x600');
