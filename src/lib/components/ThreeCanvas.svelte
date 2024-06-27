@@ -22,6 +22,8 @@
 	export let title = '';
 	export let pageType = 'landing';
 
+
+
 	let scene, camera, renderer;
 	let gridContainer;
 	let canvasContainer;
@@ -160,7 +162,8 @@
 			onClickHandlers,
 			5,
 			5,
-			pageType
+			pageType,
+			work
 		);
 
 		const initialMousePosition = new THREE.Vector3(0, 0, 0);

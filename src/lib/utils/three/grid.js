@@ -51,7 +51,8 @@ function createCompleteGrid(
 	onClickHandlers = {},
 	minCols = 5,
 	minRows = 5,
-	pageType
+	pageType,
+	work
 ) {
 	const { gridCols, gridRows } = calculateGridSize(items, minCols, minRows);
 	const totalCards = gridCols * gridRows;
@@ -103,25 +104,22 @@ function createCompleteGrid(
 		const nextWork = items[(currentIndex + 1) % items.length];
 		const prevWork = items[(currentIndex - 1 + items.length) % items.length];
 
-		const color = items[currentIndex]?.expand?.category?.color || '#000000'; // Use default black color if not available
-		console.log(color);
-		console.log(items[currentIndex]);
 		additionalCards.push({
 			type: 'navigation',
 			icon: 'north',
-			color,
+			color: work.expand.category.color,
 			onClick: onClickHandlers.backToCategory
 		});
 		additionalCards.push({
 			type: 'navigation',
 			icon: 'east',
-			color,
+			color: work.expand.category.color,
 			onClick: () => onClickHandlers.nextWork(nextWork)
 		});
 		additionalCards.push({
 			type: 'navigation',
 			icon: 'west',
-			color,
+			color: work.expand.category.color,
 			onClick: () => onClickHandlers.prevWork(prevWork)
 		});
 
