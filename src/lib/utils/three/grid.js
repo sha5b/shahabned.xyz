@@ -5,7 +5,7 @@ import {
 	addCategoryCard,
 	addNavigationCard,
 	createCardMesh,
-	addImageCard
+	addImageCard,
 } from '$lib/utils/three/card';
 
 function getGridPositions(index, cols, itemWidth, itemHeight, padding) {

@@ -37,7 +37,7 @@ function createIconTexture(icon, color, width = 640, height = 1024) {
 
 	context.clearRect(0, 0, width, height);
 
-	const radius = Math.min(width, height) / 4;
+	const radius = Math.min(width, height) / 6;
 	context.fillStyle = 'black';
 	context.beginPath();
 	context.arc(width / 2, height / 2, radius, 0, Math.PI * 2);

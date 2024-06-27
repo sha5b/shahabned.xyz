@@ -13,6 +13,7 @@
 		cleanupGrid
 	} from '$lib/utils/three/grid';
 	import { animate, rotateCardTowardsMouse } from '$lib/utils/three/animation';
+	
 	import { addEventListeners, removeEventListeners } from '$lib/utils/three/eventHandlers';
 	import { goto } from '$app/navigation';
 
