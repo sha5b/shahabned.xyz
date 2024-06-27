@@ -53,46 +53,47 @@ function createIconTexture(icon, color, width = 640, height = 1024) {
 }
 
 function createTextTexture(text, width, height, fontSize = 24, color = 'black') {
-	const canvas = document.createElement('canvas');
-	canvas.width = width;
-	canvas.height = height;
-	const context = canvas.getContext('2d');
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d');
 
-	context.clearRect(0, 0, width, height);
-	context.fillStyle = color;
-	context.font = `${fontSize}px Oxanium`;
-	context.textAlign = 'left';
-	context.textBaseline = 'bottom';
+    context.clearRect(0, 0, width, height);
+    context.fillStyle = color;
+    context.font = `${fontSize}px Oxanium`;
+    context.textAlign = 'left';
+    context.textBaseline = 'bottom';
 
-	// Calculate the maximum width for the text
-	const maxWidth = width - 10; // 10 pixels padding from the edge
+    // Calculate the maximum width for the text
+    const maxWidth = width - 10; // 10 pixels padding from the edge
 
-	// Split the text into lines
-	const words = text.split(' ');
-	let line = '';
-	const lines = [];
-	for (let n = 0; n < words.length; n++) {
-		const testLine = line + words[n] + ' ';
-		const metrics = context.measureText(testLine);
-		const testWidth = metrics.width;
-		if (testWidth > maxWidth && n > 0) {
-			lines.push(line);
-			line = words[n] + ' ';
-		} else {
-			line = testLine;
-		}
-	}
-	lines.push(line);
+    // Split the text into lines
+    const words = text.split(' ');
+    let line = '';
+    const lines = [];
+    for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = context.measureText(testLine);
+        const testWidth = metrics.width;
+        if (testWidth > maxWidth && n > 0) {
+            lines.push(line);
+            line = words[n] + ' ';
+        } else {
+            line = testLine;
+        }
+    }
+    lines.push(line);
 
-	// Draw each line of text
-	let y = height - 10; // 10 pixels padding from the bottom
-	for (let i = lines.length - 1; i >= 0; i--) {
-		context.fillText(lines[i], 10, y);
-		y -= fontSize;
-	}
+    // Draw each line of text
+    let y = height - 10; // 10 pixels padding from the bottom
+    for (let i = lines.length - 1; i >= 0; i--) {
+        context.fillText(lines[i], 10, y);
+        y -= fontSize;
+    }
 
-	return new THREE.CanvasTexture(canvas);
+    return new THREE.CanvasTexture(canvas);
 }
+
 
 function createMaterial(textureURL, itemWidth, itemHeight, radius = 8) {
 	const roundedRectTexture = createRoundedRectTexture(itemWidth * 100, itemHeight * 100, radius);
@@ -151,7 +152,7 @@ function parseHexColor(hex) {
 	}
 }
 
-function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick = null, cardColor = null, text = null) {
+function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick = null, cardColor = null, text = null, textColor = 'black') {
     let material;
     if (cardColor) {
         const parsedColor = parseHexColor(cardColor);
@@ -174,7 +175,7 @@ function createCardMesh(itemWidth, itemHeight, textureURL, radius = 8, onClick =
     }
 
     if (text) {
-        const textTexture = createTextTexture(text, itemWidth * 100, itemHeight * 100);
+        const textTexture = createTextTexture(text, itemWidth * 100, itemHeight * 100, 24, textColor); // Use textColor here
         const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
         const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), textMaterial);
         
@@ -229,13 +230,15 @@ function addCard(gridContainer, cardMesh, x, y) {
 function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
     const category = work?.expand?.category?.title || 'No Category';
     const textureURL = getImageURL('works', work.id, work.thump, '400x600');
+    const textColor = work.expand.category.color; // Assuming the color is available here
+
     const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
         if (onClick) {
             onClick(work);
         } else {
             goto(`/${category}/${work.title}`);
         }
-    }, null, work.title); // Pass work title as text
+    }, null, work.title, textColor); // Pass work title as text and color
 
     addCard(gridContainer, cardMesh, x, y);
 }
