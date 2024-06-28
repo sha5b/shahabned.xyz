@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { getImageURL } from '$lib/utils/getURL';
 import { goto } from '$app/navigation';
-import { createIconTexture, createTextTexture } from '$lib/utils/three/text';
+import { createIconTexture, createTextTexture, createWorkDetailTextTexture } from '$lib/utils/three/text';
 
 function createRoundedRectTexture(width, height, radius, resolution = 1024, color = '#f5f5f5') {
     const canvas = document.createElement('canvas');
@@ -221,17 +221,17 @@ function addImageCard(gridContainer, image, x, y, itemWidth, itemHeight) {
 }
 
 function addWorkDetailsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
-    const cardMesh = createCardMesh(
-        itemWidth,
-        itemHeight,
-        null,
-        8,
-        onClick,
-        '#d4d4d4',
-        'Work Details',
-        'black'
-    );
-    addCard(gridContainer, cardMesh, x, y);
+    const textTexture = createWorkDetailTextTexture(work, itemWidth * 100, itemHeight * 100, 18, 'black');
+    const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: false });
+    const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), textMaterial);
+
+    const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), textMaterial);
+    cardMesh.position.set(x, y, 0.1);
+    cardMesh.castShadow = true;
+    cardMesh.raycast = () => {};
+
+    cardMesh.add(textMesh);
+    gridContainer.add(cardMesh);
 }
 
 function addSynopsisCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {

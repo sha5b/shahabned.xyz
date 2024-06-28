@@ -23,8 +23,6 @@
 	export let title = '';
 	export let pageType = 'landing';
 
-
-
 	let scene, camera, renderer;
 	let gridContainer;
 	let canvasContainer;

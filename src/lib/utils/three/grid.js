@@ -106,7 +106,7 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
         },
         {
             type: 'workdetails',
-            text: 'Details about the work',
+            work,
             onClick: () => console.log('Work Details Clicked')
         },
         {
@@ -134,7 +134,6 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
 
     return cards;
 }
-
 function addCardToGrid(gridContainer, item, position, itemWidth, itemHeight, onClickHandlers, pageType) {
     if (item.type === 'navigation') {
         addNavigationCard(
@@ -153,7 +152,7 @@ function addCardToGrid(gridContainer, item, position, itemWidth, itemHeight, onC
     } else if (item.type === 'workdetails') {
         addWorkDetailsCard(
             gridContainer,
-            item.text,
+            item.work,
             position.x,
             position.y,
             itemWidth,
