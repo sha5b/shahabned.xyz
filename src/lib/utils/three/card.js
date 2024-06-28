@@ -222,7 +222,7 @@ function addImageCard(gridContainer, image, x, y, itemWidth, itemHeight) {
 
 function addWorkDetailsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
     const textTexture = createWorkDetailTextTexture(work, itemWidth * 100, itemHeight * 100, 18, 'black');
-    const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: false });
+    const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
     const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), textMaterial);
 
     const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), textMaterial);
