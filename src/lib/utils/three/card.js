@@ -220,6 +220,66 @@ function addImageCard(gridContainer, image, x, y, itemWidth, itemHeight) {
     addCard(gridContainer, cardMesh, x, y);
 }
 
+function addWorkDetailsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
+    const cardMesh = createCardMesh(
+        itemWidth,
+        itemHeight,
+        null,
+        8,
+        onClick,
+        '#d4d4d4',
+        'Work Details',
+        'black'
+    );
+    addCard(gridContainer, cardMesh, x, y);
+}
+
+function addSynopsisCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
+    const cardMesh = createCardMesh(
+        itemWidth,
+        itemHeight,
+        null,
+        8,
+        onClick,
+        '#d4d4d4',
+        'Synopsis',
+        'black',
+        '',
+        '',
+        '',
+        'category',
+    );
+    addCard(gridContainer, cardMesh, x, y);
+}
+
+function addColabsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
+    const cardMesh = createCardMesh(
+        itemWidth,
+        itemHeight,
+        null,
+        8,
+        onClick,
+        '#d4d4d4',
+        'Collaborations',
+        'black'
+    );
+    addCard(gridContainer, cardMesh, x, y);
+}
+
+function addExhibitionsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
+    const cardMesh = createCardMesh(
+        itemWidth,
+        itemHeight,
+        null,
+        8,
+        onClick,
+        '#d4d4d4',
+        'Exhibitions',
+        'black'
+    );
+    addCard(gridContainer, cardMesh, x, y);
+}
+
 export {
     createRoundedRectTexture,
     createMaterial,
@@ -228,5 +288,9 @@ export {
     addWorkCard,
     addCategoryCard,
     addNavigationCard,
-    addImageCard
+    addImageCard,
+    addWorkDetailsCard,
+    addSynopsisCard,
+    addColabsCard,
+    addExhibitionsCard
 };
