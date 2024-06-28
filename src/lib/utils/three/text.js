@@ -188,12 +188,14 @@ export function createWorkDetailTextTexture(
 	}
 
 	if (work.dimension) {
-		drawText(context, `Dimension: ${work.dimension}`, 10, y, width - 20, fontSize, 'left', 'top');
+		drawText(context, `${work.dimension}`, 10, y, width - 20, fontSize, 'left', 'top');
 		y += paddingBetweenLines;
 	}
 
-	let titleY = height - 40;
+	// Calculate title position
+	let titleY = height ;
 
+	// Format
 	if (work.format) {
 		const formatLines = wrapText(context, `Format: ${work.format}`, width - 20);
 		titleY -= formatLines.length * (fontSize + 5);
@@ -201,9 +203,10 @@ export function createWorkDetailTextTexture(
 			drawText(context, line, 10, titleY, width - 20, fontSize, 'left', 'top');
 			titleY += paddingBetweenLines;
 		});
-		titleY -= formatLines.length * (fontSize + 5); // Reset titleY to initial position after drawing format
+		titleY -= formatLines.length * (fontSize + 5); // Adjust titleY to account for format lines
 	}
 
+	// Title
 	if (work.title) {
 		const titleLines = wrapText(context, work.title, width - 20);
 		titleY -= titleLines.length * (fontSize + 5);
@@ -215,6 +218,8 @@ export function createWorkDetailTextTexture(
 
 	return createTextureFromCanvas(canvas);
 }
+
+
 
 export function createSynopsisTextTexture(
 	synopsis,
