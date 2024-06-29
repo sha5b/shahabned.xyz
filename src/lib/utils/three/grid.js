@@ -107,6 +107,7 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
         {
             type: 'workdetails',
             work,
+            color: work.expand.category.color,
             onClick: () => console.log('Work Details Clicked')
         }
     ];
@@ -115,6 +116,7 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
         cards.push({
             type: 'synopsis',
             text: work.synopsis,
+            color: work.expand.category.color,
             onClick: () => console.log('Synopsis Clicked')
         });
     }
@@ -123,6 +125,7 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
         cards.push({
             type: 'colabs',
             text: work.expand.colab,
+            color: work.expand.category.color,
             onClick: () => console.log('Collaborations Clicked')
         });
     }
@@ -131,6 +134,7 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
         cards.push({
             type: 'exhibitions',
             text: work.expand.exhibitions,
+            color: work.expand.category.color,
             onClick: () => console.log('Exhibitions Clicked')
         });
     }

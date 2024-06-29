@@ -120,6 +120,7 @@ function createCardMesh(
 
 	if (onClick) {
 		cardMesh.userData = { onClick };
+		// @ts-ignore
 		cardMesh.callback = onClick;
 	}
 
