@@ -110,7 +110,7 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
             onClick: () => console.log('Work Details Clicked')
         }
     ];
-    console.log(work.expand)
+
     if (work.synopsis) {
         cards.push({
             type: 'synopsis',

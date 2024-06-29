@@ -157,8 +157,6 @@ export function createWorkDetailTextTexture(
 ) {
 	const { canvas, context } = createHighResolutionCanvas(width, height);
 
-	console.log('Workdetail text created')
-
 	context.fillStyle = color;
 	context.font = `${fontSize}px Oxanium`;
 	context.textAlign = 'left';
@@ -229,7 +227,6 @@ export function createSynopsisTextTexture(
 	color = 'black'
 ) {
 	const { canvas, context } = createHighResolutionCanvas(width, height);
-	console.log('Synopsis text created')
 
 	context.fillStyle = color;
 	context.font = `${fontSize}px Oxanium`;
@@ -250,8 +247,6 @@ export function createExhibitionsTextTexture(
 	color = 'black'
 ) {
 	const { canvas, context } = createHighResolutionCanvas(width, height);
-	console.log('Exhibiton text created')
-
 
 	context.fillStyle = color;
 	context.font = `${fontSize}px Oxanium`;
@@ -285,7 +280,6 @@ export function createColabsTextTexture(
 	color = 'black'
 ) {
 	const { canvas, context } = createHighResolutionCanvas(width, height);
-	console.log('Colab text created')
 
 	context.fillStyle = color;
 	context.font = `${fontSize}px Oxanium`;
