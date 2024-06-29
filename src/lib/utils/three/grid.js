@@ -108,15 +108,18 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
             type: 'workdetails',
             work,
             onClick: () => console.log('Work Details Clicked')
-        },
-        {
-            type: 'synopsis',
-            text: work.synopsis || 'No synopsis available',
-            onClick: () => console.log('Synopsis Clicked')
         }
     ];
 
-    if (work.colab) {
+    if (work.synopsis) {
+        cards.push({
+            type: 'synopsis',
+            text: work.synopsis,
+            onClick: () => console.log('Synopsis Clicked')
+        });
+    }
+
+    if (work.colab && work.colab.length > 0) {
         cards.push({
             type: 'colabs',
             text: 'Collaborations',
@@ -124,7 +127,7 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
         });
     }
 
-    if (work.exhibitions) {
+    if (work.exhibitions && work.exhibitions.length > 0) {
         cards.push({
             type: 'exhibitions',
             text: 'Exhibitions',
@@ -134,6 +137,7 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
 
     return cards;
 }
+
 function addCardToGrid(gridContainer, item, position, itemWidth, itemHeight, onClickHandlers, pageType) {
     if (item.type === 'navigation') {
         addNavigationCard(

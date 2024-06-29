@@ -1,3 +1,4 @@
+// src/lib/utils/three/text.js
 import * as THREE from 'three';
 
 const scaleFactor = 4;
@@ -112,7 +113,7 @@ export function createTextTexture(
 	height,
 	fontSize = 18,
 	color = 'black',
-	pageType = 'category'
+	pageType = 'work'
 ) {
 	const { canvas, context } = createHighResolutionCanvas(width, height);
 
@@ -171,7 +172,7 @@ export function createWorkDetailTextTexture(
 		const formattedDate = work.date
 			? new Intl.DateTimeFormat('en-US', {
 					year: 'numeric',
-					month: 'short'
+					month: 'long'
 				}).format(new Date(work.date))
 			: '';
 		drawText(context, formattedDate, 10, y, width - 20, fontSize, 'left', 'top');
