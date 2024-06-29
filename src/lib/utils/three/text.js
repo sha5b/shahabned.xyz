@@ -1,7 +1,7 @@
 // src/lib/utils/three/text.js
 import * as THREE from 'three';
 
-const scaleFactor = 4;
+const scaleFactor = 2;
 
 function createHighResolutionCanvas(width, height) {
 	const canvas = document.createElement('canvas');
@@ -67,6 +67,47 @@ function drawText(
 	}
 }
 
+function drawTextWithHyperlink(
+	context,
+	text,
+	x,
+	y,
+	width,
+	fontSize = 18,
+	align = 'left',
+	baseline = 'bottom',
+	bold = false
+) {
+	if (typeof text !== 'string') return;
+
+	context.textAlign = align;
+	context.textBaseline = baseline;
+	context.font = bold ? `bold ${fontSize}px Oxanium` : `${fontSize}px Oxanium`;
+
+	const maxWidth = width - 20;
+	const words = text.split(' ');
+	let line = '';
+	const lines = [];
+
+	for (let n = 0; n < words.length; n++) {
+		const testLine = line + words[n] + ' ';
+		const metrics = context.measureText(testLine);
+		const testWidth = metrics.width;
+		if (testWidth > maxWidth && n > 0) {
+			lines.push(line);
+			line = words[n] + ' ';
+		} else {
+			line = testLine;
+		}
+	}
+	lines.push(line);
+
+	context.fillStyle = 'blue';
+	for (let i = 0; i < lines.length; i++) {
+		context.fillText(lines[i], x, y);
+		y += fontSize;
+	}
+}
 function wrapText(context, text, maxWidth) {
 	const words = text.split(' ');
 	let line = '';
@@ -92,7 +133,13 @@ export function createIconTexture(icon, color, width = 640, height = 1024) {
 	const radius = Math.min(canvas.width, canvas.height) / (6 * scaleFactor);
 	context.fillStyle = 'black';
 	context.beginPath();
-	context.arc(canvas.width / (2 * scaleFactor), canvas.height / (2 * scaleFactor), radius, 0, Math.PI * 2);
+	context.arc(
+		canvas.width / (2 * scaleFactor),
+		canvas.height / (2 * scaleFactor),
+		radius,
+		0,
+		Math.PI * 2
+	);
 	context.fill();
 
 	context.fillStyle = color;
@@ -137,7 +184,16 @@ export function createTextTexture(
 
 		const paddingBetweenFormatAndTitle = 20;
 		if (format) {
-			drawText(context, format, 10, height - 40 - paddingBetweenFormatAndTitle - fontSize, width, fontSize, 'left', 'bottom');
+			drawText(
+				context,
+				format,
+				10,
+				height - 40 - paddingBetweenFormatAndTitle - fontSize,
+				width,
+				fontSize,
+				'left',
+				'bottom'
+			);
 		}
 	}
 
@@ -160,64 +216,59 @@ export function createWorkDetailTextTexture(
 	context.fillStyle = color;
 	context.font = `${fontSize}px Oxanium`;
 	context.textAlign = 'left';
-	context.textBaseline = 'top';
+	context.textBaseline = 'bottom';
 
 	const paddingBetweenLines = fontSize + 5;
-	let y = 10;
+	let y = 10 + fontSize;
 
-	if (work.date) {
-		const formattedDate = work.date
-			? new Intl.DateTimeFormat('en-US', {
-					year: 'numeric',
-					month: 'long'
-				}).format(new Date(work.date))
-			: '';
-		drawText(context, formattedDate, 10, y, width - 20, fontSize, 'left', 'top');
-	}
+	const formattedDate = work.date
+		? new Intl.DateTimeFormat('en-US', {
+				year: 'numeric',
+				month: 'long'
+			}).format(new Date(work.date))
+		: '';
 
-	if (work.type) {
-		drawText(context, work.type, width - 10, y, width - 20, fontSize, 'right', 'top');
+	if (formattedDate || work.type) {
+		drawText(context, formattedDate, 10, y, width, fontSize, 'left', 'top');
+		drawText(context, work.type, width - 10, y, width, fontSize, 'right', 'top');
+		y += paddingBetweenLines;
 	}
-	y += paddingBetweenLines;
 
 	if (work.edition) {
-		drawText(context, `Edition: ${work.edition}`, 10, y, width - 20, fontSize, 'left', 'top');
+		drawText(context, `Edition: ${work.edition}`, 10, y, width, fontSize, 'left', 'top');
 		y += paddingBetweenLines;
 	}
 
 	if (work.dimension) {
-		drawText(context, `${work.dimension}`, 10, y, width - 20, fontSize, 'left', 'top');
+		drawText(context, `${work.dimension}`, 10, y, width, fontSize, 'left', 'top');
 		y += paddingBetweenLines;
 	}
 
-	// Calculate title position
-	let titleY = height ;
-
-	// Format
+	const paddingBetweenFormatAndTitle = 20;
 	if (work.format) {
-		const formatLines = wrapText(context, `Format: ${work.format}`, width - 20);
-		titleY -= formatLines.length * (fontSize + 5);
-		formatLines.forEach(line => {
-			drawText(context, line, 10, titleY, width - 20, fontSize, 'left', 'top');
-			titleY += paddingBetweenLines;
-		});
-		titleY -= formatLines.length * (fontSize + 5); // Adjust titleY to account for format lines
+		drawText(
+			context,
+			`Format: ${work.format}`,
+			10,
+			height - 40 - paddingBetweenFormatAndTitle - fontSize,
+			width,
+			fontSize,
+			'left',
+			'bottom'
+		);
 	}
 
-	// Title
 	if (work.title) {
 		const titleLines = wrapText(context, work.title, width - 20);
-		titleY -= titleLines.length * (fontSize + 5);
-		titleLines.forEach(line => {
-			drawText(context, line, 10, titleY, width - 20, fontSize, 'left', 'top', true);
+		let titleY = height - 40 - (titleLines.length - 1) * (fontSize + 5);
+		titleLines.forEach((line) => {
+			drawText(context, line, 10, titleY, width - 20, fontSize, 'left', 'bottom', true);
 			titleY += paddingBetweenLines;
 		});
 	}
 
 	return createTextureFromCanvas(canvas);
 }
-
-
 
 export function createSynopsisTextTexture(
 	synopsis,
@@ -233,7 +284,8 @@ export function createSynopsisTextTexture(
 	context.textAlign = 'left';
 	context.textBaseline = 'top';
 
-	const richText = new DOMParser().parseFromString(synopsis, 'text/html').body.textContent || synopsis;
+	const richText =
+		new DOMParser().parseFromString(synopsis, 'text/html').body.textContent || synopsis;
 	drawText(context, `Synopsis: ${richText}`, 10, 10, width - 20, fontSize);
 
 	return createTextureFromCanvas(canvas);
@@ -243,7 +295,7 @@ export function createExhibitionsTextTexture(
 	exhibitions,
 	width = 640,
 	height = 1024,
-	fontSize = 18,
+	fontSize = 12,
 	color = 'black'
 ) {
 	const { canvas, context } = createHighResolutionCanvas(width, height);
@@ -251,22 +303,59 @@ export function createExhibitionsTextTexture(
 	context.fillStyle = color;
 	context.font = `${fontSize}px Oxanium`;
 	context.textAlign = 'left';
-	context.textBaseline = 'top';
+	context.textBaseline = 'bottom';
 
-	let y = 10;
+	const paddingBetweenLines = fontSize + 5;
+	let y = 10 + fontSize;
+
+	// Store clickable areas
+	const clickableAreas = [];
+
 	exhibitions.forEach((exhibition) => {
 		if (exhibition.title) {
-			drawText(context, `Title: ${exhibition.title}`, 10, y, width - 20, fontSize);
-			y += fontSize + 5;
+			const titleLines = wrapText(context, exhibition.title, width - 20);
+			titleLines.forEach((line) => {
+				drawTextWithHyperlink(context, line, 10, y, width - 20, fontSize, 'left', 'top', false);
+				clickableAreas.push({
+					x: 10,
+					y: y - fontSize,
+					width: context.measureText(line).width,
+					height: fontSize,
+					link: exhibition.link
+				});
+				y += paddingBetweenLines;
+			});
+			y += 10; // Extra space after each exhibition entry
 		}
 		if (exhibition.date) {
-			drawText(context, `Date: ${new Date(exhibition.date).toLocaleDateString()}`, 10, y, width - 20, fontSize);
-			y += fontSize + 5;
+			const dateText = `Date: ${new Date(exhibition.date).toLocaleDateString()}`;
+			const dateLines = wrapText(context, dateText, width - 20);
+			dateLines.forEach((line) => {
+				drawText(context, line, 10, y, width - 20, fontSize, 'left', 'top');
+				y += paddingBetweenLines;
+			});
 		}
 		if (exhibition.location) {
-			drawText(context, `Location: ${exhibition.location}`, 10, y, width - 20, fontSize);
-			y += fontSize + 10;
+			const locationText = `Location: ${exhibition.location}`;
+			const locationLines = wrapText(context, locationText, width - 20);
+			locationLines.forEach((line) => {
+				drawText(context, line, 10, y, width - 20, fontSize, 'left', 'top');
+				y += paddingBetweenLines;
+			});
 		}
+	});
+
+	// Make the canvas clickable
+	canvas.addEventListener('click', (event) => {
+		const rect = canvas.getBoundingClientRect();
+		const x = (event.clientX - rect.left) / scaleFactor;
+		const y = (event.clientY - rect.top) / scaleFactor;
+
+		clickableAreas.forEach(area => {
+			if (x >= area.x && x <= area.x + area.width && y >= area.y && y <= area.y + area.height) {
+				window.open(area.link, '_blank');
+			}
+		});
 	});
 
 	return createTextureFromCanvas(canvas);
@@ -284,24 +373,31 @@ export function createColabsTextTexture(
 	context.fillStyle = color;
 	context.font = `${fontSize}px Oxanium`;
 	context.textAlign = 'left';
-	context.textBaseline = 'top';
+	context.textBaseline = 'bottom';
 
-	let y = 10;
+	const paddingBetweenLines = fontSize + 5;
+	let y = 10 + fontSize;
+
+	// Store clickable areas
+	const clickableAreas = [];
+
 	colabs.forEach((colab) => {
 		if (colab.title) {
-			drawText(context, `Title: ${colab.title}`, 10, y, width - 20, fontSize);
-			y += fontSize + 5;
-		}
-		if (colab.role) {
-			drawText(context, `Role: ${colab.role}`, 10, y, width - 20, fontSize);
-			y += fontSize + 5;
-		}
-		if (colab.link) {
-			drawText(context, `Link: ${colab.link}`, 10, y, width - 20, fontSize);
-			y += fontSize + 10;
+			const titleLines = wrapText(context, colab.title, width - 20);
+			titleLines.forEach((line) => {
+				drawTextWithHyperlink(context, line, 10, y, width - 20, fontSize, 'left', 'top', false);
+				clickableAreas.push({
+					x: 10,
+					y: y - fontSize,
+					width: context.measureText(line).width,
+					height: fontSize,
+					link: colab.link
+				});
+				y += paddingBetweenLines;
+			});
+			y += 10; // Extra space after each colab entry
 		}
 	});
 
 	return createTextureFromCanvas(canvas);
 }
-
