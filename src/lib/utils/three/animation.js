@@ -16,10 +16,14 @@ export function animateToPosition(camera, x, y) {
     new Tween(camera.position).to({ x, y }, animationDuration).easing(Easing.Quadratic.Out).start();
 }
 
-export function animate(renderer, scene, camera) {
-    requestAnimationFrame(() => animate(renderer, scene, camera));
+export function animate(renderer, scene, camera, composer = null) {
+    requestAnimationFrame(() => animate(renderer, scene, camera, composer));
     tweenUpdate();
-    renderer.render(scene, camera);
+    if (composer) {
+        composer.render();
+    } else {
+        renderer.render(scene, camera);
+    }
 }
 
 export function rotateCardTowardsMouse(card, mouse, camera, maxRotation) {
