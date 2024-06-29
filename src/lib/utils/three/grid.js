@@ -110,7 +110,7 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
             onClick: () => console.log('Work Details Clicked')
         }
     ];
-
+    console.log(work.expand)
     if (work.synopsis) {
         cards.push({
             type: 'synopsis',
@@ -122,7 +122,7 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
     if (work.colab && work.colab.length > 0) {
         cards.push({
             type: 'colabs',
-            text: 'Collaborations',
+            text: work.expand.colab,
             onClick: () => console.log('Collaborations Clicked')
         });
     }
@@ -130,7 +130,7 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
     if (work.exhibitions && work.exhibitions.length > 0) {
         cards.push({
             type: 'exhibitions',
-            text: 'Exhibitions',
+            text: work.expand.exhibitions,
             onClick: () => console.log('Exhibitions Clicked')
         });
     }
@@ -166,7 +166,7 @@ function addCardToGrid(gridContainer, item, position, itemWidth, itemHeight, onC
     } else if (item.type === 'synopsis') {
         addSynopsisCard(
             gridContainer,
-            item.text,
+            { synopsis: item.text }, // Ensure correct synopsis data is passed
             position.x,
             position.y,
             itemWidth,
@@ -176,7 +176,7 @@ function addCardToGrid(gridContainer, item, position, itemWidth, itemHeight, onC
     } else if (item.type === 'colabs') {
         addColabsCard(
             gridContainer,
-            item.text,
+            { colabs: item.text }, // Ensure correct colabs data is passed
             position.x,
             position.y,
             itemWidth,
@@ -186,7 +186,7 @@ function addCardToGrid(gridContainer, item, position, itemWidth, itemHeight, onC
     } else if (item.type === 'exhibitions') {
         addExhibitionsCard(
             gridContainer,
-            item.text,
+            { exhibitions: item.text }, // Ensure correct exhibitions data is passed
             position.x,
             position.y,
             itemWidth,

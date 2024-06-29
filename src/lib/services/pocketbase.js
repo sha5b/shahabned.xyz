@@ -7,7 +7,7 @@ export const fetchWorkByTitle = async (fetch, title) => {
   try {
     const works = await pb.collection('works').getFullList({
       filter: `title="${title}"`,
-      expand: 'category',
+      expand: 'category,colab,reference,exhibitions', // Expand additional fields
       $autoCancel: false // Disable auto-cancellation
     });
     if (works.length === 0) {

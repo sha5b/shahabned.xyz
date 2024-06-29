@@ -190,6 +190,7 @@ function createCardMesh(
 
 	return cardMesh;
 }
+
 function createNavigationCardMesh(itemWidth, itemHeight, icon, color, onClick) {
 	const radius = 8;
 	const roundedRectTexture = createRoundedRectTexture(itemWidth * 100, itemHeight * 100, radius);
@@ -305,9 +306,9 @@ function addWorkDetailsCard(gridContainer, work, x, y, itemWidth, itemHeight, on
 
 	addCard(gridContainer, cardMesh, x, y);
 }
+
 function addSynopsisCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
-	if (!work.synopsis) return; // Skip if no synopsis data
-	const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick, '#d4d4d4', {
+	const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick, null, {
 		textType: 'synopsis',
 		data: work.synopsis,
 		color: 'black'
@@ -316,23 +317,26 @@ function addSynopsisCard(gridContainer, work, x, y, itemWidth, itemHeight, onCli
 }
 
 function addColabsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
-	if (!work.colabs || work.colabs.length === 0) return; // Skip if no colabs data
-	const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick, '#d4d4d4', {
-		textType: 'colabs',
-		data: work.colabs,
-		color: 'black'
-	});
-	addCard(gridContainer, cardMesh, x, y);
+    const colabData = work.colabs || [];
+    console.log('Colabs Data:', colabData); // Log to verify data
+    if (!Array.isArray(colabData) || colabData.length === 0) return; // Skip if no colabs data
+    const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick, null, {
+        textType: 'colabs',
+        data: colabData,
+        color: 'black'
+    });
+    addCard(gridContainer, cardMesh, x, y);
 }
-
 function addExhibitionsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
-	if (!work.exhibitions || work.exhibitions.length === 0) return; // Skip if no exhibitions data
-	const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick, '#d4d4d4', {
-		textType: 'exhibitions',
-		data: work.exhibitions,
-		color: 'black'
-	});
-	addCard(gridContainer, cardMesh, x, y);
+    const exhibitionsData = work.exhibitions || [];
+    console.log('Exhibitions Data:', exhibitionsData); // Log to verify data
+    if (!Array.isArray(exhibitionsData) || exhibitionsData.length === 0) return; // Skip if no exhibitions data
+    const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick, '#d4d4d4', {
+        textType: 'exhibitions',
+        data: exhibitionsData,
+        color: 'black'
+    });
+    addCard(gridContainer, cardMesh, x, y);
 }
 
 export {
