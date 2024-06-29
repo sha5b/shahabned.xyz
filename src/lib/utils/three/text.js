@@ -1,7 +1,12 @@
-// src/lib/utils/three/text.js
 import * as THREE from 'three';
 
+// Configurable variables
 const scaleFactor = 2;
+const defaultFontSize = 18;
+const defaultFontFamily = 'Oxanium';
+const defaultColor = 'black';
+const hyperlinkColor = 'blue';
+const lineSpacing = 5;
 
 function createHighResolutionCanvas(width, height) {
 	const canvas = document.createElement('canvas');
@@ -32,16 +37,19 @@ function drawText(
 	x,
 	y,
 	width,
-	fontSize = 18,
+	fontSize = defaultFontSize,
 	align = 'left',
 	baseline = 'bottom',
-	bold = false
+	bold = false,
+	color = defaultColor,
+	isHyperlink = false
 ) {
 	if (typeof text !== 'string') return;
 
 	context.textAlign = align;
 	context.textBaseline = baseline;
-	context.font = bold ? `bold ${fontSize}px Oxanium` : `${fontSize}px Oxanium`;
+	context.font = bold ? `bold ${fontSize}px ${defaultFontFamily}` : `${fontSize}px ${defaultFontFamily}`;
+	context.fillStyle = isHyperlink ? hyperlinkColor : color;
 
 	const maxWidth = width - 20;
 	const words = text.split(' ');
@@ -63,51 +71,10 @@ function drawText(
 
 	for (let i = 0; i < lines.length; i++) {
 		context.fillText(lines[i], x, y);
-		y += fontSize;
+		y += fontSize + lineSpacing;
 	}
 }
 
-function drawTextWithHyperlink(
-	context,
-	text,
-	x,
-	y,
-	width,
-	fontSize = 18,
-	align = 'left',
-	baseline = 'bottom',
-	bold = false
-) {
-	if (typeof text !== 'string') return;
-
-	context.textAlign = align;
-	context.textBaseline = baseline;
-	context.font = bold ? `bold ${fontSize}px Oxanium` : `${fontSize}px Oxanium`;
-
-	const maxWidth = width - 20;
-	const words = text.split(' ');
-	let line = '';
-	const lines = [];
-
-	for (let n = 0; n < words.length; n++) {
-		const testLine = line + words[n] + ' ';
-		const metrics = context.measureText(testLine);
-		const testWidth = metrics.width;
-		if (testWidth > maxWidth && n > 0) {
-			lines.push(line);
-			line = words[n] + ' ';
-		} else {
-			line = testLine;
-		}
-	}
-	lines.push(line);
-
-	context.fillStyle = 'blue';
-	for (let i = 0; i < lines.length; i++) {
-		context.fillText(lines[i], x, y);
-		y += fontSize;
-	}
-}
 function wrapText(context, text, maxWidth) {
 	const words = text.split(' ');
 	let line = '';
@@ -158,14 +125,14 @@ export function createTextTexture(
 	format,
 	width,
 	height,
-	fontSize = 18,
-	color = 'black',
+	fontSize = defaultFontSize,
+	color = defaultColor,
 	pageType = 'work'
 ) {
 	const { canvas, context } = createHighResolutionCanvas(width, height);
 
 	context.fillStyle = color;
-	context.font = `${fontSize}px Oxanium`;
+	context.font = `${fontSize}px ${defaultFontFamily}`;
 	context.textAlign = 'left';
 	context.textBaseline = 'bottom';
 
@@ -178,8 +145,8 @@ export function createTextTexture(
 			: '';
 
 		if (formattedDate || type) {
-			drawText(context, formattedDate, 10, 10 + fontSize, width, fontSize, 'left', 'top');
-			drawText(context, type, width - 10, 10 + fontSize, width, fontSize, 'right', 'top');
+			drawText(context, formattedDate, 10, 10 + fontSize, width, fontSize, 'left', 'top', false, color);
+			drawText(context, type, width - 10, 10 + fontSize, width, fontSize, 'right', 'top', false, color);
 		}
 
 		const paddingBetweenFormatAndTitle = 20;
@@ -192,13 +159,15 @@ export function createTextTexture(
 				width,
 				fontSize,
 				'left',
-				'bottom'
+				'bottom',
+				false,
+				color
 			);
 		}
 	}
 
 	if (title) {
-		drawText(context, title, 10, height - 40, width, fontSize, 'left', 'bottom', true);
+		drawText(context, title, 10, height - 40, width, fontSize, 'left', 'bottom', true, color);
 	}
 
 	return createTextureFromCanvas(canvas);
@@ -208,17 +177,17 @@ export function createWorkDetailTextTexture(
 	work,
 	width = 640,
 	height = 1024,
-	fontSize = 18,
-	color = 'black'
+	fontSize = defaultFontSize,
+	color = defaultColor
 ) {
 	const { canvas, context } = createHighResolutionCanvas(width, height);
 
 	context.fillStyle = color;
-	context.font = `${fontSize}px Oxanium`;
+	context.font = `${fontSize}px ${defaultFontFamily}`;
 	context.textAlign = 'left';
 	context.textBaseline = 'bottom';
 
-	const paddingBetweenLines = fontSize + 5;
+	const paddingBetweenLines = fontSize + lineSpacing;
 	let y = 10 + fontSize;
 
 	const formattedDate = work.date
@@ -229,18 +198,18 @@ export function createWorkDetailTextTexture(
 		: '';
 
 	if (formattedDate || work.type) {
-		drawText(context, formattedDate, 10, y, width, fontSize, 'left', 'top');
-		drawText(context, work.type, width - 10, y, width, fontSize, 'right', 'top');
+		drawText(context, formattedDate, 10, y, width, fontSize, 'left', 'top', false, color);
+		drawText(context, work.type, width - 10, y, width, fontSize, 'right', 'top', false, color);
 		y += paddingBetweenLines;
 	}
 
 	if (work.edition) {
-		drawText(context, `Edition: ${work.edition}`, 10, y, width, fontSize, 'left', 'top');
+		drawText(context, `Edition: ${work.edition}`, 10, y, width, fontSize, 'left', 'top', false, color);
 		y += paddingBetweenLines;
 	}
 
 	if (work.dimension) {
-		drawText(context, `${work.dimension}`, 10, y, width, fontSize, 'left', 'top');
+		drawText(context, `${work.dimension}`, 10, y, width, fontSize, 'left', 'top', false, color);
 		y += paddingBetweenLines;
 	}
 
@@ -254,15 +223,17 @@ export function createWorkDetailTextTexture(
 			width,
 			fontSize,
 			'left',
-			'bottom'
+			'bottom',
+			false,
+			color
 		);
 	}
 
 	if (work.title) {
 		const titleLines = wrapText(context, work.title, width - 20);
-		let titleY = height - 40 - (titleLines.length - 1) * (fontSize + 5);
+		let titleY = height - 40 - (titleLines.length - 1) * (fontSize + lineSpacing);
 		titleLines.forEach((line) => {
-			drawText(context, line, 10, titleY, width - 20, fontSize, 'left', 'bottom', true);
+			drawText(context, line, 10, titleY, width - 20, fontSize, 'left', 'bottom', true, color);
 			titleY += paddingBetweenLines;
 		});
 	}
@@ -274,19 +245,18 @@ export function createSynopsisTextTexture(
 	synopsis,
 	width = 640,
 	height = 1024,
-	fontSize = 18,
-	color = 'black'
+	fontSize = defaultFontSize,
+	color = defaultColor
 ) {
 	const { canvas, context } = createHighResolutionCanvas(width, height);
 
 	context.fillStyle = color;
-	context.font = `${fontSize}px Oxanium`;
+	context.font = `${fontSize}px ${defaultFontFamily}`;
 	context.textAlign = 'left';
 	context.textBaseline = 'top';
 
-	const richText =
-		new DOMParser().parseFromString(synopsis, 'text/html').body.textContent || synopsis;
-	drawText(context, `Synopsis: ${richText}`, 10, 10, width - 20, fontSize);
+	const richText = new DOMParser().parseFromString(synopsis, 'text/html').body.textContent || synopsis;
+	drawText(context, `Synopsis: ${richText}`, 10, 10, width - 20, fontSize, 'left', 'top', false, color);
 
 	return createTextureFromCanvas(canvas);
 }
@@ -296,16 +266,16 @@ export function createExhibitionsTextTexture(
 	width = 640,
 	height = 1024,
 	fontSize = 12,
-	color = 'black'
+	color = defaultColor
 ) {
 	const { canvas, context } = createHighResolutionCanvas(width, height);
 
 	context.fillStyle = color;
-	context.font = `${fontSize}px Oxanium`;
+	context.font = `${fontSize}px ${defaultFontFamily}`;
 	context.textAlign = 'left';
 	context.textBaseline = 'bottom';
 
-	const paddingBetweenLines = fontSize + 5;
+	const paddingBetweenLines = fontSize + lineSpacing;
 	let y = 10 + fontSize;
 
 	// Store clickable areas
@@ -315,7 +285,7 @@ export function createExhibitionsTextTexture(
 		if (exhibition.title) {
 			const titleLines = wrapText(context, exhibition.title, width - 20);
 			titleLines.forEach((line) => {
-				drawTextWithHyperlink(context, line, 10, y, width - 20, fontSize, 'left', 'top', false);
+				drawText(context, line, 10, y, width - 20, fontSize, 'left', 'top', false, hyperlinkColor);
 				clickableAreas.push({
 					x: 10,
 					y: y - fontSize,
@@ -331,7 +301,7 @@ export function createExhibitionsTextTexture(
 			const dateText = `Date: ${new Date(exhibition.date).toLocaleDateString()}`;
 			const dateLines = wrapText(context, dateText, width - 20);
 			dateLines.forEach((line) => {
-				drawText(context, line, 10, y, width - 20, fontSize, 'left', 'top');
+				drawText(context, line, 10, y, width - 20, fontSize, 'left', 'top', false, color);
 				y += paddingBetweenLines;
 			});
 		}
@@ -339,25 +309,11 @@ export function createExhibitionsTextTexture(
 			const locationText = `Location: ${exhibition.location}`;
 			const locationLines = wrapText(context, locationText, width - 20);
 			locationLines.forEach((line) => {
-				drawText(context, line, 10, y, width - 20, fontSize, 'left', 'top');
+				drawText(context, line, 10, y, width - 20, fontSize, 'left', 'top', false, color);
 				y += paddingBetweenLines;
 			});
 		}
 	});
-
-	// Make the canvas clickable
-	canvas.addEventListener('click', (event) => {
-		const rect = canvas.getBoundingClientRect();
-		const x = (event.clientX - rect.left) / scaleFactor;
-		const y = (event.clientY - rect.top) / scaleFactor;
-
-		clickableAreas.forEach(area => {
-			if (x >= area.x && x <= area.x + area.width && y >= area.y && y <= area.y + area.height) {
-				window.open(area.link, '_blank');
-			}
-		});
-	});
-
 	return createTextureFromCanvas(canvas);
 }
 
@@ -365,17 +321,17 @@ export function createColabsTextTexture(
 	colabs,
 	width = 640,
 	height = 1024,
-	fontSize = 18,
-	color = 'black'
+	fontSize = defaultFontSize,
+	color = defaultColor
 ) {
 	const { canvas, context } = createHighResolutionCanvas(width, height);
 
 	context.fillStyle = color;
-	context.font = `${fontSize}px Oxanium`;
+	context.font = `${fontSize}px ${defaultFontFamily}`;
 	context.textAlign = 'left';
 	context.textBaseline = 'bottom';
 
-	const paddingBetweenLines = fontSize + 5;
+	const paddingBetweenLines = fontSize + lineSpacing;
 	let y = 10 + fontSize;
 
 	// Store clickable areas
@@ -385,7 +341,7 @@ export function createColabsTextTexture(
 		if (colab.title) {
 			const titleLines = wrapText(context, colab.title, width - 20);
 			titleLines.forEach((line) => {
-				drawTextWithHyperlink(context, line, 10, y, width - 20, fontSize, 'left', 'top', false);
+				drawText(context, line, 10, y, width - 20, fontSize, 'left', 'top', false, hyperlinkColor);
 				clickableAreas.push({
 					x: 10,
 					y: y - fontSize,

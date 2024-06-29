@@ -1,4 +1,3 @@
-// src/lib/utils/three/grid.js
 import * as THREE from 'three';
 import {
     addCard,
@@ -13,6 +12,12 @@ import {
     addExhibitionsCard
 } from '$lib/utils/three/card';
 
+// Configurable variables
+const minGridCols = 5;
+const minGridRows = 5;
+const wrapPadding = 50;
+const defaultRadius = 8;
+
 function getGridPositions(index, cols, itemWidth, itemHeight, padding) {
     const gap = padding;
     const row = Math.floor(index / cols);
@@ -22,7 +27,7 @@ function getGridPositions(index, cols, itemWidth, itemHeight, padding) {
     return { x, y };
 }
 
-function calculateGridSize(items, minCols = 5, minRows = 5) {
+function calculateGridSize(items, minCols = minGridCols, minRows = minGridRows) {
     const gridCols = Math.max(minCols, Math.ceil(Math.sqrt(items.length)));
     const gridRows = Math.max(minRows, Math.ceil(items.length / gridCols));
     return { gridCols, gridRows };
@@ -143,80 +148,90 @@ function createWorkPageCards(items, title, onClickHandlers, work) {
 }
 
 function addCardToGrid(gridContainer, item, position, itemWidth, itemHeight, onClickHandlers, pageType) {
-    if (item.type === 'navigation') {
-        addNavigationCard(
-            gridContainer,
-            item.icon,
-            item.color,
-            position.x,
-            position.y,
-            itemWidth,
-            itemHeight,
-            item.onClick
-        );
-    } else if (item.type === 'owner') {
-        const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, item.onClick);
-        addCard(gridContainer, cardMesh, position.x, position.y);
-    } else if (item.type === 'workdetails') {
-        addWorkDetailsCard(
-            gridContainer,
-            item.work,
-            position.x,
-            position.y,
-            itemWidth,
-            itemHeight,
-            item.onClick
-        );
-    } else if (item.type === 'synopsis') {
-        addSynopsisCard(
-            gridContainer,
-            { synopsis: item.text }, // Ensure correct synopsis data is passed
-            position.x,
-            position.y,
-            itemWidth,
-            itemHeight,
-            item.onClick
-        );
-    } else if (item.type === 'colabs') {
-        addColabsCard(
-            gridContainer,
-            { colabs: item.text }, // Ensure correct colabs data is passed
-            position.x,
-            position.y,
-            itemWidth,
-            itemHeight,
-            item.onClick
-        );
-    } else if (item.type === 'exhibitions') {
-        addExhibitionsCard(
-            gridContainer,
-            { exhibitions: item.text }, // Ensure correct exhibitions data is passed
-            position.x,
-            position.y,
-            itemWidth,
-            itemHeight,
-            item.onClick
-        );
-    } else if (pageType === 'work') {
-        addImageCard(
-            gridContainer,
-            item,
-            position.x,
-            position.y,
-            itemWidth,
-            itemHeight
-        );
-    } else {
-        addWorkCard(
-            gridContainer,
-            item,
-            position.x,
-            position.y,
-            itemWidth,
-            itemHeight,
-            onClickHandlers.work,
-            pageType
-        );
+    switch (item.type) {
+        case 'navigation':
+            addNavigationCard(
+                gridContainer,
+                item.icon,
+                item.color,
+                position.x,
+                position.y,
+                itemWidth,
+                itemHeight,
+                item.onClick
+            );
+            break;
+        case 'owner':
+            const cardMesh = createCardMesh(itemWidth, itemHeight, null, defaultRadius, item.onClick);
+            addCard(gridContainer, cardMesh, position.x, position.y);
+            break;
+        case 'workdetails':
+            addWorkDetailsCard(
+                gridContainer,
+                item.work,
+                position.x,
+                position.y,
+                itemWidth,
+                itemHeight,
+                item.onClick
+            );
+            break;
+        case 'synopsis':
+            addSynopsisCard(
+                gridContainer,
+                { synopsis: item.text }, // Ensure correct synopsis data is passed
+                position.x,
+                position.y,
+                itemWidth,
+                itemHeight,
+                item.onClick
+            );
+            break;
+        case 'colabs':
+            addColabsCard(
+                gridContainer,
+                { colabs: item.text }, // Ensure correct colabs data is passed
+                position.x,
+                position.y,
+                itemWidth,
+                itemHeight,
+                item.onClick
+            );
+            break;
+        case 'exhibitions':
+            addExhibitionsCard(
+                gridContainer,
+                { exhibitions: item.text }, // Ensure correct exhibitions data is passed
+                position.x,
+                position.y,
+                itemWidth,
+                itemHeight,
+                item.onClick
+            );
+            break;
+        default:
+            if (pageType === 'work') {
+                addImageCard(
+                    gridContainer,
+                    item,
+                    position.x,
+                    position.y,
+                    itemWidth,
+                    itemHeight
+                );
+            } else {
+                addWorkCard(
+                    gridContainer,
+                    item,
+                    position.x,
+                    position.y,
+                    itemWidth,
+                    itemHeight,
+                    onClickHandlers.work,
+                    pageType
+                );
+            }
+            break;
     }
 }
 
@@ -244,8 +259,8 @@ function createCompleteGrid(
     itemHeight,
     padding,
     onClickHandlers = {},
-    minCols = 5,
-    minRows = 5,
+    minCols = minGridCols,
+    minRows = minGridRows,
     pageType,
     work
 ) {
@@ -306,8 +321,8 @@ function wrapGrid(gridContainer, camera, gridCols, gridRows, itemWidth, itemHeig
 
 function cleanupGrid(gridContainer, camera) {
     const bounds = new THREE.Box3(
-        new THREE.Vector3(camera.position.x - 50, camera.position.y - 50, -1),
-        new THREE.Vector3(camera.position.x + 50, camera.position.y + 50, 1)
+        new THREE.Vector3(camera.position.x - wrapPadding, camera.position.y - wrapPadding, -1),
+        new THREE.Vector3(camera.position.x + wrapPadding, camera.position.y + wrapPadding, 1)
     );
 
     for (let i = gridContainer.children.length - 1; i >= 0; i--) {

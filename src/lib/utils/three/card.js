@@ -1,4 +1,3 @@
-// src/lib/utils/three/card.js
 import * as THREE from 'three';
 import { getImageURL } from '$lib/utils/getURL';
 import { goto } from '$app/navigation';
@@ -10,6 +9,11 @@ import {
 	createExhibitionsTextTexture,
 	createColabsTextTexture
 } from '$lib/utils/three/text';
+
+// Configurable variables
+const defaultRadius = 8;
+const defaultShininess = 30;
+const defaultTextColor = 'black';
 
 function createRoundedRectTexture(width, height, radius, resolution = 1024, color = '#f5f5f5') {
 	const canvas = document.createElement('canvas');
@@ -37,7 +41,7 @@ function createRoundedRectTexture(width, height, radius, resolution = 1024, colo
 	return new THREE.CanvasTexture(canvas);
 }
 
-function createMaterial(textureURL, itemWidth, itemHeight, radius = 8) {
+function createMaterial(textureURL, itemWidth, itemHeight, radius = defaultRadius) {
 	const roundedRectTexture = createRoundedRectTexture(itemWidth * 100, itemHeight * 100, radius);
 	let material;
 
@@ -67,7 +71,7 @@ function createMaterial(textureURL, itemWidth, itemHeight, radius = 8) {
 			alphaMap: roundedRectTexture,
 			transparent: true,
 			color: 0xffffff,
-			shininess: 30
+			shininess: defaultShininess
 		});
 
 		texture.onUpdate = function () {
@@ -78,7 +82,7 @@ function createMaterial(textureURL, itemWidth, itemHeight, radius = 8) {
 			map: roundedRectTexture,
 			transparent: true,
 			color: 0xffffff,
-			shininess: 30
+			shininess: defaultShininess
 		});
 	}
 
@@ -98,7 +102,7 @@ function createCardMesh(
 	itemWidth,
 	itemHeight,
 	textureURL,
-	radius = 8,
+	radius = defaultRadius,
 	onClick = null,
 	cardColor = null,
 	textOptions = {}
@@ -108,7 +112,7 @@ function createCardMesh(
 		const parsedColor = parseHexColor(cardColor);
 		material = new THREE.MeshPhongMaterial({
 			color: parsedColor,
-			shininess: 30,
+			shininess: defaultShininess,
 			transparent: true
 		});
 	} else {
@@ -135,7 +139,7 @@ function createCardMesh(
 				itemWidth * 100,
 				itemHeight * 100,
 				18,
-				color || 'black'
+				color || defaultTextColor
 			);
 			break;
 		case 'synopsis':
@@ -144,7 +148,7 @@ function createCardMesh(
 				itemWidth * 100,
 				itemHeight * 100,
 				18,
-				color || 'black'
+				color || defaultTextColor
 			);
 			break;
 		case 'exhibitions':
@@ -153,7 +157,7 @@ function createCardMesh(
 				itemWidth * 100,
 				itemHeight * 100,
 				18,
-				color || 'black'
+				color || defaultTextColor
 			);
 			break;
 		case 'colabs':
@@ -162,7 +166,7 @@ function createCardMesh(
 				itemWidth * 100,
 				itemHeight * 100,
 				18,
-				color || 'black'
+				color || defaultTextColor
 			);
 			break;
 		default:
@@ -174,7 +178,7 @@ function createCardMesh(
 				itemWidth * 100,
 				itemHeight * 100,
 				18,
-				color || 'black',
+				color || defaultTextColor,
 				pageType || 'category'
 			);
 			break;
@@ -193,25 +197,7 @@ function createCardMesh(
 }
 
 function createNavigationCardMesh(itemWidth, itemHeight, icon, color, onClick) {
-	const radius = 8;
-	const roundedRectTexture = createRoundedRectTexture(itemWidth * 100, itemHeight * 100, radius);
-	const parsedColor = parseHexColor(color); // Ensure this function works correctly
-	const cardMaterial = new THREE.MeshPhongMaterial({
-		map: roundedRectTexture,
-		transparent: true,
-		color: parsedColor,
-		shininess: 30
-	});
-
-	const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), cardMaterial);
-	cardMesh.receiveShadow = true;
-
-	if (onClick) {
-		cardMesh.userData = { onClick };
-		// @ts-ignore
-		cardMesh.callback = onClick;
-	}
-
+	const cardMesh = createCardMesh(itemWidth, itemHeight, null, defaultRadius, onClick, color);
 	const iconTexture = createIconTexture(icon, color);
 	const iconMaterial = new THREE.MeshBasicMaterial({ map: iconTexture, transparent: true });
 	const iconMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), iconMaterial);
@@ -241,7 +227,7 @@ function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick, 
 		itemWidth,
 		itemHeight,
 		textureURL,
-		8,
+		defaultRadius,
 		() => {
 			if (onClick) {
 				onClick(work);
@@ -269,7 +255,7 @@ function addCategoryCard(gridContainer, category, x, y, itemWidth, itemHeight, o
 		itemWidth,
 		itemHeight,
 		textureURL,
-		8,
+		defaultRadius,
 		() => {
 			if (onClick) {
 				onClick(category);
@@ -291,7 +277,7 @@ function addNavigationCard(gridContainer, icon, color, x, y, itemWidth, itemHeig
 
 function addImageCard(gridContainer, image, x, y, itemWidth, itemHeight) {
 	const textureURL = getImageURL('works', image.id, image.thump, '400x600');
-	const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, 8, () => {
+	const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, defaultRadius, () => {
 		console.log('Image card clicked:', image);
 	});
 
@@ -299,20 +285,20 @@ function addImageCard(gridContainer, image, x, y, itemWidth, itemHeight) {
 }
 
 function addWorkDetailsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
-	const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick, null, {
+	const cardMesh = createCardMesh(itemWidth, itemHeight, null, defaultRadius, onClick, null, {
 		textType: 'workDetail', // Ensure this is set to 'workDetail'
 		data: work,
-		color: 'black'
+		color: defaultTextColor
 	});
 
 	addCard(gridContainer, cardMesh, x, y);
 }
 
 function addSynopsisCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
-	const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick, null, {
+	const cardMesh = createCardMesh(itemWidth, itemHeight, null, defaultRadius, onClick, null, {
 		textType: 'synopsis',
 		data: work.synopsis,
-		color: 'black'
+		color: defaultTextColor
 	});
 	addCard(gridContainer, cardMesh, x, y);
 }
@@ -320,20 +306,20 @@ function addSynopsisCard(gridContainer, work, x, y, itemWidth, itemHeight, onCli
 function addColabsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
     const colabData = work.colabs || [];
     if (!Array.isArray(colabData) || colabData.length === 0) return; // Skip if no colabs data
-    const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick, null, {
+    const cardMesh = createCardMesh(itemWidth, itemHeight, null, defaultRadius, onClick, null, {
         textType: 'colabs',
         data: colabData,
-        color: 'black'
+        color: defaultTextColor
     });
     addCard(gridContainer, cardMesh, x, y);
 }
 function addExhibitionsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
     const exhibitionsData = work.exhibitions || [];
     if (!Array.isArray(exhibitionsData) || exhibitionsData.length === 0) return; // Skip if no exhibitions data
-    const cardMesh = createCardMesh(itemWidth, itemHeight, null, 8, onClick, null, {
+    const cardMesh = createCardMesh(itemWidth, itemHeight, null, defaultRadius, onClick, null, {
         textType: 'exhibitions',
         data: exhibitionsData,
-        color: 'black'
+        color: defaultTextColor
     });
     addCard(gridContainer, cardMesh, x, y);
 }
