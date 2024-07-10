@@ -1,3 +1,5 @@
+// grid.js
+
 import * as THREE from 'three';
 import {
     addCard,
@@ -28,8 +30,9 @@ function getGridPositions(index, cols, itemWidth, itemHeight, padding) {
 }
 
 function calculateGridSize(items, minCols = minGridCols, minRows = minGridRows) {
-    const gridCols = Math.max(minCols, Math.ceil(Math.sqrt(items.length)));
-    const gridRows = Math.max(minRows, Math.ceil(items.length / gridCols));
+    const totalItems = items.length;
+    const gridCols = Math.max(minCols, Math.ceil(Math.sqrt(totalItems)));
+    const gridRows = Math.max(minRows, Math.ceil(totalItems / gridCols));
     return { gridCols, gridRows };
 }
 
