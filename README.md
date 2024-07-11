@@ -1,5 +1,5 @@
 
-# Project Title
+# Shahab Nedaei Portfolio Website
 
 An interactive 3D canvas web application using Svelte and Three.js.
 
