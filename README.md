@@ -26,7 +26,7 @@ To get started with this project, follow these steps:
    ```env
    VITE_API_URL=https://your-pocketbase-api-url
    ```
-
+(the shema for the database is under pb/pb_shema.json)
 ## Usage
 
 To run the application locally:
