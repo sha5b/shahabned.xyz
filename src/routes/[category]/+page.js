@@ -20,6 +20,8 @@ export async function load({ params, fetch }) {
     categories,
     category,
     title: category,
-    pageType: 'category'
+    pageType: 'category',
+    description: `Explore Shahab Nedaei's ${category} artworks, diving into digital, virtual reality, and AI art.`,
+    keywords: `${category} art, digital art, virtual reality art, AI art, Shahab Nedaei`,
   };
 }
