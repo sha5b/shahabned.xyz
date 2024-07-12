@@ -13,7 +13,7 @@ export async function load({ params, fetch }) {
       categories,
       works: worksInCategory,
       title: category, // Pass the category title
-      description: `Discover ${workDetails.title}, a ${category} artwork by Shahab Nedaei, exploring digital, virtual reality, and AI art.`,
+      description: `${workDetails.title}, a ${category} artwork by Shahab Nedaei`,
       keywords: `${workDetails.title}, ${category} art, digital art, virtual reality art, AI art, Shahab Nedaei`,
       pageType: 'work'
     };
