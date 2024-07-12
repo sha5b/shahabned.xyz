@@ -235,6 +235,49 @@
     "options": {}
   },
   {
+    "id": "vui91ahvw8sl47o",
+    "name": "categories",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "system": false,
+        "id": "gdjpschv",
+        "name": "title",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "system": false,
+        "id": "svwb2coi",
+        "name": "color",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
     "id": "qgou9q4i846eph5",
     "name": "works",
     "type": "base",
@@ -296,7 +339,8 @@
           "values": [
             "analog",
             "digital",
-            "mixed"
+            "mixed",
+            "curated"
           ]
         }
       },
@@ -436,49 +480,6 @@
           "maxSelect": 99,
           "maxSize": 5242880,
           "protected": false
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": "",
-    "viewRule": "",
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
-  },
-  {
-    "id": "vui91ahvw8sl47o",
-    "name": "categories",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "system": false,
-        "id": "gdjpschv",
-        "name": "title",
-        "type": "text",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "system": false,
-        "id": "svwb2coi",
-        "name": "color",
-        "type": "text",
-        "required": false,
-        "presentable": false,
-        "unique": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
         }
       }
     ],

@@ -1,0 +1,13 @@
+
+# Allow all web crawlers access to all content
+User-agent: *
+Disallow: /private/
+Disallow: /admin/
+Disallow: /login/
+Disallow: /register/
+
+# Allow access to all other directories
+Allow: /
+
+# Specify the location of the sitemap
+Sitemap: https://shahabned.xyz/sitemap.xml
