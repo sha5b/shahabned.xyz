@@ -3,11 +3,7 @@ import { getImageURL } from '$lib/utils/getURL';
 import { goto } from '$app/navigation';
 import {
 	createIconTexture,
-	createTextTexture,
-	createWorkDetailTextTexture,
-	createSynopsisTextTexture,
-	createExhibitionsTextTexture,
-	createColabsTextTexture
+	createTextTexture
 } from '$lib/utils/three/text';
 
 // Configurable variables
@@ -15,14 +11,11 @@ const defaultRadius = 8;
 const defaultShininess = 30;
 const defaultTextColor = 'black';
 
-function createRoundedRectTexture(width, height, radius, resolution = 1024, color = '#f5f5f5') {
+function createRoundedRectTexture(width, height, radius, color = '#f5f5f5') {
 	const canvas = document.createElement('canvas');
-	canvas.width = resolution;
-	canvas.height = resolution * (height / width);
+	canvas.width = width;
+	canvas.height = height;
 	const context = canvas.getContext('2d');
-	const scale = resolution / width;
-
-	context.scale(scale, scale);
 
 	context.fillStyle = color;
 	context.beginPath();
@@ -41,8 +34,9 @@ function createRoundedRectTexture(width, height, radius, resolution = 1024, colo
 	return new THREE.CanvasTexture(canvas);
 }
 
-function createMaterial(textureURL, itemWidth, itemHeight, radius = defaultRadius) {
+function createMaterial(textureURL, itemWidth, itemHeight, radius = defaultRadius, cardColor = null) {
 	const roundedRectTexture = createRoundedRectTexture(itemWidth * 100, itemHeight * 100, radius);
+
 	let material;
 
 	if (textureURL) {
@@ -79,110 +73,44 @@ function createMaterial(textureURL, itemWidth, itemHeight, radius = defaultRadiu
 		};
 	} else {
 		material = new THREE.MeshPhongMaterial({
+			color: cardColor || 0xffffff,
 			map: roundedRectTexture,
 			transparent: true,
-			color: 0xffffff,
 			shininess: defaultShininess
 		});
 	}
 
-	return material;
-}
+	material.alphaMap = roundedRectTexture; // Ensure alphaMap is always applied for rounded corners
+	material.transparent = true;
 
-function parseHexColor(hex) {
-	try {
-		return new THREE.Color(hex);
-	} catch {
-		console.error(`Invalid color: ${hex}`);
-		return new THREE.Color(0xffffff);
-	}
+	return material;
 }
 
 function createCardMesh(
 	itemWidth,
 	itemHeight,
-	textureURL,
-	radius = defaultRadius,
+	textureURL = null,
 	onClick = null,
 	cardColor = null,
 	textOptions = {}
 ) {
-	let material;
-	if (cardColor) {
-		const parsedColor = parseHexColor(cardColor);
-		material = new THREE.MeshPhongMaterial({
-			color: parsedColor,
-			shininess: defaultShininess,
-			transparent: true
-		});
-	} else {
-		material = createMaterial(textureURL, itemWidth, itemHeight, radius);
-	}
+	const material = createMaterial(textureURL, itemWidth, itemHeight, defaultRadius, cardColor);
 
 	const cardMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), material);
 	cardMesh.receiveShadow = true;
 
 	if (onClick) {
 		cardMesh.userData = { onClick };
-		// @ts-ignore
 		cardMesh.callback = onClick;
 	}
 
-	// Create the combined text texture
-	let textTexture;
-	const { textType, mainText, date, type, format, pageType, color, data } = textOptions;
-
-	switch (textType) {
-		case 'workDetail':
-			textTexture = createWorkDetailTextTexture(
-				data,
-				itemWidth * 100,
-				itemHeight * 100,
-				18,
-				color || defaultTextColor
-			);
-			break;
-		case 'synopsis':
-			textTexture = createSynopsisTextTexture(
-				data,
-				itemWidth * 100,
-				itemHeight * 100,
-				18,
-				color || defaultTextColor
-			);
-			break;
-		case 'exhibitions':
-			textTexture = createExhibitionsTextTexture(
-				data,
-				itemWidth * 100,
-				itemHeight * 100,
-				18,
-				color || defaultTextColor
-			);
-			break;
-		case 'colabs':
-			textTexture = createColabsTextTexture(
-				data,
-				itemWidth * 100,
-				itemHeight * 100,
-				18,
-				color || defaultTextColor
-			);
-			break;
-		default:
-			textTexture = createTextTexture(
-				mainText || '',
-				date || '',
-				type || '',
-				format || '',
-				itemWidth * 100,
-				itemHeight * 100,
-				18,
-				color || defaultTextColor,
-				pageType || 'category'
-			);
-			break;
-	}
+	// Text texture handling
+	const { mainText = '', date = '', type = '', format = '', pageType = 'category', color = defaultTextColor } = textOptions;
+	const textTexture = createTextTexture(
+		mainText, date, type, format,
+		itemWidth * 100, itemHeight * 100,
+		18, color, pageType
+	);
 
 	const textMaterial = new THREE.MeshBasicMaterial({ map: textTexture, transparent: true });
 	const textMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), textMaterial);
@@ -197,7 +125,7 @@ function createCardMesh(
 }
 
 function createNavigationCardMesh(itemWidth, itemHeight, icon, color, onClick) {
-	const cardMesh = createCardMesh(itemWidth, itemHeight, null, defaultRadius, onClick, color);
+	const cardMesh = createCardMesh(itemWidth, itemHeight, null, onClick, color);
 	const iconTexture = createIconTexture(icon, color);
 	const iconMaterial = new THREE.MeshBasicMaterial({ map: iconTexture, transparent: true });
 	const iconMesh = new THREE.Mesh(new THREE.PlaneGeometry(itemWidth, itemHeight), iconMaterial);
@@ -221,27 +149,16 @@ function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick, 
 	const textureURL = getImageURL('works', work.id, work.thump, '400x600');
 	const textColor = work.expand.category.color;
 
-	const mainText = pageType === 'landing' ? category : work.title;
-
 	const cardMesh = createCardMesh(
-		itemWidth,
-		itemHeight,
-		textureURL,
-		defaultRadius,
-		() => {
-			if (onClick) {
-				onClick(work);
-			} else {
-				goto(`/${category}/${work.title}`);
-			}
-		},
+		itemWidth, itemHeight, textureURL, 
+		() => onClick ? onClick(work) : goto(`/${category}/${work.title}`),
 		null,
 		{
-			mainText: mainText,
+			mainText: pageType === 'landing' ? category : work.title,
 			date: work.date,
 			type: work.type,
 			format: work.format,
-			pageType: pageType,
+			pageType,
 			color: textColor
 		}
 	);
@@ -252,20 +169,11 @@ function addWorkCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick, 
 function addCategoryCard(gridContainer, category, x, y, itemWidth, itemHeight, onClick) {
 	const textureURL = getImageURL('category', category.id, category.thump, '400x600');
 	const cardMesh = createCardMesh(
-		itemWidth,
-		itemHeight,
-		textureURL,
-		defaultRadius,
-		() => {
-			if (onClick) {
-				onClick(category);
-			} else {
-				goto(`/${category.title}`);
-			}
-		},
+		itemWidth, itemHeight, textureURL,
+		() => onClick ? onClick(category) : goto(`/${category.title}`),
 		null,
-		category.title
-	); // Pass category title as text
+		{ mainText: category.title }
+	);
 
 	addCard(gridContainer, cardMesh, x, y);
 }
@@ -277,51 +185,9 @@ function addNavigationCard(gridContainer, icon, color, x, y, itemWidth, itemHeig
 
 function addImageCard(gridContainer, image, x, y, itemWidth, itemHeight) {
 	const textureURL = getImageURL('works', image.id, image.thump, '400x600');
-	const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL, defaultRadius, () => {
-		console.log('Image card clicked:', image);
-	});
+	const cardMesh = createCardMesh(itemWidth, itemHeight, textureURL);
 
 	addCard(gridContainer, cardMesh, x, y);
-}
-
-function addWorkDetailsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
-	const cardMesh = createCardMesh(itemWidth, itemHeight, null, defaultRadius, onClick, null, {
-		textType: 'workDetail', // Ensure this is set to 'workDetail'
-		data: work,
-		color: defaultTextColor
-	});
-
-	addCard(gridContainer, cardMesh, x, y);
-}
-
-function addSynopsisCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
-	const cardMesh = createCardMesh(itemWidth, itemHeight, null, defaultRadius, onClick, null, {
-		textType: 'synopsis',
-		data: work.synopsis,
-		color: defaultTextColor
-	});
-	addCard(gridContainer, cardMesh, x, y);
-}
-
-function addColabsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
-    const colabData = work.colabs || [];
-    if (!Array.isArray(colabData) || colabData.length === 0) return; // Skip if no colabs data
-    const cardMesh = createCardMesh(itemWidth, itemHeight, null, defaultRadius, onClick, null, {
-        textType: 'colabs',
-        data: colabData,
-        color: defaultTextColor
-    });
-    addCard(gridContainer, cardMesh, x, y);
-}
-function addExhibitionsCard(gridContainer, work, x, y, itemWidth, itemHeight, onClick) {
-    const exhibitionsData = work.exhibitions || [];
-    if (!Array.isArray(exhibitionsData) || exhibitionsData.length === 0) return; // Skip if no exhibitions data
-    const cardMesh = createCardMesh(itemWidth, itemHeight, null, defaultRadius, onClick, null, {
-        textType: 'exhibitions',
-        data: exhibitionsData,
-        color: defaultTextColor
-    });
-    addCard(gridContainer, cardMesh, x, y);
 }
 
 export {
@@ -332,9 +198,5 @@ export {
 	addWorkCard,
 	addCategoryCard,
 	addNavigationCard,
-	addImageCard,
-	addWorkDetailsCard,
-	addSynopsisCard,
-	addColabsCard,
-	addExhibitionsCard
+	addImageCard
 };

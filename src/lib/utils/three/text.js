@@ -94,30 +94,6 @@ function wrapText(context, text, maxWidth) {
 	return lines;
 }
 
-export function createIconTexture(icon, color, width = 640, height = 1024) {
-	const { canvas, context } = createHighResolutionCanvas(width, height);
-
-	const radius = Math.min(canvas.width, canvas.height) / (6 * scaleFactor);
-	context.fillStyle = 'black';
-	context.beginPath();
-	context.arc(
-		canvas.width / (2 * scaleFactor),
-		canvas.height / (2 * scaleFactor),
-		radius,
-		0,
-		Math.PI * 2
-	);
-	context.fill();
-
-	context.fillStyle = color;
-	context.font = `${radius}px 'Material Icons'`;
-	context.textAlign = 'center';
-	context.textBaseline = 'middle';
-	context.fillText(icon, canvas.width / (2 * scaleFactor), canvas.height / (2 * scaleFactor));
-
-	return createTextureFromCanvas(canvas);
-}
-
 export function createTextTexture(
 	title,
 	date,
@@ -167,193 +143,38 @@ export function createTextTexture(
 	}
 
 	if (title) {
-		drawText(context, title, 10, height - 40, width, fontSize, 'left', 'bottom', true, color);
+		const wrappedLines = wrapText(context, title, width - 20); // Wrapping the title to fit within the width
+		let yPosition = height - 40 - (wrappedLines.length - 1) * (fontSize + lineSpacing); // Adjust y position to account for the number of wrapped lines
+
+		for (let i = 0; i < wrappedLines.length; i++) {
+			drawText(context, wrappedLines[i], 10, yPosition, width, fontSize, 'left', 'bottom', true, color);
+			yPosition += fontSize + lineSpacing;
+		}
 	}
 
 	return createTextureFromCanvas(canvas);
 }
 
-export function createWorkDetailTextTexture(
-	work,
-	width = 640,
-	height = 1024,
-	fontSize = defaultFontSize,
-	color = defaultColor
-) {
+export function createIconTexture(icon, color, width = 640, height = 1024) {
 	const { canvas, context } = createHighResolutionCanvas(width, height);
 
-	context.fillStyle = color;
-	context.font = `${fontSize}px ${defaultFontFamily}`;
-	context.textAlign = 'left';
-	context.textBaseline = 'bottom';
-
-	const paddingBetweenLines = fontSize + lineSpacing;
-	let y = 10 + fontSize;
-
-	const formattedDate = work.date
-		? new Intl.DateTimeFormat('en-US', {
-				year: 'numeric',
-				month: 'long'
-			}).format(new Date(work.date))
-		: '';
-
-	if (formattedDate || work.type) {
-		drawText(context, formattedDate, 10, y, width, fontSize, 'left', 'top', false, color);
-		drawText(context, work.type, width - 10, y, width, fontSize, 'right', 'top', false, color);
-		y += paddingBetweenLines;
-	}
-
-	if (work.edition) {
-		drawText(context, `Edition: ${work.edition}`, 10, y, width, fontSize, 'left', 'top', false, color);
-		y += paddingBetweenLines;
-	}
-
-	if (work.dimension) {
-		drawText(context, `${work.dimension}`, 10, y, width, fontSize, 'left', 'top', false, color);
-		y += paddingBetweenLines;
-	}
-
-	const paddingBetweenFormatAndTitle = 20;
-	if (work.format) {
-		drawText(
-			context,
-			`Format: ${work.format}`,
-			10,
-			height - 40 - paddingBetweenFormatAndTitle - fontSize,
-			width,
-			fontSize,
-			'left',
-			'bottom',
-			false,
-			color
-		);
-	}
-
-	if (work.title) {
-		const titleLines = wrapText(context, work.title, width - 20);
-		let titleY = height - 40 - (titleLines.length - 1) * (fontSize + lineSpacing);
-		titleLines.forEach((line) => {
-			drawText(context, line, 10, titleY, width - 20, fontSize, 'left', 'bottom', true, color);
-			titleY += paddingBetweenLines;
-		});
-	}
-
-	return createTextureFromCanvas(canvas);
-}
-
-export function createSynopsisTextTexture(
-	synopsis,
-	width = 640,
-	height = 1024,
-	fontSize = defaultFontSize,
-	color = defaultColor
-) {
-	const { canvas, context } = createHighResolutionCanvas(width, height);
+	const radius = Math.min(canvas.width, canvas.height) / (6 * scaleFactor);
+	context.fillStyle = 'black';
+	context.beginPath();
+	context.arc(
+		canvas.width / (2 * scaleFactor),
+		canvas.height / (2 * scaleFactor),
+		radius,
+		0,
+		Math.PI * 2
+	);
+	context.fill();
 
 	context.fillStyle = color;
-	context.font = `${fontSize}px ${defaultFontFamily}`;
-	context.textAlign = 'left';
-	context.textBaseline = 'top';
-
-	const richText = new DOMParser().parseFromString(synopsis, 'text/html').body.textContent || synopsis;
-	drawText(context, `Synopsis: ${richText}`, 10, 10, width - 20, fontSize, 'left', 'top', false, color);
-
-	return createTextureFromCanvas(canvas);
-}
-
-export function createExhibitionsTextTexture(
-	exhibitions,
-	width = 640,
-	height = 1024,
-	fontSize = 12,
-	color = defaultColor
-) {
-	const { canvas, context } = createHighResolutionCanvas(width, height);
-
-	context.fillStyle = color;
-	context.font = `${fontSize}px ${defaultFontFamily}`;
-	context.textAlign = 'left';
-	context.textBaseline = 'bottom';
-
-	const paddingBetweenLines = fontSize + lineSpacing;
-	let y = 10 + fontSize;
-
-	// Store clickable areas
-	const clickableAreas = [];
-
-	exhibitions.forEach((exhibition) => {
-		if (exhibition.title) {
-			const titleLines = wrapText(context, exhibition.title, width - 20);
-			titleLines.forEach((line) => {
-				drawText(context, line, 10, y, width - 20, fontSize, 'left', 'top', false, hyperlinkColor);
-				clickableAreas.push({
-					x: 10,
-					y: y - fontSize,
-					width: context.measureText(line).width,
-					height: fontSize,
-					link: exhibition.link
-				});
-				y += paddingBetweenLines;
-			});
-			y += 10; // Extra space after each exhibition entry
-		}
-		if (exhibition.date) {
-			const dateText = `Date: ${new Date(exhibition.date).toLocaleDateString()}`;
-			const dateLines = wrapText(context, dateText, width - 20);
-			dateLines.forEach((line) => {
-				drawText(context, line, 10, y, width - 20, fontSize, 'left', 'top', false, color);
-				y += paddingBetweenLines;
-			});
-		}
-		if (exhibition.location) {
-			const locationText = `Location: ${exhibition.location}`;
-			const locationLines = wrapText(context, locationText, width - 20);
-			locationLines.forEach((line) => {
-				drawText(context, line, 10, y, width - 20, fontSize, 'left', 'top', false, color);
-				y += paddingBetweenLines;
-			});
-		}
-	});
-	return createTextureFromCanvas(canvas);
-}
-
-export function createColabsTextTexture(
-	colabs,
-	width = 640,
-	height = 1024,
-	fontSize = defaultFontSize,
-	color = defaultColor
-) {
-	const { canvas, context } = createHighResolutionCanvas(width, height);
-
-	context.fillStyle = color;
-	context.font = `${fontSize}px ${defaultFontFamily}`;
-	context.textAlign = 'left';
-	context.textBaseline = 'bottom';
-
-	const paddingBetweenLines = fontSize + lineSpacing;
-	let y = 10 + fontSize;
-
-	// Store clickable areas
-	const clickableAreas = [];
-
-	colabs.forEach((colab) => {
-		if (colab.title) {
-			const titleLines = wrapText(context, colab.title, width - 20);
-			titleLines.forEach((line) => {
-				drawText(context, line, 10, y, width - 20, fontSize, 'left', 'top', false, hyperlinkColor);
-				clickableAreas.push({
-					x: 10,
-					y: y - fontSize,
-					width: context.measureText(line).width,
-					height: fontSize,
-					link: colab.link
-				});
-				y += paddingBetweenLines;
-			});
-			y += 10; // Extra space after each colab entry
-		}
-	});
+	context.font = `${radius}px 'Material Icons'`;
+	context.textAlign = 'center';
+	context.textBaseline = 'middle';
+	context.fillText(icon, canvas.width / (2 * scaleFactor), canvas.height / (2 * scaleFactor));
 
 	return createTextureFromCanvas(canvas);
 }
