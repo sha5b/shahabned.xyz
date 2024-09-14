@@ -36,25 +36,14 @@ export function rotateCardTowardsMouse(card, mouse, camera, maxRotation) {
     const targetRotationX = Math.atan2(dy, camera.position.z) * maxRotationMultiplier;
     const targetRotationY = Math.atan2(dx, camera.position.z) * maxRotationMultiplier;
 
-    const smoothRotationX = THREE.MathUtils.lerp(
-        card.rotation.x,
-        THREE.MathUtils.clamp(-targetRotationX, -maxRotation, maxRotation),
-        rotationLerpFactor
-    );
-    const smoothRotationY = THREE.MathUtils.lerp(
-        card.rotation.y,
-        THREE.MathUtils.clamp(targetRotationY, -maxRotation, maxRotation),
-        rotationLerpFactor
-    );
-
-    card.rotation.x = smoothRotationX;
-    card.rotation.y = smoothRotationY;
+    card.rotation.x = THREE.MathUtils.lerp(card.rotation.x, THREE.MathUtils.clamp(-targetRotationX, -maxRotation, maxRotation), rotationLerpFactor);
+    card.rotation.y = THREE.MathUtils.lerp(card.rotation.y, THREE.MathUtils.clamp(targetRotationY, -maxRotation, maxRotation), rotationLerpFactor);
 }
 
 export function updateCardTransparency(gridContainer, camera, maxDistance) {
     gridContainer.children.forEach((child) => {
         const distance = camera.position.distanceTo(child.position);
-        const transparency = THREE.MathUtils.clamp(1 - distance / maxDistance, 0.1, 1);
-        child.material.opacity = transparency;
+        child.material.opacity = THREE.MathUtils.clamp(1 - distance / maxDistance, 0, 1);
+        child.material.transparent = child.material.opacity < 1;
     });
 }
